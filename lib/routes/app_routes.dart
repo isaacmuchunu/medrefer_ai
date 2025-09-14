@@ -50,6 +50,10 @@ import '../presentation/schedule_screen/schedule_screen.dart';
 import '../presentation/emergency_alerts_screen/emergency_alerts_screen.dart';
 import '../presentation/articles_screen/articles_screen.dart';
 import '../presentation/profile_screen/profile_screen.dart';
+import '../presentation/consent_management/consent_management_screen.dart';
+import '../presentation/care_plan/care_plan_screen.dart';
+import '../presentation/audit_log_viewer/audit_log_viewer_screen.dart';
+import '../presentation/sync_center/sync_center_screen.dart';
 
 class AppRoutes {
   // TODO: Add your routes here
@@ -107,6 +111,10 @@ class AppRoutes {
   static const String articlesScreen = '/articles';
   static const String profileScreen = '/profile';
   static const String emergencyAlertsScreen = '/emergency-alerts';
+  static const String consentManagementScreen = '/consent-management';
+  static const String carePlanScreen = '/care-plan';
+  static const String auditLogViewerScreen = '/audit-log-viewer';
+  static const String syncCenterScreen = '/sync-center';
 
   static Map<String, WidgetBuilder> routes = {
     initial: (context) => const SpecialistDirectory(),
@@ -245,5 +253,23 @@ class AppRoutes {
     articlesScreen: (context) => const ArticlesScreen(),
     profileScreen: (context) => const ProfileScreen(),
     emergencyAlertsScreen: (context) => const EmergencyAlertsScreen(),
+    consentManagementScreen: (context) {
+      final args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+      final patientId = args?['patientId'] as String?;
+      if (patientId == null || patientId.isEmpty) {
+        return const Scaffold(body: Center(child: Text('Missing patientId')));
+      }
+      return ConsentManagementScreen(patientId: patientId);
+    },
+    carePlanScreen: (context) {
+      final args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+      final patientId = args?['patientId'] as String?;
+      if (patientId == null || patientId.isEmpty) {
+        return const Scaffold(body: Center(child: Text('Missing patientId')));
+      }
+      return CarePlanScreen(patientId: patientId);
+    },
+    auditLogViewerScreen: (context) => const AuditLogViewerScreen(),
+    syncCenterScreen: (context) => const SyncCenterScreen(),
   };
 }

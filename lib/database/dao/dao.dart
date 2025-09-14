@@ -21,3 +21,5 @@ export 'audit_log_dao.dart';
 export 'feature_flag_dao.dart';
 export 'notification_dao.dart';
 export 'rbac_dao.dart';
+export 'consent_dao.dart';
+export 'care_plan_dao.dart';

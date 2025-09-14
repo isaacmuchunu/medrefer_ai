@@ -30,7 +30,7 @@ class DatabaseHelper {
     
     return await openDatabase(
       path,
-      version: 4,
+      version: 5,
       onCreate: _onCreate,
       onUpgrade: _onUpgrade,
     );
@@ -245,6 +245,44 @@ class DatabaseHelper {
       )
     ''');
 
+    // Create consents table
+    await db.execute('''
+      CREATE TABLE consents (
+        id TEXT PRIMARY KEY,
+        patient_id TEXT NOT NULL,
+        consent_type TEXT NOT NULL,
+        status TEXT NOT NULL,
+        granted_by TEXT,
+        granted_at TEXT NOT NULL,
+        expires_at TEXT,
+        scope TEXT,
+        revocation_reason TEXT,
+        notes TEXT,
+        created_at TEXT NOT NULL,
+        updated_at TEXT NOT NULL,
+        FOREIGN KEY (patient_id) REFERENCES patients (id) ON DELETE CASCADE
+      )
+    ''');
+
+    // Create care_plans table
+    await db.execute('''
+      CREATE TABLE care_plans (
+        id TEXT PRIMARY KEY,
+        patient_id TEXT NOT NULL,
+        title TEXT NOT NULL,
+        description TEXT NOT NULL,
+        status TEXT NOT NULL,
+        start_date TEXT NOT NULL,
+        end_date TEXT,
+        goals TEXT,
+        interventions TEXT,
+        assigned_to TEXT,
+        created_at TEXT NOT NULL,
+        updated_at TEXT NOT NULL,
+        FOREIGN KEY (patient_id) REFERENCES patients (id) ON DELETE CASCADE
+      )
+    ''');
+
     // Create sync_queue table for offline operations
     await db.execute('''
       CREATE TABLE sync_queue (
@@ -288,6 +326,51 @@ class DatabaseHelper {
       await FeatureFlagDAO.createTables(db);
       await NotificationDAO.createTables(db);
       await RBACDAO.createTables(db);
+    }
+
+    if (oldVersion < 5) {
+      // New consent and care plan tables
+      await db.execute('''
+        CREATE TABLE IF NOT EXISTS consents (
+          id TEXT PRIMARY KEY,
+          patient_id TEXT NOT NULL,
+          consent_type TEXT NOT NULL,
+          status TEXT NOT NULL,
+          granted_by TEXT,
+          granted_at TEXT NOT NULL,
+          expires_at TEXT,
+          scope TEXT,
+          revocation_reason TEXT,
+          notes TEXT,
+          created_at TEXT NOT NULL,
+          updated_at TEXT NOT NULL,
+          FOREIGN KEY (patient_id) REFERENCES patients (id) ON DELETE CASCADE
+        )
+      ''');
+
+      await db.execute('''
+        CREATE TABLE IF NOT EXISTS care_plans (
+          id TEXT PRIMARY KEY,
+          patient_id TEXT NOT NULL,
+          title TEXT NOT NULL,
+          description TEXT NOT NULL,
+          status TEXT NOT NULL,
+          start_date TEXT NOT NULL,
+          end_date TEXT,
+          goals TEXT,
+          interventions TEXT,
+          assigned_to TEXT,
+          created_at TEXT NOT NULL,
+          updated_at TEXT NOT NULL,
+          FOREIGN KEY (patient_id) REFERENCES patients (id) ON DELETE CASCADE
+        )
+      ''');
+
+      // Indexes
+      await db.execute('CREATE INDEX IF NOT EXISTS idx_consents_patient_id ON consents(patient_id);');
+      await db.execute('CREATE INDEX IF NOT EXISTS idx_consents_status ON consents(status);');
+      await db.execute('CREATE INDEX IF NOT EXISTS idx_care_plans_patient_id ON care_plans(patient_id);');
+      await db.execute('CREATE INDEX IF NOT EXISTS idx_care_plans_status ON care_plans(status);');
     }
   }
 
