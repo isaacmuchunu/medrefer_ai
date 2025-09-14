@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'dart:async';
 
 /// Service for managing app performance optimizations
 class PerformanceService {
@@ -315,21 +316,4 @@ class _DebounceManager {
   }
 }
 
-/// Timer implementation for debouncing
-class Timer {
-  final Duration duration;
-  final VoidCallback callback;
-  bool _isActive = true;
-
-  Timer(this.duration, this.callback) {
-    Future.delayed(duration, () {
-      if (_isActive) {
-        callback();
-      }
-    });
-  }
-
-  void cancel() {
-    _isActive = false;
-  }
-}
+// Using dart:async Timer for debouncing

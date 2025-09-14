@@ -42,7 +42,14 @@ class DataService extends ChangeNotifier {
   InsuranceDao get insuranceDAO => _insuranceDao;
   LabResultDao get labResultDAO => _labResultDao;
   PrescriptionDao get prescriptionDAO => _prescriptionDao;
-  FeedbackDao get feedbackDAO => _feedbackDao;\nMessageDao get messageDAO => _messageDao;\nMedicalHistoryDao get medicalHistoryDAO => _medicalHistoryDao;\nConditionDao get conditionDAO => _conditionDao;\nMedicationDao get medicationDAO => _medicationDao;\nDocumentDao get documentDAO => _documentDao;\nEmergencyContactDao get emergencyContactDAO => _emergencyContactDao;\nPharmacyDao get pharmacyDAO => _pharmacyDao;
+  FeedbackDao get feedbackDAO => _feedbackDao;
+  MessageDao get messageDAO => _messageDao;
+  MedicalHistoryDao get medicalHistoryDAO => _medicalHistoryDao;
+  ConditionDao get conditionDAO => _conditionDao;
+  MedicationDao get medicationDAO => _medicationDao;
+  DocumentDao get documentDAO => _documentDao;
+  EmergencyContactDao get emergencyContactDAO => _emergencyContactDao;
+  PharmacyDao get pharmacyDAO => _pharmacyDao;
 
   // Cache for frequently accessed data
   List<Patient>? _cachedPatients;

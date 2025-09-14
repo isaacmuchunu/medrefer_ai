@@ -3,9 +3,14 @@
 /// This file contains all the configuration needed for M-Pesa integration.
 /// Replace the sandbox values with production values when going live.
 
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+
 class MpesaConfig {
   // Environment Configuration
-  static const bool isProduction = false; // Set to true for production
+  static bool get isProduction {
+    final env = (dotenv.env['MPESA_ENVIRONMENT'] ?? dotenv.env['ENV'] ?? 'sandbox').toLowerCase();
+    return env == 'production' || env == 'prod';
+  }
   
   // API URLs
   static const String sandboxBaseUrl = 'https://sandbox.safaricom.co.ke';
@@ -14,16 +19,16 @@ class MpesaConfig {
   static String get baseUrl => isProduction ? productionBaseUrl : sandboxBaseUrl;
   
   // Sandbox Credentials (Replace with your actual sandbox credentials)
-  static const String sandboxConsumerKey = 'YOUR_SANDBOX_CONSUMER_KEY';
-  static const String sandboxConsumerSecret = 'YOUR_SANDBOX_CONSUMER_SECRET';
-  static const String sandboxBusinessShortCode = '174379';
-  static const String sandboxPasskey = 'bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919';
+  static String get sandboxConsumerKey => dotenv.env['MPESA_SANDBOX_CONSUMER_KEY'] ?? 'YOUR_SANDBOX_CONSUMER_KEY';
+  static String get sandboxConsumerSecret => dotenv.env['MPESA_SANDBOX_CONSUMER_SECRET'] ?? 'YOUR_SANDBOX_CONSUMER_SECRET';
+  static String get sandboxBusinessShortCode => dotenv.env['MPESA_SANDBOX_SHORTCODE'] ?? '174379';
+  static String get sandboxPasskey => dotenv.env['MPESA_SANDBOX_PASSKEY'] ?? 'bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919';
   
   // Production Credentials (Replace with your actual production credentials)
-  static const String productionConsumerKey = 'YOUR_PRODUCTION_CONSUMER_KEY';
-  static const String productionConsumerSecret = 'YOUR_PRODUCTION_CONSUMER_SECRET';
-  static const String productionBusinessShortCode = 'YOUR_BUSINESS_SHORTCODE';
-  static const String productionPasskey = 'YOUR_PRODUCTION_PASSKEY';
+  static String get productionConsumerKey => dotenv.env['MPESA_PRODUCTION_CONSUMER_KEY'] ?? 'YOUR_PRODUCTION_CONSUMER_KEY';
+  static String get productionConsumerSecret => dotenv.env['MPESA_PRODUCTION_CONSUMER_SECRET'] ?? 'YOUR_PRODUCTION_CONSUMER_SECRET';
+  static String get productionBusinessShortCode => dotenv.env['MPESA_PRODUCTION_SHORTCODE'] ?? 'YOUR_BUSINESS_SHORTCODE';
+  static String get productionPasskey => dotenv.env['MPESA_PRODUCTION_PASSKEY'] ?? 'YOUR_PRODUCTION_PASSKEY';
   
   // Current Environment Credentials
   static String get consumerKey => isProduction ? productionConsumerKey : sandboxConsumerKey;
@@ -32,8 +37,8 @@ class MpesaConfig {
   static String get passkey => isProduction ? productionPasskey : sandboxPasskey;
   
   // Callback URLs
-  static const String sandboxCallbackUrl = 'https://your-sandbox-app.com/mpesa/callback';
-  static const String productionCallbackUrl = 'https://your-production-app.com/mpesa/callback';
+  static String get sandboxCallbackUrl => dotenv.env['MPESA_SANDBOX_CALLBACK_URL'] ?? 'https://your-sandbox-app.com/mpesa/callback';
+  static String get productionCallbackUrl => dotenv.env['MPESA_PRODUCTION_CALLBACK_URL'] ?? 'https://your-production-app.com/mpesa/callback';
   
   static String get callbackUrl => isProduction ? productionCallbackUrl : sandboxCallbackUrl;
   
