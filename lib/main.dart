@@ -6,6 +6,12 @@ import 'core/performance/performance_service.dart';
 import 'services/ai_service.dart';
 import 'services/collaboration_service.dart';
 import 'services/offline_sync_service.dart';
+import 'services/advanced_ml_analytics_service.dart';
+import 'services/blockchain_medical_records_service.dart';
+import 'services/iot_medical_device_service.dart';
+import 'services/advanced_telemedicine_service.dart';
+import 'services/ai_workflow_automation_service.dart';
+import 'services/enterprise_integration_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -77,6 +83,30 @@ void main() async {
   final offlineSyncService = OfflineSyncService();
   await offlineSyncService.initialize();
 
+  // Initialize advanced ML analytics service
+  final mlAnalyticsService = AdvancedMLAnalyticsService();
+  await mlAnalyticsService.initialize();
+
+  // Initialize blockchain medical records service
+  final blockchainService = BlockchainMedicalRecordsService();
+  await blockchainService.initialize();
+
+  // Initialize IoT medical device service
+  final iotDeviceService = IoTMedicalDeviceService();
+  await iotDeviceService.initialize();
+
+  // Initialize advanced telemedicine service
+  final telemedicineService = AdvancedTelemedicineService();
+  await telemedicineService.initialize();
+
+  // Initialize AI workflow automation service
+  final workflowService = AIWorkflowAutomationService();
+  await workflowService.initialize();
+
+  // Initialize enterprise integration service
+  final integrationService = EnterpriseIntegrationService();
+  await integrationService.initialize();
+
   // Note: CollaborationService will be initialized after authentication
   // as it requires userId and authToken
 
@@ -140,6 +170,24 @@ void main() async {
           ),
           ChangeNotifierProvider<CollaborationService>(
             create: (context) => CollaborationService(),
+          ),
+          ChangeNotifierProvider<AdvancedMLAnalyticsService>(
+            create: (context) => mlAnalyticsService,
+          ),
+          ChangeNotifierProvider<BlockchainMedicalRecordsService>(
+            create: (context) => blockchainService,
+          ),
+          ChangeNotifierProvider<IoTMedicalDeviceService>(
+            create: (context) => iotDeviceService,
+          ),
+          ChangeNotifierProvider<AdvancedTelemedicineService>(
+            create: (context) => telemedicineService,
+          ),
+          ChangeNotifierProvider<AIWorkflowAutomationService>(
+            create: (context) => workflowService,
+          ),
+          ChangeNotifierProvider<EnterpriseIntegrationService>(
+            create: (context) => integrationService,
           ),
         ],
         child: MyApp(),
