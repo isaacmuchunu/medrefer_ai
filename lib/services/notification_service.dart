@@ -1,0 +1,300 @@
+import 'dart:async';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+
+/// Service for managing notifications and alerts in the MedRefer AI app
+class NotificationService extends ChangeNotifier {
+  static final NotificationService _instance = NotificationService._internal();
+  factory NotificationService() => _instance;
+  NotificationService._internal();
+
+  // Notification state
+  List<AppNotification> _notifications = [];
+  int _unreadCount = 0;
+  bool _isInitialized = false;
+
+  // Getters
+  List<AppNotification> get notifications => List.unmodifiable(_notifications);
+  int get unreadCount => _unreadCount;
+  bool get isInitialized => _isInitialized;
+
+  /// Initialize the notification service
+  Future<void> initialize() async {
+    if (_isInitialized) return;
+    
+    try {
+      // Load existing notifications
+      await _loadNotifications();
+      
+      // Setup periodic cleanup
+      _setupPeriodicCleanup();
+      
+      _isInitialized = true;
+      
+      if (kDebugMode) {
+        debugPrint('NotificationService: Initialized successfully');
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        debugPrint('NotificationService: Initialization failed: $e');
+      }
+      rethrow;
+    }
+  }
+
+  /// Add a new notification
+  Future<void> addNotification({
+    required String title,
+    required String message,
+    NotificationType type = NotificationType.info,
+    String? actionRoute,
+    Map<String, dynamic>? data,
+    Duration? autoRemoveAfter,
+  }) async {
+    final notification = AppNotification(
+      id: DateTime.now().millisecondsSinceEpoch.toString(),
+      title: title,
+      message: message,
+      type: type,
+      timestamp: DateTime.now(),
+      actionRoute: actionRoute,
+      data: data,
+    );
+
+    _notifications.insert(0, notification);
+    _unreadCount++;
+    
+    // Auto-remove if specified
+    if (autoRemoveAfter != null) {
+      Future.delayed(autoRemoveAfter, () {
+        removeNotification(notification.id);
+      });
+    }
+    
+    // Trigger haptic feedback for important notifications
+    if (type == NotificationType.urgent || type == NotificationType.error) {
+      HapticFeedback.heavyImpact();
+    } else {
+      HapticFeedback.lightImpact();
+    }
+    
+    notifyListeners();
+    
+    if (kDebugMode) {
+      debugPrint('NotificationService: Added notification - $title');
+    }
+  }
+
+  /// Mark notification as read
+  void markAsRead(String notificationId) {
+    final index = _notifications.indexWhere((n) => n.id == notificationId);
+    if (index != -1 && !_notifications[index].isRead) {
+      _notifications[index] = _notifications[index].copyWith(isRead: true);
+      _unreadCount = (_unreadCount - 1).clamp(0, _notifications.length);
+      notifyListeners();
+    }
+  }
+
+  /// Mark all notifications as read
+  void markAllAsRead() {
+    for (int i = 0; i < _notifications.length; i++) {
+      if (!_notifications[i].isRead) {
+        _notifications[i] = _notifications[i].copyWith(isRead: true);
+      }
+    }
+    _unreadCount = 0;
+    notifyListeners();
+  }
+
+  /// Remove a notification
+  void removeNotification(String notificationId) {
+    final index = _notifications.indexWhere((n) => n.id == notificationId);
+    if (index != -1) {
+      if (!_notifications[index].isRead) {
+        _unreadCount = (_unreadCount - 1).clamp(0, _notifications.length);
+      }
+      _notifications.removeAt(index);
+      notifyListeners();
+    }
+  }
+
+  /// Clear all notifications
+  void clearAll() {
+    _notifications.clear();
+    _unreadCount = 0;
+    notifyListeners();
+  }
+
+  /// Get notifications by type
+  List<AppNotification> getNotificationsByType(NotificationType type) {
+    return _notifications.where((n) => n.type == type).toList();
+  }
+
+  /// Get urgent notifications
+  List<AppNotification> getUrgentNotifications() {
+    return _notifications.where((n) => n.type == NotificationType.urgent).toList();
+  }
+
+  /// Show system notification (for urgent alerts)
+  Future<void> showSystemNotification({
+    required String title,
+    required String message,
+    NotificationType type = NotificationType.info,
+  }) async {
+    // Add to internal notifications
+    await addNotification(
+      title: title,
+      message: message,
+      type: type,
+    );
+    
+    // In a real app, you would integrate with firebase_messaging or local_notifications
+    // For now, we'll just log it
+    if (kDebugMode) {
+      debugPrint('System Notification: $title - $message');
+    }
+  }
+
+  /// Load notifications from storage
+  Future<void> _loadNotifications() async {
+    // In a real app, you would load from local storage or database
+    // For now, we'll start with empty notifications
+    _notifications = [];
+    _unreadCount = 0;
+  }
+
+  /// Setup periodic cleanup of old notifications
+  void _setupPeriodicCleanup() {
+    // Clean up notifications older than 30 days every hour
+    Timer.periodic(const Duration(hours: 1), (timer) {
+      final cutoffDate = DateTime.now().subtract(const Duration(days: 30));
+      final initialCount = _notifications.length;
+      
+      _notifications.removeWhere((notification) => 
+        notification.timestamp.isBefore(cutoffDate));
+      
+      if (_notifications.length != initialCount) {
+        _recalculateUnreadCount();
+        notifyListeners();
+        
+        if (kDebugMode) {
+          debugPrint('NotificationService: Cleaned up ${initialCount - _notifications.length} old notifications');
+        }
+      }
+    });
+  }
+
+  /// Recalculate unread count
+  void _recalculateUnreadCount() {
+    _unreadCount = _notifications.where((n) => !n.isRead).length;
+  }
+
+  @override
+  void dispose() {
+    // Clean up any timers or listeners
+    super.dispose();
+  }
+}
+
+/// Notification types
+enum NotificationType {
+  info,
+  success,
+  warning,
+  error,
+  urgent,
+  referral,
+  message,
+  appointment,
+}
+
+/// App notification model
+class AppNotification {
+  final String id;
+  final String title;
+  final String message;
+  final NotificationType type;
+  final DateTime timestamp;
+  final bool isRead;
+  final String? actionRoute;
+  final Map<String, dynamic>? data;
+
+  const AppNotification({
+    required this.id,
+    required this.title,
+    required this.message,
+    required this.type,
+    required this.timestamp,
+    this.isRead = false,
+    this.actionRoute,
+    this.data,
+  });
+
+  AppNotification copyWith({
+    String? id,
+    String? title,
+    String? message,
+    NotificationType? type,
+    DateTime? timestamp,
+    bool? isRead,
+    String? actionRoute,
+    Map<String, dynamic>? data,
+  }) {
+    return AppNotification(
+      id: id ?? this.id,
+      title: title ?? this.title,
+      message: message ?? this.message,
+      type: type ?? this.type,
+      timestamp: timestamp ?? this.timestamp,
+      isRead: isRead ?? this.isRead,
+      actionRoute: actionRoute ?? this.actionRoute,
+      data: data ?? this.data,
+    );
+  }
+
+  /// Get icon for notification type
+  IconData get icon {
+    switch (type) {
+      case NotificationType.info:
+        return Icons.info_outline;
+      case NotificationType.success:
+        return Icons.check_circle_outline;
+      case NotificationType.warning:
+        return Icons.warning_outlined;
+      case NotificationType.error:
+        return Icons.error_outline;
+      case NotificationType.urgent:
+        return Icons.priority_high;
+      case NotificationType.referral:
+        return Icons.assignment_outlined;
+      case NotificationType.message:
+        return Icons.message_outlined;
+      case NotificationType.appointment:
+        return Icons.event_outlined;
+    }
+  }
+
+  /// Get color for notification type
+  Color getColor(BuildContext context) {
+    final theme = Theme.of(context);
+    switch (type) {
+      case NotificationType.info:
+        return theme.colorScheme.primary;
+      case NotificationType.success:
+        return Colors.green;
+      case NotificationType.warning:
+        return Colors.orange;
+      case NotificationType.error:
+        return theme.colorScheme.error;
+      case NotificationType.urgent:
+        return Colors.red;
+      case NotificationType.referral:
+        return theme.colorScheme.secondary;
+      case NotificationType.message:
+        return Colors.blue;
+      case NotificationType.appointment:
+        return Colors.purple;
+    }
+  }
+}

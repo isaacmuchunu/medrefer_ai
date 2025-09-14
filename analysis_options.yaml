@@ -1,0 +1,137 @@
+# This file configures the analyzer, which statically analyzes Dart code to
+# check for errors, warnings, and lints.
+#
+# The issues identified by the analyzer are surfaced in the UI of Dart-enabled
+# IDEs (https://dart.dev/tools#ides-and-editors). The analyzer can also be
+# invoked from the command line by running `flutter analyze`.
+
+# The following line activates a set of recommended lints for Flutter apps,
+# packages, and plugins designed to encourage good coding practices.
+include: package:flutter_lints/flutter.yaml
+
+linter:
+  # The lint rules applied to this project can be customized in the
+  # section below to disable rules from the `package:flutter_lints/flutter.yaml`
+  # included above or to enable additional rules. A list of all available lints
+  # and their documentation is published at
+  # https://dart-lang.github.io/linter/lints/index.html.
+  #
+  # Instead of disabling a lint rule for the entire project in the
+  # section below, it can also be suppressed for a single line of code
+  # or a specific dart file by using the `// ignore: name_of_lint` and
+  # `// ignore_for_file: name_of_lint` syntax on the line or in the file
+  # producing the lint.
+  rules:
+    # avoid_print: false  # Uncomment to disable the `avoid_print` rule
+    # prefer_single_quotes: true  # Uncomment to enable the `prefer_single_quotes` rule
+    
+    # Disable some rules that might be too strict for this project
+    avoid_print: false
+    prefer_const_constructors: false
+    prefer_const_literals_to_create_immutables: false
+    use_key_in_widget_constructors: false
+    
+    # Enable some additional useful rules
+    always_declare_return_types: true
+    always_specify_types: false
+    annotate_overrides: true
+    avoid_empty_else: true
+    avoid_relative_lib_imports: true
+    avoid_returning_null_for_future: true
+    avoid_slow_async_io: true
+    avoid_types_as_parameter_names: true
+    avoid_web_libraries_in_flutter: true
+    cancel_subscriptions: true
+    close_sinks: true
+    comment_references: true
+    control_flow_in_finally: true
+    empty_catches: true
+    empty_constructor_bodies: true
+    empty_statements: true
+    hash_and_equals: true
+    implementation_imports: true
+    iterable_contains_unrelated_type: true
+    list_remove_unrelated_type: true
+    no_adjacent_strings_in_list: true
+    no_duplicate_case_values: true
+    non_constant_identifier_names: true
+    null_closures: true
+    omit_local_variable_types: true
+    only_throw_errors: true
+    overridden_fields: true
+    package_names: true
+    package_prefixed_library_names: true
+    prefer_adjacent_string_concatenation: true
+    prefer_collection_literals: true
+    prefer_conditional_assignment: true
+    prefer_contains: true
+    prefer_equal_for_default_values: true
+    prefer_final_fields: true
+    prefer_final_locals: true
+    prefer_for_elements_to_map_fromIterable: true
+    prefer_generic_function_type_aliases: true
+    prefer_if_null_operators: true
+    prefer_initializing_formals: true
+    prefer_inlined_adds: true
+    prefer_is_empty: true
+    prefer_is_not_empty: true
+    prefer_iterable_whereType: true
+    prefer_single_quotes: true
+    prefer_spread_collections: true
+    prefer_typing_uninitialized_variables: true
+    prefer_void_to_null: true
+    provide_deprecation_message: true
+    recursive_getters: true
+    slash_for_doc_comments: true
+    sort_child_properties_last: true
+    sort_constructors_first: true
+    sort_unnamed_constructors_first: true
+    test_types_in_equals: true
+    throw_in_finally: true
+    type_init_formals: true
+    unawaited_futures: true
+    unnecessary_brace_in_string_interps: true
+    unnecessary_const: true
+    unnecessary_getters_setters: true
+    unnecessary_lambdas: true
+    unnecessary_new: true
+    unnecessary_null_aware_assignments: true
+    unnecessary_null_in_if_null_operators: true
+    unnecessary_overrides: true
+    unnecessary_parenthesis: true
+    unnecessary_statements: true
+    unnecessary_this: true
+    unrelated_type_equality_checks: true
+    use_full_hex_values_for_flutter_colors: true
+    use_function_type_syntax_for_parameters: true
+    use_rethrow_when_possible: true
+    valid_regexps: true
+    void_checks: true
+
+analyzer:
+  exclude:
+    # Exclude the problematic flutter directory
+    - lib/presentation/splash_screen/flutter/**
+    # Exclude generated files
+    - "**/*.g.dart"
+    - "**/*.freezed.dart"
+    # Exclude build directories
+    - build/**
+    - .dart_tool/**
+    # Exclude any widget_preview_scaffold related files
+    - "**/widget_preview_scaffold/**"
+  
+  errors:
+    # Treat missing required parameters as errors
+    missing_required_param: error
+    # Treat missing return types as warnings
+    always_declare_return_types: warning
+    # Treat unused imports as warnings
+    unused_import: warning
+    # Treat unused local variables as info
+    unused_local_variable: info
+  
+  language:
+    strict-casts: false
+    strict-inference: false
+    strict-raw-types: false

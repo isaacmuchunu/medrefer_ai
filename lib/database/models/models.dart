@@ -1,0 +1,20 @@
+// Database models export file
+export 'base_model.dart';
+export 'patient.dart';
+export 'specialist.dart';
+export 'referral.dart';
+export 'message.dart';
+export 'medical_history.dart';
+export 'medication.dart';
+export 'condition.dart';
+export 'document.dart';
+export 'emergency_contact.dart';
+export 'vital_statistics.dart';
+export 'pharmacy_drug.dart';
+export 'user.dart';
+export 'appointment.dart';
+export 'feedback.dart';
+export 'insurance.dart';
+export 'lab_result.dart';
+export 'payment.dart';
+export 'prescription.dart';
