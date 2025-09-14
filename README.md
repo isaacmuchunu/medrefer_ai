@@ -520,6 +520,8 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 **Built with ❤️ for healthcare professionals worldwide**
 
 For support, please contact: [support@medrefer.ai](mailto:support@medrefer.ai)
-#   m e d r e f e r - a i  
- #   m e d r e f e r _ a i  
+#   m e d r e f e r - a i 
+ 
+ #   m e d r e f e r _ a i 
+ 
  
