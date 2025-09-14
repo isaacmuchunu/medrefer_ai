@@ -31,6 +31,8 @@ class DataService extends ChangeNotifier {
   final PrescriptionDao _prescriptionDao = PrescriptionDao();
   final FeedbackDao _feedbackDao = FeedbackDao();
   final PharmacyDao _pharmacyDao = PharmacyDao();
+  final ConsentDao _consentDao = ConsentDao();
+  final CarePlanDao _carePlanDao = CarePlanDao();
 
   // DAO Getters
   PatientDao get patientDAO => _patientDao;
@@ -50,6 +52,8 @@ class DataService extends ChangeNotifier {
   DocumentDao get documentDAO => _documentDao;
   EmergencyContactDao get emergencyContactDAO => _emergencyContactDao;
   PharmacyDao get pharmacyDAO => _pharmacyDao;
+  ConsentDao get consentDAO => _consentDao;
+  CarePlanDao get carePlanDAO => _carePlanDao;
 
   // Cache for frequently accessed data
   List<Patient>? _cachedPatients;
@@ -61,6 +65,8 @@ class DataService extends ChangeNotifier {
   List<Insurance>? _cachedInsurance;
   List<LabResult>? _cachedLabResults;
   List<Prescription>? _cachedPrescriptions;
+  List<Consent>? _cachedConsents;
+  List<CarePlan>? _cachedCarePlans;
 
   bool _isInitialized = false;
   bool get isInitialized => _isInitialized;
@@ -599,6 +605,112 @@ class DataService extends ChangeNotifier {
       return await _prescriptionDao.getPrescriptionsByPatientId(patientId);
     } catch (e) {
       debugPrint('getPrescriptionsForPatient failed: $e');
+      rethrow;
+    }
+  }
+
+  // Consent operations
+  Future<List<Consent>> getConsentsForPatient(String patientId, {bool forceRefresh = false}) async {
+    try {
+      if (_cachedConsents == null || forceRefresh) {
+        _cachedConsents = await _consentDao.getConsentsByPatientId(patientId);
+      }
+      return _cachedConsents!.where((c) => c.patientId == patientId).toList();
+    } catch (e) {
+      debugPrint('getConsentsForPatient failed: $e');
+      rethrow;
+    }
+  }
+
+  Future<String> createConsent(Consent consent) async {
+    try {
+      final id = await _consentDao.createConsent(consent);
+      _cachedConsents = null;
+      notifyListeners();
+      return id;
+    } catch (e) {
+      debugPrint('createConsent failed: $e');
+      rethrow;
+    }
+  }
+
+  Future<bool> updateConsent(Consent consent) async {
+    try {
+      final success = await _consentDao.updateConsent(consent);
+      if (success) {
+        _cachedConsents = null;
+        notifyListeners();
+      }
+      return success;
+    } catch (e) {
+      debugPrint('updateConsent failed: $e');
+      rethrow;
+    }
+  }
+
+  Future<bool> deleteConsent(String id) async {
+    try {
+      final success = await _consentDao.deleteConsent(id);
+      if (success) {
+        _cachedConsents = null;
+        notifyListeners();
+      }
+      return success;
+    } catch (e) {
+      debugPrint('deleteConsent failed: $e');
+      rethrow;
+    }
+  }
+
+  // Care Plan operations
+  Future<List<CarePlan>> getCarePlansForPatient(String patientId, {bool forceRefresh = false}) async {
+    try {
+      if (_cachedCarePlans == null || forceRefresh) {
+        _cachedCarePlans = await _carePlanDao.getCarePlansByPatientId(patientId);
+      }
+      return _cachedCarePlans!.where((p) => p.patientId == patientId).toList();
+    } catch (e) {
+      debugPrint('getCarePlansForPatient failed: $e');
+      rethrow;
+    }
+  }
+
+  Future<String> createCarePlan(CarePlan plan) async {
+    try {
+      final id = await _carePlanDao.createCarePlan(plan);
+      _cachedCarePlans = null;
+      notifyListeners();
+      return id;
+    } catch (e) {
+      debugPrint('createCarePlan failed: $e');
+      rethrow;
+    }
+  }
+
+  Future<bool> updateCarePlan(CarePlan plan) async {
+    try {
+      final success = await _carePlanDao.updateCarePlan(plan);
+      if (success) {
+        _cachedCarePlans = null;
+        notifyListeners();
+      }
+      return success;
+    } catch (e) {
+      debugPrint('updateCarePlan failed: $e');
+      rethrow;
+    }
+  }
+
+  Future<bool> deleteCarePlan(String id) async {
+    try {
+      final success = await _carePlanDao.deleteCarePlan(id);
+      if (success) {
+        _cachedCarePlans = null;
+        notifyListeners();
+      }
+      return success;
+    } catch (e) {
+      debugPrint('deleteCarePlan failed: $e');
       rethrow;
     }
   }

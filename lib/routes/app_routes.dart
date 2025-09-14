@@ -50,6 +50,8 @@ import '../presentation/schedule_screen/schedule_screen.dart';
 import '../presentation/emergency_alerts_screen/emergency_alerts_screen.dart';
 import '../presentation/articles_screen/articles_screen.dart';
 import '../presentation/profile_screen/profile_screen.dart';
+
+// From develop branch
 import '../presentation/clinical_decision_support/clinical_decision_support.dart';
 import '../presentation/quality_assurance_dashboard/quality_assurance_dashboard.dart';
 import '../presentation/research_analytics/research_analytics.dart';
@@ -58,8 +60,13 @@ import '../presentation/emergency_response_system/emergency_response_system.dart
 import '../presentation/medical_education_hub/medical_education_hub.dart';
 import '../presentation/inventory_management/inventory_management.dart';
 
+// From main branch
+import '../presentation/consent_management/consent_management_screen.dart';
+import '../presentation/care_plan/care_plan_screen.dart';
+import '../presentation/audit_log_viewer/audit_log_viewer_screen.dart';
+import '../presentation/sync_center/sync_center_screen.dart';
+
 class AppRoutes {
-  // TODO: Add your routes here
   static const String initial = '/';
   static const String specialistDirectory = '/specialist-directory';
   static const String patientProfile = '/patient-profile';
@@ -114,6 +121,8 @@ class AppRoutes {
   static const String articlesScreen = '/articles';
   static const String profileScreen = '/profile';
   static const String emergencyAlertsScreen = '/emergency-alerts';
+
+// From develop branch
   static const String clinicalDecisionSupport = '/clinical-decision-support';
   static const String qualityAssuranceDashboard = '/quality-assurance-dashboard';
   static const String researchAnalytics = '/research-analytics';
@@ -121,6 +130,12 @@ class AppRoutes {
   static const String emergencyResponseSystem = '/emergency-response-system';
   static const String medicalEducationHub = '/medical-education-hub';
   static const String inventoryManagement = '/inventory-management';
+
+// From main branch
+  static const String consentManagementScreen = '/consent-management';
+  static const String carePlanScreen = '/care-plan';
+  static const String auditLogViewerScreen = '/audit-log-viewer';
+  static const String syncCenterScreen = '/sync-center';
 
   static Map<String, WidgetBuilder> routes = {
     initial: (context) => const SpecialistDirectory(),
@@ -137,9 +152,7 @@ class AppRoutes {
     notificationsScreen: (context) => const NotificationsScreen(),
     specialistProfileScreen: (context) {
       final args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
-      return SpecialistProfileScreen(
-        specialistId: args?['specialistId'] ?? '',
-      );
+      return SpecialistProfileScreen(specialistId: args?['specialistId'] ?? '');
     },
     documentViewerScreen: (context) {
       final args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
@@ -195,16 +208,12 @@ class AppRoutes {
     onboardingScreen: (context) => const OnboardingScreen(),
     doctorDetailScreen: (context) {
       final args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
-      return DoctorDetailScreen(
-        doctor: args?['doctor'] ?? {},
-      );
+      return DoctorDetailScreen(doctor: args?['doctor'] ?? {});
     },
     pharmacyScreen: (context) => const PharmacyScreen(),
     drugDetailScreen: (context) {
       final args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
-      return DrugDetailScreen(
-        drug: args?['drug'],
-      );
+      return DrugDetailScreen(drug: args?['drug']);
     },
     cartScreen: (context) => const CartScreen(),
     checkoutScreen: (context) {
@@ -233,18 +242,10 @@ class AppRoutes {
     feedbackRating: (context) {
       final args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
       final specialistId = args?['specialistId'] as String?;
-      assert(specialistId != null && specialistId.isNotEmpty, 'specialistId must be a non-empty string');
       if (specialistId == null || specialistId.isEmpty) {
-        // Optionally, navigate to an error screen or show a dialog
-        return const Scaffold(
-          body: Center(
-            child: Text('Error: Missing Specialist ID'),
-          ),
-        );
+        return const Scaffold(body: Center(child: Text('Error: Missing Specialist ID')));
       }
-      return FeedbackRating(
-        specialistId: specialistId,
-      );
+      return FeedbackRating(specialistId: specialistId);
     },
     signUpScreen: (context) => const SignUpScreen(),
     signUpSuccessScreen: (context) => const SignUpSuccessScreen(),
@@ -259,6 +260,8 @@ class AppRoutes {
     articlesScreen: (context) => const ArticlesScreen(),
     profileScreen: (context) => const ProfileScreen(),
     emergencyAlertsScreen: (context) => const EmergencyAlertsScreen(),
+
+// From develop branch
     clinicalDecisionSupport: (context) => const ClinicalDecisionSupport(),
     qualityAssuranceDashboard: (context) => const QualityAssuranceDashboard(),
     researchAnalytics: (context) => const ResearchAnalytics(),
@@ -266,5 +269,25 @@ class AppRoutes {
     emergencyResponseSystem: (context) => const EmergencyResponseSystem(),
     medicalEducationHub: (context) => const MedicalEducationHub(),
     inventoryManagement: (context) => const InventoryManagement(),
+
+// From main branch
+    consentManagementScreen: (context) {
+      final args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+      final patientId = args?['patientId'] as String?;
+      if (patientId == null || patientId.isEmpty) {
+        return const Scaffold(body: Center(child: Text('Missing patientId')));
+      }
+      return ConsentManagementScreen(patientId: patientId);
+    },
+    carePlanScreen: (context) {
+      final args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+      final patientId = args?['patientId'] as String?;
+      if (patientId == null || patientId.isEmpty) {
+        return const Scaffold(body: Center(child: Text('Missing patientId')));
+      }
+      return CarePlanScreen(patientId: patientId);
+    },
+    auditLogViewerScreen: (context) => const AuditLogViewerScreen(),
+    syncCenterScreen: (context) => const SyncCenterScreen(),
   };
 }
