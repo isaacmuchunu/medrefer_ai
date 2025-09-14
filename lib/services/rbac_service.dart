@@ -1,5 +1,8 @@
 import 'package:flutter/foundation.dart';
 import '../database/models/models.dart';
+import 'package:sqflite/sqflite.dart';
+import '../database/database_helper.dart';
+import '../database/dao/rbac_dao.dart';
 
 /// Role-Based Access Control Service for MedRefer AI
 class RBACService extends ChangeNotifier {
@@ -46,6 +49,23 @@ class RBACService extends ChangeNotifier {
     if (_currentRole == null) {
       _currentPermissions = [];
       return;
+    }
+
+    // Try to load from RBAC tables; fallback to static map if not found
+    try {
+      final db = await DatabaseHelper().database;
+      final rbac = RBACDAO(db);
+      final role = await rbac.getRoleByName(_currentRole!.name);
+      if (role != null) {
+        final perms = await rbac.getPermissionsForRole(role.id);
+        _currentPermissions = perms
+            .map((p) => _mapPermissionKey(p.key))
+            .whereType<Permission>()
+            .toList();
+        return;
+      }
+    } catch (_) {
+      // ignore and fallback
     }
 
     _currentPermissions = _getPermissionsForRole(_currentRole!);
@@ -205,6 +225,14 @@ class RBACService extends ChangeNotifier {
 
       case UserRole.superAdmin:
         return Permission.values; // Super admin has all permissions
+    }
+  }
+
+  Permission? _mapPermissionKey(String key) {
+    try {
+      return Permission.values.firstWhere((p) => p.name == key);
+    } catch (_) {
+      return null;
     }
   }
 

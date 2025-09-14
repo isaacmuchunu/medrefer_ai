@@ -47,6 +47,7 @@ import '../presentation/booking_screen/booking_screen.dart';
 import '../presentation/booking_success_screen/booking_success_screen.dart';
 import '../presentation/audio_call_screen/audio_call_screen.dart';
 import '../presentation/schedule_screen/schedule_screen.dart';
+import '../presentation/emergency_alerts_screen/emergency_alerts_screen.dart';
 import '../presentation/articles_screen/articles_screen.dart';
 import '../presentation/profile_screen/profile_screen.dart';
 
@@ -105,6 +106,7 @@ class AppRoutes {
   static const String scheduleScreen = '/schedule';
   static const String articlesScreen = '/articles';
   static const String profileScreen = '/profile';
+  static const String emergencyAlertsScreen = '/emergency-alerts';
 
   static Map<String, WidgetBuilder> routes = {
     initial: (context) => const SpecialistDirectory(),
@@ -242,5 +244,6 @@ class AppRoutes {
     scheduleScreen: (context) => const ScheduleScreen(),
     articlesScreen: (context) => const ArticlesScreen(),
     profileScreen: (context) => const ProfileScreen(),
+    emergencyAlertsScreen: (context) => const EmergencyAlertsScreen(),
   };
 }

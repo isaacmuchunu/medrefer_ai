@@ -5,6 +5,10 @@ import 'package:sqflite/sqflite.dart';
 import 'package:path_provider/path_provider.dart';
 import 'dao/pharmacy_dao.dart';
 import 'dao/user_dao.dart';
+import 'dao/audit_log_dao.dart';
+import 'dao/feature_flag_dao.dart';
+import 'dao/notification_dao.dart';
+import 'dao/rbac_dao.dart';
 
 class DatabaseHelper {
   static final DatabaseHelper _instance = DatabaseHelper._internal();
@@ -26,7 +30,7 @@ class DatabaseHelper {
     
     return await openDatabase(
       path,
-      version: 3,
+      version: 4,
       onCreate: _onCreate,
       onUpgrade: _onUpgrade,
     );
@@ -259,6 +263,12 @@ class DatabaseHelper {
 
     // Create user tables
     await UserDAO.createTables(db);
+
+    // Create enterprise tables
+    await AuditLogDAO.createTables(db);
+    await FeatureFlagDAO.createTables(db);
+    await NotificationDAO.createTables(db);
+    await RBACDAO.createTables(db);
   }
 
   Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
@@ -270,6 +280,14 @@ class DatabaseHelper {
     if (oldVersion < 3) {
       // Add additional indexes for new features
       await _createAdditionalIndexes(db);
+    }
+
+    if (oldVersion < 4) {
+      // Enterprise tables
+      await AuditLogDAO.createTables(db);
+      await FeatureFlagDAO.createTables(db);
+      await NotificationDAO.createTables(db);
+      await RBACDAO.createTables(db);
     }
   }
 

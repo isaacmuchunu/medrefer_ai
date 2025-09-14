@@ -456,13 +456,13 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
         Navigator.pushNamed(context, AppRoutes.pharmacyScreen);
         break;
       case 'create_referral':
-        Navigator.pushNamed(context, AppRoutes.createReferralScreen);
+        Navigator.pushNamed(context, AppRoutes.createReferral);
         break;
       case 'patient_search':
         Navigator.pushNamed(context, AppRoutes.patientSearchScreen);
         break;
       case 'book_appointment':
-        Navigator.pushNamed(context, AppRoutes.appointmentBookingScreen);
+        Navigator.pushNamed(context, AppRoutes.appointmentSchedulingScreen);
         break;
     }
   }

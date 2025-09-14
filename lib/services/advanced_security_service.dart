@@ -8,6 +8,7 @@ import 'package:encrypt/encrypt.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../database/database_helper.dart';
 import '../database/database.dart';
+import '../database/dao/feature_flag_dao.dart';
 
 /// Advanced Security and Compliance Service
 /// Provides enterprise-grade security, GDPR compliance, and penetration testing utilities
@@ -1202,6 +1203,17 @@ class AdvancedSecurityService extends ChangeNotifier {
     if (riskScore < 50) return SecurityStatus.fair;
     if (riskScore < 70) return SecurityStatus.poor;
     return SecurityStatus.critical;
+  }
+
+  // Feature Flags convenience
+  Future<bool> isFeatureEnabled(String key) async {
+    try {
+      final db = await DatabaseHelper().database;
+      final dao = FeatureFlagDAO(db);
+      return await dao.isEnabled(key);
+    } catch (e) {
+      return false;
+    }
   }
 
   Future<void> _testSQLInjection(List<PenTestFinding> findings) async {
