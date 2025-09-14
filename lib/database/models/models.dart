@@ -22,5 +22,16 @@ export 'audit_log.dart';
 export 'feature_flag.dart';
 export 'app_notification.dart';
 export 'rbac.dart';
+
+// From develop branch
+export 'clinical_decision.dart';
+export 'quality_metric.dart';
+export 'research_study.dart';
+export 'compliance_audit.dart';
+export 'emergency_protocol.dart';
+export 'medical_education.dart';
+export 'inventory_item.dart';
+
+// From main branch
 export 'consent.dart';
 export 'care_plan.dart';
