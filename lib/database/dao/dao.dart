@@ -17,3 +17,7 @@ export 'insurance_dao.dart';
 export 'lab_result_dao.dart';
 export 'prescription_dao.dart';
 export 'feedback_dao.dart';
+export 'audit_log_dao.dart';
+export 'feature_flag_dao.dart';
+export 'notification_dao.dart';
+export 'rbac_dao.dart';

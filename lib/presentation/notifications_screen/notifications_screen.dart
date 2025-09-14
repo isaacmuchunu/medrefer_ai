@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../core/app_export.dart';
+import '../../services/notification_service.dart';
 
 class NotificationsScreen extends StatefulWidget {
   const NotificationsScreen({Key? key}) : super(key: key);
@@ -23,64 +24,23 @@ class _NotificationsScreenState extends State<NotificationsScreen> with TickerPr
   }
 
   Future<void> _loadNotifications() async {
+    setState(() { _isLoading = true; });
+    final service = Provider.of<NotificationService>(context, listen: false);
+    await service.initialize();
+    final items = service.notifications
+        .map((n) => NotificationItem(
+              id: n.id,
+              title: n.title,
+              message: n.message,
+              type: _mapType(n.type),
+              timestamp: n.timestamp,
+              isRead: n.isRead,
+              priority: _mapPriority(n.type),
+            ))
+        .toList();
     setState(() {
-      _isLoading = true;
-    });
-
-    // Simulate loading notifications
-    await Future.delayed(Duration(milliseconds: 500));
-
-    final notifications = [
-      NotificationItem(
-        id: '1',
-        title: 'Referral Approved',
-        message: 'Your referral for John Smith to Dr. Emily Chen has been approved.',
-        type: NotificationType.referralUpdate,
-        timestamp: DateTime.now().subtract(Duration(minutes: 30)),
-        isRead: false,
-        priority: NotificationPriority.high,
-      ),
-      NotificationItem(
-        id: '2',
-        title: 'New Message',
-        message: 'Dr. Robert Wilson sent you a message about patient Sarah Johnson.',
-        type: NotificationType.message,
-        timestamp: DateTime.now().subtract(Duration(hours: 1)),
-        isRead: false,
-        priority: NotificationPriority.medium,
-      ),
-      NotificationItem(
-        id: '3',
-        title: 'Urgent Referral',
-        message: 'Emergency referral requires immediate attention.',
-        type: NotificationType.emergency,
-        timestamp: DateTime.now().subtract(Duration(hours: 2)),
-        isRead: true,
-        priority: NotificationPriority.critical,
-      ),
-      NotificationItem(
-        id: '4',
-        title: 'Appointment Reminder',
-        message: 'Patient Michael Brown has an appointment tomorrow at 2:00 PM.',
-        type: NotificationType.appointment,
-        timestamp: DateTime.now().subtract(Duration(hours: 4)),
-        isRead: false,
-        priority: NotificationPriority.medium,
-      ),
-      NotificationItem(
-        id: '5',
-        title: 'System Update',
-        message: 'MedRefer AI has been updated with new features.',
-        type: NotificationType.system,
-        timestamp: DateTime.now().subtract(Duration(days: 1)),
-        isRead: true,
-        priority: NotificationPriority.low,
-      ),
-    ];
-
-    setState(() {
-      _allNotifications = notifications;
-      _unreadNotifications = notifications.where((n) => !n.isRead).toList();
+      _allNotifications = items;
+      _unreadNotifications = items.where((n) => !n.isRead).toList();
       _isLoading = false;
     });
   }
@@ -446,6 +406,8 @@ class _NotificationsScreenState extends State<NotificationsScreen> with TickerPr
   }
 
   void _markAsRead(NotificationItem notification) {
+    final service = Provider.of<NotificationService>(context, listen: false);
+    service.markAsRead(notification.id);
     setState(() {
       notification.isRead = true;
       _unreadNotifications.removeWhere((n) => n.id == notification.id);
@@ -453,19 +415,49 @@ class _NotificationsScreenState extends State<NotificationsScreen> with TickerPr
   }
 
   void _markAllAsRead() {
+    final service = Provider.of<NotificationService>(context, listen: false);
+    service.markAllAsRead();
     setState(() {
       for (var notification in _allNotifications) {
         notification.isRead = true;
       }
       _unreadNotifications.clear();
     });
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: const Text('All notifications marked as read'),
+      backgroundColor: Theme.of(context).colorScheme.primary,
+    ));
+  }
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('All notifications marked as read'),
-        backgroundColor: Theme.of(context).colorScheme.primary,
-      ),
-    );
+  NotificationType _mapType(NotificationTypeService type) {
+    switch (type) {
+      case NotificationTypeService.referral:
+        return NotificationType.referralUpdate;
+      case NotificationTypeService.message:
+        return NotificationType.message;
+      case NotificationTypeService.appointment:
+        return NotificationType.appointment;
+      case NotificationTypeService.urgent:
+        return NotificationType.emergency;
+      case NotificationTypeService.info:
+      case NotificationTypeService.success:
+      case NotificationTypeService.warning:
+      case NotificationTypeService.error:
+        return NotificationType.system;
+    }
+  }
+
+  NotificationPriority _mapPriority(NotificationTypeService type) {
+    switch (type) {
+      case NotificationTypeService.urgent:
+        return NotificationPriority.critical;
+      case NotificationTypeService.error:
+        return NotificationPriority.high;
+      case NotificationTypeService.warning:
+        return NotificationPriority.medium;
+      default:
+        return NotificationPriority.low;
+    }
   }
 }
 

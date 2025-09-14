@@ -18,3 +18,7 @@ export 'insurance.dart';
 export 'lab_result.dart';
 export 'payment.dart';
 export 'prescription.dart';
+export 'audit_log.dart';
+export 'feature_flag.dart';
+export 'app_notification.dart';
+export 'rbac.dart';
