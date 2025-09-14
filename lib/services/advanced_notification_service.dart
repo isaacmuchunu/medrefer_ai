@@ -1,451 +1,494 @@
 import 'dart:async';
-import 'dart:collection';
 import 'dart:convert';
-import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
-import '../database/database_helper.dart';
-import '../database/database.dart';
+import 'dart:math';
+import 'package:medrefer_ai/core/app_export.dart';
+import 'package:medrefer_ai/database/models/notification_models.dart';
 
-/// Advanced Notification Service with push, email, SMS, scheduling and templates
+/// Advanced Notification Service for enterprise-level notifications
 class AdvancedNotificationService extends ChangeNotifier {
   static final AdvancedNotificationService _instance = AdvancedNotificationService._internal();
   factory AdvancedNotificationService() => _instance;
   AdvancedNotificationService._internal();
 
-  // Configuration
-  static const int _maxRetries = 3;
-  static const Duration _retryDelay = Duration(seconds: 30);
-  static const int _maxQueueSize = 1000;
-  
-  // Notification management
-  final Queue<NotificationRequest> _notificationQueue = Queue();
-  final Map<String, NotificationTemplate> _templates = {};
-  final Map<String, UserNotificationPreferences> _userPreferences = {};
-  final List<NotificationHistory> _history = [];
-  final Map<String, ScheduledNotification> _scheduledNotifications = {};
-  
-  // In-app notifications stream
-  final StreamController<InAppNotification> _inAppController = StreamController<InAppNotification>.broadcast();
-  final List<InAppNotification> _activeInAppNotifications = [];
-  
-  // Analytics
-  int _notificationsSent = 0;
-  int _notificationsDelivered = 0;
-  int _notificationsFailed = 0;
-  
-  // Database
-  Database? _database;
-  Timer? _processTimer;
-  Timer? _scheduleTimer;
-  
-  bool _isInitialized = false;
-  bool _isProcessing = false;
+  late LoggingService _loggingService;
+  final List<NotificationModel> _notifications = [];
+  final Map<String, NotificationPreferences> _userPreferences = {};
+  Timer? _schedulerTimer;
+  Timer? _cleanupTimer;
 
-  Stream<InAppNotification> get inAppNotifications => _inAppController.stream;
-  List<InAppNotification> get activeInAppNotifications => List.unmodifiable(_activeInAppNotifications);
+  // Delivery tracking
+  final Map<String, NotificationDelivery> _deliveryStatus = {};
+  int _totalSent = 0;
+  int _totalDelivered = 0;
+  int _totalFailed = 0;
 
-  /// Initialize service
+  /// Initialize the notification service
   Future<void> initialize() async {
-    if (_isInitialized) return;
-    
     try {
-      _database = await DatabaseHelper().database;
-      await _createTables();
-      await _loadTemplates();
-      await _loadScheduledNotifications();
+      _loggingService = LoggingService();
+      
+      // Start scheduler for scheduled notifications
+      _startScheduler();
+      
+      // Start cleanup timer for expired notifications
+      _startCleanupTimer();
+      
+      // Load user preferences
       await _loadUserPreferences();
       
-      _startProcessingQueue();
-      _startScheduleChecker();
-      
-      _isInitialized = true;
-      debugPrint('Advanced Notification Service initialized');
+      _loggingService.info('Advanced Notification Service initialized successfully');
     } catch (e) {
-      debugPrint('Error initializing Advanced Notification Service: $e');
-      throw NotificationException('Failed to initialize notification service');
+      _loggingService.error('Failed to initialize Advanced Notification Service', error: e);
+      rethrow;
     }
   }
 
-  /// Create database tables
-  Future<void> _createTables() async {
-    await _database!.execute('''
-      CREATE TABLE IF NOT EXISTS notification_history (
-        id TEXT PRIMARY KEY,
-        user_id TEXT NOT NULL,
-        type TEXT NOT NULL,
-        priority TEXT NOT NULL,
-        title TEXT NOT NULL,
-        body TEXT NOT NULL,
-        data TEXT,
-        channels TEXT,
-        status TEXT NOT NULL,
-        sent_at INTEGER,
-        delivered_at INTEGER,
-        read_at INTEGER,
-        error TEXT,
-        created_at INTEGER NOT NULL
-      )
-    ''');
+  /// Start scheduler for scheduled notifications
+  void _startScheduler() {
+    _schedulerTimer = Timer.periodic(Duration(minutes: 1), (_) {
+      _processScheduledNotifications();
+    });
+  }
 
-    await _database!.execute('''
-      CREATE TABLE IF NOT EXISTS notification_templates (
-        id TEXT PRIMARY KEY,
-        name TEXT NOT NULL,
-        title_template TEXT NOT NULL,
-        body_template TEXT NOT NULL,
-        type TEXT NOT NULL,
-        default_priority TEXT,
-        variables TEXT,
-        created_at INTEGER NOT NULL
-      )
-    ''');
-
-    await _database!.execute('''
-      CREATE TABLE IF NOT EXISTS scheduled_notifications (
-        id TEXT PRIMARY KEY,
-        notification_data TEXT NOT NULL,
-        schedule_type TEXT NOT NULL,
-        schedule_time INTEGER,
-        recurrence_rule TEXT,
-        next_run INTEGER,
-        enabled INTEGER DEFAULT 1,
-        created_at INTEGER NOT NULL
-      )
-    ''');
-
-    await _database!.execute('''
-      CREATE TABLE IF NOT EXISTS user_notification_preferences (
-        user_id TEXT PRIMARY KEY,
-        push_enabled INTEGER DEFAULT 1,
-        email_enabled INTEGER DEFAULT 1,
-        sms_enabled INTEGER DEFAULT 1,
-        in_app_enabled INTEGER DEFAULT 1,
-        quiet_hours_start TEXT,
-        quiet_hours_end TEXT,
-        blocked_types TEXT,
-        updated_at INTEGER NOT NULL
-      )
-    ''');
+  /// Start cleanup timer for expired notifications
+  void _startCleanupTimer() {
+    _cleanupTimer = Timer.periodic(Duration(hours: 1), (_) {
+      _cleanupExpiredNotifications();
+    });
   }
 
   /// Send notification
-  Future<NotificationResult> sendNotification({
-    required String userId,
+  Future<String> sendNotification({
     required String title,
     required String body,
-    NotificationType type = NotificationType.info,
-    NotificationPriority priority = NotificationPriority.normal,
+    String type = 'info',
+    String category = 'system',
+    String priority = 'medium',
+    String? userId,
+    String? organizationId,
     Map<String, dynamic>? data,
-    List<NotificationChannel>? channels,
-    DateTime? scheduledTime,
+    List<String>? channels,
+    DateTime? scheduledFor,
+    DateTime? expiresAt,
+    String? actionUrl,
+    String? imageUrl,
+    Map<String, dynamic>? metadata,
   }) async {
     try {
-      final preferences = await _getUserPreferences(userId);
+      final notificationId = _generateId();
       
-      if (!_shouldSendNotification(preferences, type, priority)) {
-        return NotificationResult(
-          success: false,
-          message: 'Blocked by user preferences',
-        );
+      // Get user preferences if userId is provided
+      final preferences = userId != null ? _userPreferences[userId] : null;
+      
+      // Determine channels based on preferences
+      final notificationChannels = channels ?? _getDefaultChannels(preferences, priority);
+      
+      // Check if notification should be sent based on preferences and quiet hours
+      if (!_shouldSendNotification(preferences, priority, scheduledFor)) {
+        _loggingService.debug('Notification skipped due to user preferences', 
+          context: 'Notifications', metadata: {'user_id': userId, 'priority': priority});
+        return notificationId;
       }
-      
-      final notification = NotificationRequest(
-        id: 'notif_${DateTime.now().millisecondsSinceEpoch}',
-        userId: userId,
+
+      final notification = NotificationModel(
+        id: notificationId,
         title: title,
         body: body,
         type: type,
+        category: category,
         priority: priority,
-        data: data,
-        channels: channels ?? _getDefaultChannels(type, priority),
-        scheduledTime: scheduledTime,
+        userId: userId,
+        organizationId: organizationId,
+        data: data ?? {},
+        channels: notificationChannels,
         createdAt: DateTime.now(),
+        scheduledFor: scheduledFor,
+        expiresAt: expiresAt,
+        actionUrl: actionUrl,
+        imageUrl: imageUrl,
+        metadata: metadata ?? {},
       );
-      
-      if (scheduledTime != null && scheduledTime.isAfter(DateTime.now())) {
-        return await _scheduleNotification(notification);
-      }
-      
-      return await _processNotification(notification);
+
+      // Add to notifications list
+      _notifications.add(notification);
+
+      // Send through configured channels
+      await _sendThroughChannels(notification, notificationChannels);
+
+      _loggingService.info('Notification sent', context: 'Notifications', metadata: {
+        'notification_id': notificationId,
+        'channels': notificationChannels,
+        'user_id': userId,
+      });
+
+      notifyListeners();
+      return notificationId;
     } catch (e) {
-      debugPrint('Error sending notification: $e');
-      return NotificationResult(
-        success: false,
-        message: 'Failed to send notification: $e',
-      );
+      _loggingService.error('Failed to send notification', error: e);
+      rethrow;
     }
   }
 
-  /// Send notification from template
-  Future<NotificationResult> sendFromTemplate({
-    required String userId,
+  /// Send notification using template
+  Future<String> sendTemplateNotification({
     required String templateId,
-    required Map<String, dynamic> variables,
-    NotificationPriority? priority,
-    DateTime? scheduledTime,
+    String? userId,
+    String? organizationId,
+    Map<String, dynamic>? variables,
+    List<String>? channels,
+    DateTime? scheduledFor,
+    Map<String, dynamic>? additionalData,
   }) async {
     try {
-      final template = _templates[templateId];
+      // In a real implementation, you would fetch the template from database
+      final template = _getTemplate(templateId);
       if (template == null) {
-        throw NotificationException('Template not found: $templateId');
+        throw Exception('Template not found: $templateId');
       }
-      
-      final title = _processTemplate(template.titleTemplate, variables);
-      final body = _processTemplate(template.bodyTemplate, variables);
-      
+
+      // Replace variables in template
+      final title = _replaceTemplateVariables(template.titleTemplate, variables ?? {});
+      final body = _replaceTemplateVariables(template.bodyTemplate, variables ?? {});
+
       return await sendNotification(
-        userId: userId,
         title: title,
         body: body,
         type: template.type,
-        priority: priority ?? template.defaultPriority,
-        data: variables,
-        scheduledTime: scheduledTime,
+        category: template.category,
+        priority: template.defaultPriority,
+        userId: userId,
+        organizationId: organizationId,
+        data: {...template.defaultData, ...?additionalData},
+        channels: channels ?? template.defaultChannels,
+        scheduledFor: scheduledFor,
       );
     } catch (e) {
-      debugPrint('Error sending from template: $e');
-      return NotificationResult(
-        success: false,
-        message: 'Failed to send from template: $e',
-      );
+      _loggingService.error('Failed to send template notification', error: e);
+      rethrow;
     }
   }
 
   /// Send bulk notifications
-  Future<BulkNotificationResult> sendBulkNotifications({
+  Future<List<String>> sendBulkNotifications({
     required List<String> userIds,
     required String title,
     required String body,
-    NotificationType type = NotificationType.info,
-    NotificationPriority priority = NotificationPriority.normal,
+    String type = 'info',
+    String category = 'system',
+    String priority = 'medium',
     Map<String, dynamic>? data,
+    List<String>? channels,
+    DateTime? scheduledFor,
   }) async {
-    final results = <String, NotificationResult>{};
-    int successCount = 0;
-    int failureCount = 0;
+    final notificationIds = <String>[];
     
     for (final userId in userIds) {
-      final result = await sendNotification(
-        userId: userId,
-        title: title,
-        body: body,
-        type: type,
-        priority: priority,
-        data: data,
-      );
-      
-      results[userId] = result;
-      if (result.success) {
-        successCount++;
-      } else {
-        failureCount++;
-      }
-    }
-    
-    return BulkNotificationResult(
-      totalCount: userIds.length,
-      successCount: successCount,
-      failureCount: failureCount,
-      results: results,
-    );
-  }
-
-  /// Show in-app notification
-  void showInAppNotification({
-    required String title,
-    required String message,
-    InAppNotificationType type = InAppNotificationType.info,
-    Duration duration = const Duration(seconds: 4),
-    VoidCallback? onTap,
-  }) {
-    final notification = InAppNotification(
-      id: 'inapp_${DateTime.now().millisecondsSinceEpoch}',
-      title: title,
-      message: message,
-      type: type,
-      duration: duration,
-      onTap: onTap,
-      timestamp: DateTime.now(),
-    );
-    
-    _activeInAppNotifications.add(notification);
-    _inAppController.add(notification);
-    
-    if (duration != Duration.zero) {
-      Future.delayed(duration, () {
-        dismissInAppNotification(notification.id);
-      });
-    }
-    
-    notifyListeners();
-  }
-
-  /// Dismiss in-app notification
-  void dismissInAppNotification(String notificationId) {
-    _activeInAppNotifications.removeWhere((n) => n.id == notificationId);
-    notifyListeners();
-  }
-
-  /// Schedule recurring notification
-  Future<void> scheduleRecurringNotification({
-    required String id,
-    required NotificationRequest notification,
-    required RecurrenceRule recurrence,
-    DateTime? endDate,
-  }) async {
-    try {
-      final scheduled = ScheduledNotification(
-        id: id,
-        notification: notification,
-        scheduleType: ScheduleType.recurring,
-        recurrence: recurrence,
-        endDate: endDate,
-        nextRun: _calculateNextRun(recurrence, DateTime.now()),
-        enabled: true,
-        createdAt: DateTime.now(),
-      );
-      
-      _scheduledNotifications[id] = scheduled;
-      await _saveScheduledNotification(scheduled);
-      
-      notifyListeners();
-    } catch (e) {
-      debugPrint('Error scheduling recurring notification: $e');
-      throw NotificationException('Failed to schedule recurring notification');
-    }
-  }
-
-  /// Update user preferences
-  Future<void> updateUserPreferences({
-    required String userId,
-    bool? pushEnabled,
-    bool? emailEnabled,
-    bool? smsEnabled,
-    bool? inAppEnabled,
-    TimeOfDay? quietHoursStart,
-    TimeOfDay? quietHoursEnd,
-    List<NotificationType>? blockedTypes,
-  }) async {
-    try {
-      var preferences = _userPreferences[userId] ?? UserNotificationPreferences(
-        userId: userId,
-        updatedAt: DateTime.now(),
-      );
-      
-      preferences = preferences.copyWith(
-        pushEnabled: pushEnabled,
-        emailEnabled: emailEnabled,
-        smsEnabled: smsEnabled,
-        inAppEnabled: inAppEnabled,
-        quietHoursStart: quietHoursStart,
-        quietHoursEnd: quietHoursEnd,
-        blockedTypes: blockedTypes,
-        updatedAt: DateTime.now(),
-      );
-      
-      _userPreferences[userId] = preferences;
-      await _saveUserPreferences(preferences);
-      
-      notifyListeners();
-    } catch (e) {
-      debugPrint('Error updating user preferences: $e');
-      throw NotificationException('Failed to update user preferences');
-    }
-  }
-
-  /// Get notification analytics
-  NotificationAnalytics getAnalytics() {
-    final deliveryRate = _notificationsSent > 0 
-      ? (_notificationsDelivered / _notificationsSent * 100) 
-      : 0.0;
-    
-    final byType = <NotificationType, int>{};
-    final byPriority = <NotificationPriority, int>{};
-    
-    for (final item in _history) {
-      byType[item.type] = (byType[item.type] ?? 0) + 1;
-      byPriority[item.priority] = (byPriority[item.priority] ?? 0) + 1;
-    }
-    
-    return NotificationAnalytics(
-      totalSent: _notificationsSent,
-      totalDelivered: _notificationsDelivered,
-      totalFailed: _notificationsFailed,
-      deliveryRate: deliveryRate,
-      byType: byType,
-      byPriority: byPriority,
-    );
-  }
-
-  // Private helper methods
-
-  Future<NotificationResult> _processNotification(NotificationRequest notification) async {
-    try {
-      // Add to queue if processing
-      if (_isProcessing && _notificationQueue.length < _maxQueueSize) {
-        _notificationQueue.add(notification);
-        return NotificationResult(
-          success: true,
-          message: 'Queued for processing',
+      try {
+        final id = await sendNotification(
+          title: title,
+          body: body,
+          type: type,
+          category: category,
+          priority: priority,
+          userId: userId,
+          data: data,
+          channels: channels,
+          scheduledFor: scheduledFor,
         );
+        notificationIds.add(id);
+      } catch (e) {
+        _loggingService.error('Failed to send bulk notification to user $userId', error: e);
       }
+    }
+
+    _loggingService.info('Bulk notifications sent', context: 'Notifications', metadata: {
+      'total_users': userIds.length,
+      'successful': notificationIds.length,
+    });
+
+    return notificationIds;
+  }
+
+  /// Get notifications for user
+  List<NotificationModel> getUserNotifications(
+    String userId, {
+    bool includeArchived = false,
+    String? category,
+    String? type,
+    int limit = 50,
+  }) {
+    return _notifications
+        .where((notification) {
+          if (notification.userId != userId && notification.userId != null) return false;
+          if (!includeArchived && notification.isArchived) return false;
+          if (category != null && notification.category != category) return false;
+          if (type != null && notification.type != type) return false;
+          if (notification.expiresAt != null && notification.expiresAt!.isBefore(DateTime.now())) {
+            return false;
+          }
+          return true;
+        })
+        .take(limit)
+        .toList()
+        ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
+  }
+
+  /// Mark notification as read
+  Future<void> markAsRead(String notificationId) async {
+    final index = _notifications.indexWhere((n) => n.id == notificationId);
+    if (index != -1) {
+      _notifications[index] = _notifications[index].copyWith(isRead: true);
+      notifyListeners();
       
-      // Process immediately
-      final success = await _sendNotification(notification);
-      
-      _notificationsSent++;
-      if (success) {
-        _notificationsDelivered++;
-      } else {
-        _notificationsFailed++;
-      }
-      
-      await _saveNotificationHistory(notification, success);
-      
-      return NotificationResult(success: success);
-    } catch (e) {
-      _notificationsFailed++;
-      return NotificationResult(
-        success: false,
-        message: 'Processing failed: $e',
-      );
+      _loggingService.debug('Notification marked as read', 
+        context: 'Notifications', metadata: {'notification_id': notificationId});
     }
   }
 
-  Future<bool> _sendNotification(NotificationRequest notification) async {
-    bool success = false;
-    
-    for (final channel in notification.channels) {
-      switch (channel) {
-        case NotificationChannel.push:
-          // Implement push notification
-          success = true;
-          break;
-        case NotificationChannel.inApp:
-          showInAppNotification(
-            title: notification.title,
-            message: notification.body,
-            type: _mapToInAppType(notification.type),
-          );
-          success = true;
-          break;
-        case NotificationChannel.email:
-          // Implement email notification
-          success = true;
-          break;
-        case NotificationChannel.sms:
-          // Implement SMS notification
-          success = true;
-          break;
-      }
+  /// Archive notification
+  Future<void> archiveNotification(String notificationId) async {
+    final index = _notifications.indexWhere((n) => n.id == notificationId);
+    if (index != -1) {
+      _notifications[index] = _notifications[index].copyWith(isArchived: true);
+      notifyListeners();
       
-      if (success) break;
+      _loggingService.debug('Notification archived', 
+        context: 'Notifications', metadata: {'notification_id': notificationId});
     }
-    
-    return success;
   }
 
-  String _processTemplate(String template, Map<String, dynamic> variables) {
+  /// Get unread count for user
+  int getUnreadCount(String userId) {
+    return _notifications.where((notification) {
+      return notification.userId == userId && 
+             !notification.isRead && 
+             !notification.isArchived &&
+             (notification.expiresAt == null || notification.expiresAt!.isAfter(DateTime.now()));
+    }).length;
+  }
+
+  /// Update user notification preferences
+  Future<void> updateUserPreferences(NotificationPreferences preferences) async {
+    _userPreferences[preferences.userId] = preferences;
+    
+    _loggingService.info('User notification preferences updated', 
+      context: 'Notifications', metadata: {'user_id': preferences.userId});
+  }
+
+  /// Get user notification preferences
+  NotificationPreferences? getUserPreferences(String userId) {
+    return _userPreferences[userId];
+  }
+
+  /// Process scheduled notifications
+  Future<void> _processScheduledNotifications() async {
+    final now = DateTime.now();
+    
+    for (final notification in _notifications) {
+      if (notification.scheduledFor != null && 
+          notification.scheduledFor!.isBefore(now) &&
+          !_deliveryStatus.containsKey(notification.id)) {
+        
+        await _sendThroughChannels(notification, notification.channels);
+      }
+    }
+  }
+
+  /// Cleanup expired notifications
+  void _cleanupExpiredNotifications() {
+    final now = DateTime.now();
+    final initialCount = _notifications.length;
+    
+    _notifications.removeWhere((notification) {
+      return notification.expiresAt != null && notification.expiresAt!.isBefore(now);
+    });
+
+    final removedCount = initialCount - _notifications.length;
+    if (removedCount > 0) {
+      _loggingService.debug('Cleaned up expired notifications', 
+        context: 'Notifications', metadata: {'removed_count': removedCount});
+    }
+  }
+
+  /// Send notification through channels
+  Future<void> _sendThroughChannels(NotificationModel notification, List<String> channels) async {
+    for (final channel in channels) {
+      try {
+        await _sendThroughChannel(notification, channel);
+      } catch (e) {
+        _loggingService.error('Failed to send notification through channel $channel', error: e);
+        _trackDelivery(notification.id, channel, 'failed', errorMessage: e.toString());
+      }
+    }
+  }
+
+  /// Send notification through specific channel
+  Future<void> _sendThroughChannel(NotificationModel notification, String channel) async {
+    switch (channel) {
+      case 'push':
+        await _sendPushNotification(notification);
+        break;
+      case 'email':
+        await _sendEmailNotification(notification);
+        break;
+      case 'sms':
+        await _sendSMSNotification(notification);
+        break;
+      case 'in_app':
+        await _sendInAppNotification(notification);
+        break;
+      default:
+        _loggingService.warning('Unknown notification channel: $channel');
+    }
+  }
+
+  /// Send push notification
+  Future<void> _sendPushNotification(NotificationModel notification) async {
+    // In a real implementation, you would integrate with Firebase Cloud Messaging
+    _loggingService.debug('Sending push notification', 
+      context: 'Notifications', metadata: {'notification_id': notification.id});
+    
+    // Simulate sending
+    await Future.delayed(Duration(milliseconds: 100));
+    _trackDelivery(notification.id, 'push', 'sent');
+    _totalSent++;
+  }
+
+  /// Send email notification
+  Future<void> _sendEmailNotification(NotificationModel notification) async {
+    // In a real implementation, you would integrate with email service
+    _loggingService.debug('Sending email notification', 
+      context: 'Notifications', metadata: {'notification_id': notification.id});
+    
+    // Simulate sending
+    await Future.delayed(Duration(milliseconds: 200));
+    _trackDelivery(notification.id, 'email', 'sent');
+    _totalSent++;
+  }
+
+  /// Send SMS notification
+  Future<void> _sendSMSNotification(NotificationModel notification) async {
+    // In a real implementation, you would integrate with SMS service
+    _loggingService.debug('Sending SMS notification', 
+      context: 'Notifications', metadata: {'notification_id': notification.id});
+    
+    // Simulate sending
+    await Future.delayed(Duration(milliseconds: 150));
+    _trackDelivery(notification.id, 'sms', 'sent');
+    _totalSent++;
+  }
+
+  /// Send in-app notification
+  Future<void> _sendInAppNotification(NotificationModel notification) async {
+    // In-app notifications are handled by the UI
+    _trackDelivery(notification.id, 'in_app', 'delivered');
+    _totalDelivered++;
+  }
+
+  /// Track notification delivery
+  void _trackDelivery(String notificationId, String channel, String status, {String? errorMessage}) {
+    final delivery = NotificationDelivery(
+      id: _generateId(),
+      notificationId: notificationId,
+      channel: channel,
+      status: status,
+      sentAt: status == 'sent' ? DateTime.now() : null,
+      deliveredAt: status == 'delivered' ? DateTime.now() : null,
+      failedAt: status == 'failed' ? DateTime.now() : null,
+      errorMessage: errorMessage,
+      createdAt: DateTime.now(),
+    );
+
+    _deliveryStatus['${notificationId}_$channel'] = delivery;
+
+    if (status == 'delivered') {
+      _totalDelivered++;
+    } else if (status == 'failed') {
+      _totalFailed++;
+    }
+  }
+
+  /// Get default channels based on preferences and priority
+  List<String> _getDefaultChannels(NotificationPreferences? preferences, String priority) {
+    if (preferences == null) {
+      return ['in_app'];
+    }
+
+    final channels = <String>[];
+    
+    if (preferences.enableInApp) channels.add('in_app');
+    if (preferences.enablePush && (priority == 'high' || priority == 'critical')) channels.add('push');
+    if (preferences.enableEmail && (priority == 'medium' || priority == 'high' || priority == 'critical')) channels.add('email');
+    if (preferences.enableSMS && priority == 'critical') channels.add('sms');
+
+    return channels.isEmpty ? ['in_app'] : channels;
+  }
+
+  /// Check if notification should be sent based on preferences
+  bool _shouldSendNotification(NotificationPreferences? preferences, String priority, DateTime? scheduledFor) {
+    if (preferences == null) return true;
+
+    // Check quiet hours
+    if (scheduledFor == null && _isQuietHours(preferences)) {
+      return priority == 'critical';
+    }
+
+    // Check category preferences
+    // Check type preferences
+    // Check channel preferences
+
+    return true;
+  }
+
+  /// Check if current time is within quiet hours
+  bool _isQuietHours(NotificationPreferences preferences) {
+    final now = DateTime.now();
+    final currentDay = now.weekday.toString();
+    final currentTime = '${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}';
+
+    // Check if current day is in quiet days
+    if (preferences.quietDays.contains(currentDay)) {
+      return true;
+    }
+
+    // Check if current time is within quiet hours
+    return _isTimeInRange(currentTime, preferences.quietHoursStart, preferences.quietHoursEnd);
+  }
+
+  /// Check if time is within range
+  bool _isTimeInRange(String time, String start, String end) {
+    final timeMinutes = _timeToMinutes(time);
+    final startMinutes = _timeToMinutes(start);
+    final endMinutes = _timeToMinutes(end);
+
+    if (startMinutes <= endMinutes) {
+      return timeMinutes >= startMinutes && timeMinutes <= endMinutes;
+    } else {
+      // Crosses midnight
+      return timeMinutes >= startMinutes || timeMinutes <= endMinutes;
+    }
+  }
+
+  /// Convert time string to minutes
+  int _timeToMinutes(String time) {
+    final parts = time.split(':');
+    return int.parse(parts[0]) * 60 + int.parse(parts[1]);
+  }
+
+  /// Load user preferences
+  Future<void> _loadUserPreferences() async {
+    // In a real implementation, you would load from database
+    // For now, we'll create default preferences
+  }
+
+  /// Get template by ID
+  NotificationTemplate? _getTemplate(String templateId) {
+    // In a real implementation, you would fetch from database
+    return null;
+  }
+
+  /// Replace template variables
+  String _replaceTemplateVariables(String template, Map<String, dynamic> variables) {
     String result = template;
     variables.forEach((key, value) {
       result = result.replaceAll('{{$key}}', value.toString());
@@ -453,706 +496,30 @@ class AdvancedNotificationService extends ChangeNotifier {
     return result;
   }
 
-  bool _shouldSendNotification(
-    UserNotificationPreferences preferences,
-    NotificationType type,
-    NotificationPriority priority,
-  ) {
-    if (preferences.blockedTypes?.contains(type) ?? false) {
-      return false;
-    }
-    
-    if (priority != NotificationPriority.urgent && _isInQuietHours(preferences)) {
-      return false;
-    }
-    
-    return true;
+  /// Generate unique ID
+  String _generateId() {
+    return DateTime.now().millisecondsSinceEpoch.toString() + 
+           Random().nextInt(1000).toString();
   }
 
-  bool _isInQuietHours(UserNotificationPreferences preferences) {
-    if (preferences.quietHoursStart == null || preferences.quietHoursEnd == null) {
-      return false;
-    }
-    
-    final now = TimeOfDay.now();
-    final start = preferences.quietHoursStart!;
-    final end = preferences.quietHoursEnd!;
-    
-    final nowMinutes = now.hour * 60 + now.minute;
-    final startMinutes = start.hour * 60 + start.minute;
-    final endMinutes = end.hour * 60 + end.minute;
-    
-    if (startMinutes <= endMinutes) {
-      return nowMinutes >= startMinutes && nowMinutes <= endMinutes;
-    } else {
-      return nowMinutes >= startMinutes || nowMinutes <= endMinutes;
-    }
+  /// Get notification statistics
+  Map<String, dynamic> getStatistics() {
+    return {
+      'total_notifications': _notifications.length,
+      'unread_notifications': _notifications.where((n) => !n.isRead).length,
+      'archived_notifications': _notifications.where((n) => n.isArchived).length,
+      'total_sent': _totalSent,
+      'total_delivered': _totalDelivered,
+      'total_failed': _totalFailed,
+      'delivery_rate': _totalSent > 0 ? (_totalDelivered / _totalSent) * 100 : 0.0,
+    };
   }
 
-  List<NotificationChannel> _getDefaultChannels(
-    NotificationType type,
-    NotificationPriority priority,
-  ) {
-    final channels = <NotificationChannel>[NotificationChannel.inApp];
-    
-    if (priority == NotificationPriority.urgent) {
-      channels.add(NotificationChannel.push);
-    }
-    
-    return channels;
-  }
-
-  InAppNotificationType _mapToInAppType(NotificationType type) {
-    switch (type) {
-      case NotificationType.alert:
-        return InAppNotificationType.error;
-      case NotificationType.warning:
-        return InAppNotificationType.warning;
-      case NotificationType.success:
-        return InAppNotificationType.success;
-      default:
-        return InAppNotificationType.info;
-    }
-  }
-
-  DateTime? _calculateNextRun(RecurrenceRule recurrence, DateTime start) {
-    switch (recurrence.frequency) {
-      case RecurrenceFrequency.daily:
-        return start.add(Duration(days: recurrence.interval));
-      case RecurrenceFrequency.weekly:
-        return start.add(Duration(days: 7 * recurrence.interval));
-      case RecurrenceFrequency.monthly:
-        return DateTime(
-          start.year,
-          start.month + recurrence.interval,
-          start.day,
-          start.hour,
-          start.minute,
-        );
-      default:
-        return null;
-    }
-  }
-
-  Future<NotificationResult> _scheduleNotification(NotificationRequest notification) async {
-    try {
-      final scheduled = ScheduledNotification(
-        id: 'sched_${DateTime.now().millisecondsSinceEpoch}',
-        notification: notification,
-        scheduleType: ScheduleType.once,
-        scheduleTime: notification.scheduledTime!,
-        nextRun: notification.scheduledTime,
-        enabled: true,
-        createdAt: DateTime.now(),
-      );
-      
-      _scheduledNotifications[scheduled.id] = scheduled;
-      await _saveScheduledNotification(scheduled);
-      
-      return NotificationResult(
-        success: true,
-        message: 'Notification scheduled',
-      );
-    } catch (e) {
-      return NotificationResult(
-        success: false,
-        message: 'Failed to schedule: $e',
-      );
-    }
-  }
-
-  Future<UserNotificationPreferences> _getUserPreferences(String userId) async {
-    if (_userPreferences.containsKey(userId)) {
-      return _userPreferences[userId]!;
-    }
-    
-    final results = await _database!.query(
-      'user_notification_preferences',
-      where: 'user_id = ?',
-      whereArgs: [userId],
-    );
-    
-    if (results.isNotEmpty) {
-      final preferences = UserNotificationPreferences.fromMap(results.first);
-      _userPreferences[userId] = preferences;
-      return preferences;
-    }
-    
-    return UserNotificationPreferences(
-      userId: userId,
-      updatedAt: DateTime.now(),
-    );
-  }
-
-  Future<void> _saveNotificationHistory(NotificationRequest notification, bool success) async {
-    final history = NotificationHistory(
-      id: notification.id,
-      userId: notification.userId,
-      type: notification.type,
-      priority: notification.priority,
-      title: notification.title,
-      body: notification.body,
-      data: notification.data,
-      channels: notification.channels,
-      status: success ? NotificationStatus.delivered : NotificationStatus.failed,
-      sentAt: DateTime.now(),
-      createdAt: notification.createdAt,
-    );
-    
-    _history.add(history);
-    
-    await _database!.insert('notification_history', history.toMap());
-  }
-
-  Future<void> _saveScheduledNotification(ScheduledNotification scheduled) async {
-    await _database!.insert(
-      'scheduled_notifications',
-      scheduled.toMap(),
-      conflictAlgorithm: ConflictAlgorithm.replace,
-    );
-  }
-
-  Future<void> _saveUserPreferences(UserNotificationPreferences preferences) async {
-    await _database!.insert(
-      'user_notification_preferences',
-      preferences.toMap(),
-      conflictAlgorithm: ConflictAlgorithm.replace,
-    );
-  }
-
-  void _startProcessingQueue() {
-    _processTimer = Timer.periodic(Duration(seconds: 5), (_) {
-      _processQueue();
-    });
-  }
-
-  Future<void> _processQueue() async {
-    if (_isProcessing || _notificationQueue.isEmpty) return;
-    
-    _isProcessing = true;
-    
-    try {
-      while (_notificationQueue.isNotEmpty) {
-        final notification = _notificationQueue.removeFirst();
-        await _sendNotification(notification);
-      }
-    } finally {
-      _isProcessing = false;
-    }
-  }
-
-  void _startScheduleChecker() {
-    _scheduleTimer = Timer.periodic(Duration(minutes: 1), (_) {
-      _checkScheduledNotifications();
-    });
-  }
-
-  Future<void> _checkScheduledNotifications() async {
-    final now = DateTime.now();
-    
-    for (final scheduled in _scheduledNotifications.values) {
-      if (!scheduled.enabled) continue;
-      
-      if (scheduled.nextRun != null && scheduled.nextRun!.isBefore(now)) {
-        await _processNotification(scheduled.notification);
-        
-        if (scheduled.scheduleType == ScheduleType.recurring) {
-          final nextRun = _calculateNextRun(scheduled.recurrence!, scheduled.nextRun!);
-          
-          if (nextRun != null && (scheduled.endDate == null || nextRun.isBefore(scheduled.endDate!))) {
-            scheduled.nextRun = nextRun;
-            await _saveScheduledNotification(scheduled);
-          } else {
-            scheduled.enabled = false;
-            await _saveScheduledNotification(scheduled);
-          }
-        } else {
-          scheduled.enabled = false;
-          await _saveScheduledNotification(scheduled);
-        }
-      }
-    }
-  }
-
-  Future<void> _loadTemplates() async {
-    final results = await _database!.query('notification_templates');
-    for (final row in results) {
-      final template = NotificationTemplate.fromMap(row);
-      _templates[template.id] = template;
-    }
-  }
-
-  Future<void> _loadScheduledNotifications() async {
-    final results = await _database!.query(
-      'scheduled_notifications',
-      where: 'enabled = ?',
-      whereArgs: [1],
-    );
-    
-    for (final row in results) {
-      final scheduled = ScheduledNotification.fromMap(row);
-      _scheduledNotifications[scheduled.id] = scheduled;
-    }
-  }
-
-  Future<void> _loadUserPreferences() async {
-    final results = await _database!.query(
-      'user_notification_preferences',
-      orderBy: 'updated_at DESC',
-      limit: 100,
-    );
-    
-    for (final row in results) {
-      final preferences = UserNotificationPreferences.fromMap(row);
-      _userPreferences[preferences.userId] = preferences;
-    }
-  }
-
+  /// Dispose resources
   @override
   void dispose() {
-    _processTimer?.cancel();
-    _scheduleTimer?.cancel();
-    _inAppController.close();
+    _schedulerTimer?.cancel();
+    _cleanupTimer?.cancel();
     super.dispose();
   }
-}
-
-// Data Models and Enums
-
-enum NotificationType {
-  info,
-  success,
-  warning,
-  alert,
-  reminder,
-  update,
-}
-
-enum NotificationPriority {
-  low,
-  normal,
-  high,
-  urgent,
-}
-
-enum NotificationChannel {
-  push,
-  inApp,
-  email,
-  sms,
-}
-
-enum NotificationStatus {
-  pending,
-  sent,
-  delivered,
-  failed,
-  read,
-}
-
-enum InAppNotificationType {
-  info,
-  success,
-  warning,
-  error,
-}
-
-enum ScheduleType {
-  once,
-  recurring,
-}
-
-enum RecurrenceFrequency {
-  daily,
-  weekly,
-  monthly,
-}
-
-class NotificationRequest {
-  final String id;
-  final String userId;
-  final String title;
-  final String body;
-  final NotificationType type;
-  final NotificationPriority priority;
-  final Map<String, dynamic>? data;
-  final List<NotificationChannel> channels;
-  final DateTime? scheduledTime;
-  final DateTime createdAt;
-
-  NotificationRequest({
-    required this.id,
-    required this.userId,
-    required this.title,
-    required this.body,
-    required this.type,
-    required this.priority,
-    this.data,
-    required this.channels,
-    this.scheduledTime,
-    required this.createdAt,
-  });
-}
-
-class NotificationResult {
-  final bool success;
-  final String? message;
-
-  NotificationResult({
-    required this.success,
-    this.message,
-  });
-}
-
-class BulkNotificationResult {
-  final int totalCount;
-  final int successCount;
-  final int failureCount;
-  final Map<String, NotificationResult> results;
-
-  BulkNotificationResult({
-    required this.totalCount,
-    required this.successCount,
-    required this.failureCount,
-    required this.results,
-  });
-}
-
-class NotificationTemplate {
-  final String id;
-  final String name;
-  final String titleTemplate;
-  final String bodyTemplate;
-  final NotificationType type;
-  final NotificationPriority defaultPriority;
-  final List<String> variables;
-  final DateTime createdAt;
-
-  NotificationTemplate({
-    required this.id,
-    required this.name,
-    required this.titleTemplate,
-    required this.bodyTemplate,
-    required this.type,
-    required this.defaultPriority,
-    required this.variables,
-    required this.createdAt,
-  });
-
-  Map<String, dynamic> toMap() => {
-    'id': id,
-    'name': name,
-    'title_template': titleTemplate,
-    'body_template': bodyTemplate,
-    'type': type.toString(),
-    'default_priority': defaultPriority.toString(),
-    'variables': jsonEncode(variables),
-    'created_at': createdAt.millisecondsSinceEpoch,
-  };
-
-  factory NotificationTemplate.fromMap(Map<String, dynamic> map) => NotificationTemplate(
-    id: map['id'],
-    name: map['name'],
-    titleTemplate: map['title_template'],
-    bodyTemplate: map['body_template'],
-    type: NotificationType.values.firstWhere((e) => e.toString() == map['type']),
-    defaultPriority: NotificationPriority.values.firstWhere((e) => e.toString() == map['default_priority']),
-    variables: List<String>.from(jsonDecode(map['variables'])),
-    createdAt: DateTime.fromMillisecondsSinceEpoch(map['created_at']),
-  );
-}
-
-class ScheduledNotification {
-  final String id;
-  final NotificationRequest notification;
-  final ScheduleType scheduleType;
-  final DateTime? scheduleTime;
-  final RecurrenceRule? recurrence;
-  final DateTime? endDate;
-  DateTime? nextRun;
-  bool enabled;
-  final DateTime createdAt;
-
-  ScheduledNotification({
-    required this.id,
-    required this.notification,
-    required this.scheduleType,
-    this.scheduleTime,
-    this.recurrence,
-    this.endDate,
-    this.nextRun,
-    required this.enabled,
-    required this.createdAt,
-  });
-
-  Map<String, dynamic> toMap() => {
-    'id': id,
-    'notification_data': jsonEncode({
-      'id': notification.id,
-      'userId': notification.userId,
-      'title': notification.title,
-      'body': notification.body,
-      'type': notification.type.toString(),
-      'priority': notification.priority.toString(),
-      'data': notification.data,
-      'channels': notification.channels.map((c) => c.toString()).toList(),
-      'createdAt': notification.createdAt.millisecondsSinceEpoch,
-    }),
-    'schedule_type': scheduleType.toString(),
-    'schedule_time': scheduleTime?.millisecondsSinceEpoch,
-    'recurrence_rule': recurrence != null ? jsonEncode({
-      'frequency': recurrence!.frequency.toString(),
-      'interval': recurrence!.interval,
-    }) : null,
-    'next_run': nextRun?.millisecondsSinceEpoch,
-    'enabled': enabled ? 1 : 0,
-    'created_at': createdAt.millisecondsSinceEpoch,
-  };
-
-  factory ScheduledNotification.fromMap(Map<String, dynamic> map) {
-    final notifData = jsonDecode(map['notification_data']);
-    final notification = NotificationRequest(
-      id: notifData['id'],
-      userId: notifData['userId'],
-      title: notifData['title'],
-      body: notifData['body'],
-      type: NotificationType.values.firstWhere((e) => e.toString() == notifData['type']),
-      priority: NotificationPriority.values.firstWhere((e) => e.toString() == notifData['priority']),
-      data: notifData['data'],
-      channels: (notifData['channels'] as List).map((c) => 
-        NotificationChannel.values.firstWhere((e) => e.toString() == c)).toList(),
-      createdAt: DateTime.fromMillisecondsSinceEpoch(notifData['createdAt']),
-    );
-    
-    RecurrenceRule? recurrence;
-    if (map['recurrence_rule'] != null) {
-      final recData = jsonDecode(map['recurrence_rule']);
-      recurrence = RecurrenceRule(
-        frequency: RecurrenceFrequency.values.firstWhere((e) => e.toString() == recData['frequency']),
-        interval: recData['interval'],
-      );
-    }
-    
-    return ScheduledNotification(
-      id: map['id'],
-      notification: notification,
-      scheduleType: ScheduleType.values.firstWhere((e) => e.toString() == map['schedule_type']),
-      scheduleTime: map['schedule_time'] != null ? 
-        DateTime.fromMillisecondsSinceEpoch(map['schedule_time']) : null,
-      recurrence: recurrence,
-      nextRun: map['next_run'] != null ? 
-        DateTime.fromMillisecondsSinceEpoch(map['next_run']) : null,
-      enabled: map['enabled'] == 1,
-      createdAt: DateTime.fromMillisecondsSinceEpoch(map['created_at']),
-    );
-  }
-}
-
-class RecurrenceRule {
-  final RecurrenceFrequency frequency;
-  final int interval;
-
-  RecurrenceRule({
-    required this.frequency,
-    this.interval = 1,
-  });
-}
-
-class UserNotificationPreferences {
-  final String userId;
-  final bool pushEnabled;
-  final bool emailEnabled;
-  final bool smsEnabled;
-  final bool inAppEnabled;
-  final TimeOfDay? quietHoursStart;
-  final TimeOfDay? quietHoursEnd;
-  final List<NotificationType>? blockedTypes;
-  final DateTime updatedAt;
-
-  UserNotificationPreferences({
-    required this.userId,
-    this.pushEnabled = true,
-    this.emailEnabled = true,
-    this.smsEnabled = true,
-    this.inAppEnabled = true,
-    this.quietHoursStart,
-    this.quietHoursEnd,
-    this.blockedTypes,
-    required this.updatedAt,
-  });
-
-  UserNotificationPreferences copyWith({
-    bool? pushEnabled,
-    bool? emailEnabled,
-    bool? smsEnabled,
-    bool? inAppEnabled,
-    TimeOfDay? quietHoursStart,
-    TimeOfDay? quietHoursEnd,
-    List<NotificationType>? blockedTypes,
-    DateTime? updatedAt,
-  }) {
-    return UserNotificationPreferences(
-      userId: userId,
-      pushEnabled: pushEnabled ?? this.pushEnabled,
-      emailEnabled: emailEnabled ?? this.emailEnabled,
-      smsEnabled: smsEnabled ?? this.smsEnabled,
-      inAppEnabled: inAppEnabled ?? this.inAppEnabled,
-      quietHoursStart: quietHoursStart ?? this.quietHoursStart,
-      quietHoursEnd: quietHoursEnd ?? this.quietHoursEnd,
-      blockedTypes: blockedTypes ?? this.blockedTypes,
-      updatedAt: updatedAt ?? this.updatedAt,
-    );
-  }
-
-  Map<String, dynamic> toMap() => {
-    'user_id': userId,
-    'push_enabled': pushEnabled ? 1 : 0,
-    'email_enabled': emailEnabled ? 1 : 0,
-    'sms_enabled': smsEnabled ? 1 : 0,
-    'in_app_enabled': inAppEnabled ? 1 : 0,
-    'quiet_hours_start': quietHoursStart != null ? 
-      '${quietHoursStart!.hour}:${quietHoursStart!.minute}' : null,
-    'quiet_hours_end': quietHoursEnd != null ? 
-      '${quietHoursEnd!.hour}:${quietHoursEnd!.minute}' : null,
-    'blocked_types': blockedTypes != null ? 
-      jsonEncode(blockedTypes!.map((t) => t.toString()).toList()) : null,
-    'updated_at': updatedAt.millisecondsSinceEpoch,
-  };
-
-  factory UserNotificationPreferences.fromMap(Map<String, dynamic> map) {
-    TimeOfDay? parseTime(String? timeStr) {
-      if (timeStr == null) return null;
-      final parts = timeStr.split(':');
-      return TimeOfDay(hour: int.parse(parts[0]), minute: int.parse(parts[1]));
-    }
-    
-    return UserNotificationPreferences(
-      userId: map['user_id'],
-      pushEnabled: map['push_enabled'] == 1,
-      emailEnabled: map['email_enabled'] == 1,
-      smsEnabled: map['sms_enabled'] == 1,
-      inAppEnabled: map['in_app_enabled'] == 1,
-      quietHoursStart: parseTime(map['quiet_hours_start']),
-      quietHoursEnd: parseTime(map['quiet_hours_end']),
-      blockedTypes: map['blocked_types'] != null ?
-        (jsonDecode(map['blocked_types']) as List).map((t) =>
-          NotificationType.values.firstWhere((e) => e.toString() == t)).toList() : null,
-      updatedAt: DateTime.fromMillisecondsSinceEpoch(map['updated_at']),
-    );
-  }
-}
-
-class NotificationHistory {
-  final String id;
-  final String userId;
-  final NotificationType type;
-  final NotificationPriority priority;
-  final String title;
-  final String body;
-  final Map<String, dynamic>? data;
-  final List<NotificationChannel> channels;
-  final NotificationStatus status;
-  final DateTime? sentAt;
-  final DateTime? deliveredAt;
-  final DateTime? readAt;
-  final String? error;
-  final DateTime createdAt;
-
-  NotificationHistory({
-    required this.id,
-    required this.userId,
-    required this.type,
-    required this.priority,
-    required this.title,
-    required this.body,
-    this.data,
-    required this.channels,
-    required this.status,
-    this.sentAt,
-    this.deliveredAt,
-    this.readAt,
-    this.error,
-    required this.createdAt,
-  });
-
-  Map<String, dynamic> toMap() => {
-    'id': id,
-    'user_id': userId,
-    'type': type.toString(),
-    'priority': priority.toString(),
-    'title': title,
-    'body': body,
-    'data': data != null ? jsonEncode(data) : null,
-    'channels': jsonEncode(channels.map((c) => c.toString()).toList()),
-    'status': status.toString(),
-    'sent_at': sentAt?.millisecondsSinceEpoch,
-    'delivered_at': deliveredAt?.millisecondsSinceEpoch,
-    'read_at': readAt?.millisecondsSinceEpoch,
-    'error': error,
-    'created_at': createdAt.millisecondsSinceEpoch,
-  };
-
-  factory NotificationHistory.fromMap(Map<String, dynamic> map) => NotificationHistory(
-    id: map['id'],
-    userId: map['user_id'],
-    type: NotificationType.values.firstWhere((e) => e.toString() == map['type']),
-    priority: NotificationPriority.values.firstWhere((e) => e.toString() == map['priority']),
-    title: map['title'],
-    body: map['body'],
-    data: map['data'] != null ? jsonDecode(map['data']) : null,
-    channels: (jsonDecode(map['channels']) as List).map((c) =>
-      NotificationChannel.values.firstWhere((e) => e.toString() == c)).toList(),
-    status: NotificationStatus.values.firstWhere((e) => e.toString() == map['status']),
-    sentAt: map['sent_at'] != null ? DateTime.fromMillisecondsSinceEpoch(map['sent_at']) : null,
-    deliveredAt: map['delivered_at'] != null ? DateTime.fromMillisecondsSinceEpoch(map['delivered_at']) : null,
-    readAt: map['read_at'] != null ? DateTime.fromMillisecondsSinceEpoch(map['read_at']) : null,
-    error: map['error'],
-    createdAt: DateTime.fromMillisecondsSinceEpoch(map['created_at']),
-  );
-}
-
-class InAppNotification {
-  final String id;
-  final String title;
-  final String message;
-  final InAppNotificationType type;
-  final Duration duration;
-  final VoidCallback? onTap;
-  final DateTime timestamp;
-
-  InAppNotification({
-    required this.id,
-    required this.title,
-    required this.message,
-    required this.type,
-    required this.duration,
-    this.onTap,
-    required this.timestamp,
-  });
-}
-
-class NotificationAnalytics {
-  final int totalSent;
-  final int totalDelivered;
-  final int totalFailed;
-  final double deliveryRate;
-  final Map<NotificationType, int> byType;
-  final Map<NotificationPriority, int> byPriority;
-
-  NotificationAnalytics({
-    required this.totalSent,
-    required this.totalDelivered,
-    required this.totalFailed,
-    required this.deliveryRate,
-    required this.byType,
-    required this.byPriority,
-  });
-}
-
-class NotificationException implements Exception {
-  final String message;
-  NotificationException(this.message);
-  
-  @override
-  String toString() => 'NotificationException: $message';
 }
