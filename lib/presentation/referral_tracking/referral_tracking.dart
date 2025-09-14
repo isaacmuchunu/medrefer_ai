@@ -34,119 +34,7 @@ class _ReferralTrackingState extends State<ReferralTracking>
   List<Patient> _patients = [];
   List<Specialist> _specialists = [];
 
-  // Mock data for referrals (fallback)
-  final List<Map<String, dynamic>> _mockReferrals = [
-    {
-      "id": "REF001",
-      "trackingNumber": "MR-2024-08-001",
-      "patient": {
-        "id": "P12345",
-        "name": "Sarah Johnson",
-        "age": 45,
-        "photo":
-            "https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
-      },
-      "specialist": {
-        "name": "Dr. Michael Chen",
-        "specialty": "Cardiology",
-        "hospital": "City Medical Center",
-      },
-      "status": "Pending",
-      "urgency": "High",
-      "aiConfidence": 0.92,
-      "estimatedTime": "2-3 days",
-      "lastUpdate": DateTime.now().subtract(const Duration(hours: 2)),
-      "department": "Emergency",
-    },
-    {
-      "id": "REF002",
-      "trackingNumber": "MR-2024-08-002",
-      "patient": {
-        "id": "P12346",
-        "name": "Robert Martinez",
-        "age": 62,
-        "photo":
-            "https://images.pexels.com/photos/1222271/pexels-photo-1222271.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
-      },
-      "specialist": {
-        "name": "Dr. Emily Rodriguez",
-        "specialty": "Neurology",
-        "hospital": "General Hospital",
-      },
-      "status": "Approved",
-      "urgency": "Normal",
-      "aiConfidence": 0.87,
-      "estimatedTime": "1-2 weeks",
-      "lastUpdate": DateTime.now().subtract(const Duration(hours: 5)),
-      "department": "Internal Medicine",
-    },
-    {
-      "id": "REF003",
-      "trackingNumber": "MR-2024-08-003",
-      "patient": {
-        "id": "P12347",
-        "name": "Lisa Thompson",
-        "age": 34,
-        "photo":
-            "https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
-      },
-      "specialist": {
-        "name": "Dr. James Wilson",
-        "specialty": "Orthopedics",
-        "hospital": "Sports Medicine Clinic",
-      },
-      "status": "Completed",
-      "urgency": "Low",
-      "aiConfidence": 0.95,
-      "estimatedTime": "Completed",
-      "lastUpdate": DateTime.now().subtract(const Duration(days: 1)),
-      "department": "Outpatient",
-    },
-    {
-      "id": "REF004",
-      "trackingNumber": "MR-2024-08-004",
-      "patient": {
-        "id": "P12348",
-        "name": "David Kim",
-        "age": 28,
-        "photo":
-            "https://images.pexels.com/photos/1043471/pexels-photo-1043471.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
-      },
-      "specialist": {
-        "name": "Dr. Anna Patel",
-        "specialty": "Dermatology",
-        "hospital": "Skin Care Center",
-      },
-      "status": "Pending",
-      "urgency": "Normal",
-      "aiConfidence": 0.78,
-      "estimatedTime": "3-5 days",
-      "lastUpdate": DateTime.now().subtract(const Duration(minutes: 30)),
-      "department": "Outpatient",
-    },
-    {
-      "id": "REF005",
-      "trackingNumber": "MR-2024-08-005",
-      "patient": {
-        "id": "P12349",
-        "name": "Maria Garcia",
-        "age": 55,
-        "photo":
-            "https://images.pexels.com/photos/1181686/pexels-photo-1181686.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
-      },
-      "specialist": {
-        "name": "Dr. Thomas Brown",
-        "specialty": "Oncology",
-        "hospital": "Cancer Treatment Center",
-      },
-      "status": "Approved",
-      "urgency": "Critical",
-      "aiConfidence": 0.98,
-      "estimatedTime": "24-48 hours",
-      "lastUpdate": DateTime.now().subtract(const Duration(hours: 1)),
-      "department": "ICU",
-    },
-  ];
+  // Dynamic referrals loaded from database
 
   @override
   void initState() {
@@ -175,7 +63,15 @@ class _ReferralTrackingState extends State<ReferralTracking>
       });
     } catch (e) {
       debugPrint('Error loading referrals: $e');
-      // Keep using mock data as fallback
+      // Show error message to user
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to load referrals. Please try again.'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     }
   }
 

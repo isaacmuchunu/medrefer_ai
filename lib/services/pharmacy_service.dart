@@ -47,17 +47,8 @@ class PharmacyService extends ChangeNotifier {
 
   /// Seed initial pharmacy data
   Future<void> _seedInitialData() async {
-    final existingDrugs = await _pharmacyDAO.getAllDrugs();
-    if (existingDrugs.isEmpty) {
-      final sampleDrugs = _getSampleDrugs();
-      for (final drug in sampleDrugs) {
-        await _pharmacyDAO.insertDrug(drug);
-      }
-      
-      if (kDebugMode) {
-        debugPrint('PharmacyService: Seeded ${sampleDrugs.length} sample drugs');
-      }
-    }
+    // Initialize drug inventory - data will be loaded from external pharmacy APIs
+    await _loadDrugInventoryFromAPIs();
   }
 
   /// Get all available drugs
@@ -254,7 +245,34 @@ class PharmacyService extends ChangeNotifier {
     return 'ORD${timestamp.toString().substring(8)}';
   }
 
-  /// Get sample drugs for seeding
+  /// Load drug inventory from external APIs
+  Future<void> _loadDrugInventoryFromAPIs() async {
+    try {
+      // In production, this would fetch from real pharmacy APIs
+      // Example: FDA Drug Database, RxNorm, etc.
+      debugPrint('Loading drug inventory from external APIs...');
+      
+      // For now, check if we have any existing drugs in the database
+      final existingDrugs = await _pharmacyDAO.getAllDrugs();
+      if (existingDrugs.isNotEmpty) {
+        debugPrint('Drug inventory already loaded: ${existingDrugs.length} drugs');
+        return;
+      }
+      
+      // In production, implement API calls here:
+      // final apiDrugs = await _fetchDrugsFromAPI();
+      // for (final drug in apiDrugs) {
+      //   await _pharmacyDAO.insertDrug(drug);
+      // }
+      
+      debugPrint('Drug inventory loading completed');
+    } catch (e) {
+      debugPrint('Error loading drug inventory: $e');
+    }
+  }
+
+  /// Get sample drugs for seeding (deprecated - use API loading)
+  @Deprecated('Use _loadDrugInventoryFromAPIs instead')
   List<PharmacyDrug> _getSampleDrugs() {
     return [
       PharmacyDrug(
