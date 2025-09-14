@@ -1,5 +1,7 @@
 
 import 'core/app_export.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'core/performance/performance_service.dart';
 import 'services/ai_service.dart';
 import 'services/collaboration_service.dart';
@@ -7,6 +9,13 @@ import 'services/offline_sync_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Load environment variables (non-fatal if missing)
+  try {
+    await dotenv.load(fileName: ".env");
+  } catch (e) {
+    debugPrint('dotenv: .env not loaded: $e');
+  }
 
   // Initialize performance optimizations
   await PerformanceService.initialize();
@@ -51,6 +60,17 @@ void main() async {
 
   // Note: CollaborationService will be initialized after authentication
   // as it requires userId and authToken
+
+  // Initialize Supabase if configured
+  final supabaseUrl = dotenv.env['SUPABASE_URL'];
+  final supabaseAnon = dotenv.env['SUPABASE_ANON_KEY'];
+  if (supabaseUrl != null && supabaseUrl.isNotEmpty && supabaseAnon != null && supabaseAnon.isNotEmpty) {
+    try {
+      await Supabase.initialize(url: supabaseUrl, anonKey: supabaseAnon);
+    } catch (e) {
+      debugPrint('Supabase init failed: $e');
+    }
+  }
 
   bool _hasShownError = false;
 
@@ -131,6 +151,20 @@ class MyApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         routes: AppRoutes.routes,
         initialRoute: AppRoutes.splashScreen,
+        onGenerateRoute: (settings) {
+          final routeGuard = Provider.of<RouteGuardService>(context, listen: false);
+          final name = settings.name ?? AppRoutes.splashScreen;
+          if (!routeGuard.canAccessRoute(name)) {
+            final redirect = routeGuard.getRedirectRoute(name);
+            return MaterialPageRoute(builder: (_) => AppRoutes.routes[redirect]!(context));
+          }
+          final builder = AppRoutes.routes[name];
+          if (builder != null) {
+            return MaterialPageRoute(builder: builder, settings: settings);
+          }
+          // Fallback to splash
+          return MaterialPageRoute(builder: AppRoutes.routes[AppRoutes.splashScreen]!, settings: settings);
+        },
       );
     });
   }
