@@ -59,6 +59,7 @@ import '../presentation/compliance_dashboard/compliance_dashboard.dart';
 import '../presentation/emergency_response_system/emergency_response_system.dart';
 import '../presentation/medical_education_hub/medical_education_hub.dart';
 import '../presentation/inventory_management/inventory_management.dart';
+import '../presentation/enterprise_command_center/enterprise_command_center_screen.dart';
 
 // From main branch
 import '../presentation/consent_management/consent_management_screen.dart';
@@ -130,6 +131,7 @@ class AppRoutes {
   static const String emergencyResponseSystem = '/emergency-response-system';
   static const String medicalEducationHub = '/medical-education-hub';
   static const String inventoryManagement = '/inventory-management';
+  static const String enterpriseCommandCenter = '/enterprise-command-center';
 
 // From main branch
   static const String consentManagementScreen = '/consent-management';
@@ -289,5 +291,6 @@ class AppRoutes {
     },
     auditLogViewerScreen: (context) => const AuditLogViewerScreen(),
     syncCenterScreen: (context) => const SyncCenterScreen(),
+    enterpriseCommandCenter: (context) => const EnterpriseCommandCenterScreen(),
   };
 }
