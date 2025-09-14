@@ -50,6 +50,13 @@ import '../presentation/schedule_screen/schedule_screen.dart';
 import '../presentation/emergency_alerts_screen/emergency_alerts_screen.dart';
 import '../presentation/articles_screen/articles_screen.dart';
 import '../presentation/profile_screen/profile_screen.dart';
+import '../presentation/clinical_decision_support/clinical_decision_support.dart';
+import '../presentation/quality_assurance_dashboard/quality_assurance_dashboard.dart';
+import '../presentation/research_analytics/research_analytics.dart';
+import '../presentation/compliance_dashboard/compliance_dashboard.dart';
+import '../presentation/emergency_response_system/emergency_response_system.dart';
+import '../presentation/medical_education_hub/medical_education_hub.dart';
+import '../presentation/inventory_management/inventory_management.dart';
 
 class AppRoutes {
   // TODO: Add your routes here
@@ -107,6 +114,13 @@ class AppRoutes {
   static const String articlesScreen = '/articles';
   static const String profileScreen = '/profile';
   static const String emergencyAlertsScreen = '/emergency-alerts';
+  static const String clinicalDecisionSupport = '/clinical-decision-support';
+  static const String qualityAssuranceDashboard = '/quality-assurance-dashboard';
+  static const String researchAnalytics = '/research-analytics';
+  static const String complianceDashboard = '/compliance-dashboard';
+  static const String emergencyResponseSystem = '/emergency-response-system';
+  static const String medicalEducationHub = '/medical-education-hub';
+  static const String inventoryManagement = '/inventory-management';
 
   static Map<String, WidgetBuilder> routes = {
     initial: (context) => const SpecialistDirectory(),
@@ -245,5 +259,12 @@ class AppRoutes {
     articlesScreen: (context) => const ArticlesScreen(),
     profileScreen: (context) => const ProfileScreen(),
     emergencyAlertsScreen: (context) => const EmergencyAlertsScreen(),
+    clinicalDecisionSupport: (context) => const ClinicalDecisionSupport(),
+    qualityAssuranceDashboard: (context) => const QualityAssuranceDashboard(),
+    researchAnalytics: (context) => const ResearchAnalytics(),
+    complianceDashboard: (context) => const ComplianceDashboard(),
+    emergencyResponseSystem: (context) => const EmergencyResponseSystem(),
+    medicalEducationHub: (context) => const MedicalEducationHub(),
+    inventoryManagement: (context) => const InventoryManagement(),
   };
 }
