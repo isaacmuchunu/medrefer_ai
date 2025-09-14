@@ -22,3 +22,5 @@ export 'audit_log.dart';
 export 'feature_flag.dart';
 export 'app_notification.dart';
 export 'rbac.dart';
+export 'consent.dart';
+export 'care_plan.dart';
