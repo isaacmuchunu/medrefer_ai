@@ -7,6 +7,7 @@ export 'package:connectivity_plus/connectivity_plus.dart';
 // Core exports
 export '../routes/app_routes.dart';
 export '../theme/app_theme.dart';
+export 'result.dart';
 
 // Widget exports
 export '../widgets/custom_icon_widget.dart';
@@ -36,6 +37,7 @@ export '../services/biometric_service.dart';
 export '../services/notification_service.dart';
 export '../services/sync_service.dart';
 export '../services/error_handling_service.dart';
+export '../services/logging_service.dart';
 export '../services/webrtc_service.dart';
 export '../services/document_security_service.dart';
 export '../services/security_audit_service.dart';
@@ -43,6 +45,11 @@ export '../services/pharmacy_service.dart';
 export '../services/mpesa_service.dart';
 export '../services/rbac_service.dart';
 export '../services/route_guard_service.dart';
+export '../services/enhanced_security_service.dart';
+export '../services/validation_service.dart';
+export '../services/accessibility_service.dart';
+export '../services/internationalization_service.dart';
+export '../services/realtime_update_service.dart';
 
 // Core services exports
 export 'performance/performance_service.dart';

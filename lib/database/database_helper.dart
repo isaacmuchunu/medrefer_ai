@@ -26,7 +26,7 @@ class DatabaseHelper {
     
     return await openDatabase(
       path,
-      version: 2,
+      version: 3,
       onCreate: _onCreate,
       onUpgrade: _onUpgrade,
     );
@@ -263,17 +263,102 @@ class DatabaseHelper {
 
   Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
     if (oldVersion < 2) {
-      // Add indexes for performance optimization
-      await db.execute('CREATE INDEX idx_referrals_patient_id ON referrals(patient_id);');
-      await db.execute('CREATE INDEX idx_medical_history_patient_id ON medical_history(patient_id);');
-      await db.execute('CREATE INDEX idx_medications_patient_id ON medications(patient_id);');
-      await db.execute('CREATE INDEX idx_conditions_patient_id ON conditions(patient_id);');
-      await db.execute('CREATE INDEX idx_documents_patient_id ON documents(patient_id);');
-      await db.execute('CREATE INDEX idx_emergency_contacts_patient_id ON emergency_contacts(patient_id);');
-      await db.execute('CREATE INDEX idx_vital_statistics_patient_id ON vital_statistics(patient_id);');
-      await db.execute('CREATE INDEX idx_referrals_specialist_id ON referrals(specialist_id);');
-      await db.execute('CREATE INDEX idx_documents_referral_id ON documents(referral_id);');
-      await db.execute('CREATE INDEX idx_messages_referral_id ON messages(referral_id);');
+      // Add comprehensive indexes for performance optimization
+      await _createPerformanceIndexes(db);
+    }
+    
+    if (oldVersion < 3) {
+      // Add additional indexes for new features
+      await _createAdditionalIndexes(db);
+    }
+  }
+
+  /// Create performance indexes
+  Future<void> _createPerformanceIndexes(Database db) async {
+    // Patient-related indexes
+    await db.execute('CREATE INDEX IF NOT EXISTS idx_patients_medical_record_number ON patients(medical_record_number);');
+    await db.execute('CREATE INDEX IF NOT EXISTS idx_patients_email ON patients(email);');
+    await db.execute('CREATE INDEX IF NOT EXISTS idx_patients_phone ON patients(phone);');
+    await db.execute('CREATE INDEX IF NOT EXISTS idx_patients_created_at ON patients(created_at);');
+    
+    // Referral-related indexes
+    await db.execute('CREATE INDEX IF NOT EXISTS idx_referrals_patient_id ON referrals(patient_id);');
+    await db.execute('CREATE INDEX IF NOT EXISTS idx_referrals_specialist_id ON referrals(specialist_id);');
+    await db.execute('CREATE INDEX IF NOT EXISTS idx_referrals_status ON referrals(status);');
+    await db.execute('CREATE INDEX IF NOT EXISTS idx_referrals_urgency ON referrals(urgency);');
+    await db.execute('CREATE INDEX IF NOT EXISTS idx_referrals_tracking_number ON referrals(tracking_number);');
+    await db.execute('CREATE INDEX IF NOT EXISTS idx_referrals_created_at ON referrals(created_at);');
+    await db.execute('CREATE INDEX IF NOT EXISTS idx_referrals_department ON referrals(department);');
+    
+    // Medical history indexes
+    await db.execute('CREATE INDEX IF NOT EXISTS idx_medical_history_patient_id ON medical_history(patient_id);');
+    await db.execute('CREATE INDEX IF NOT EXISTS idx_medical_history_type ON medical_history(type);');
+    await db.execute('CREATE INDEX IF NOT EXISTS idx_medical_history_date ON medical_history(date);');
+    await db.execute('CREATE INDEX IF NOT EXISTS idx_medical_history_icd10_code ON medical_history(icd10_code);');
+    
+    // Medication indexes
+    await db.execute('CREATE INDEX IF NOT EXISTS idx_medications_patient_id ON medications(patient_id);');
+    await db.execute('CREATE INDEX IF NOT EXISTS idx_medications_name ON medications(name);');
+    await db.execute('CREATE INDEX IF NOT EXISTS idx_medications_status ON medications(status);');
+    await db.execute('CREATE INDEX IF NOT EXISTS idx_medications_prescribed_by ON medications(prescribed_by);');
+    
+    // Condition indexes
+    await db.execute('CREATE INDEX IF NOT EXISTS idx_conditions_patient_id ON conditions(patient_id);');
+    await db.execute('CREATE INDEX IF NOT EXISTS idx_conditions_name ON conditions(name);');
+    await db.execute('CREATE INDEX IF NOT EXISTS idx_conditions_severity ON conditions(severity);');
+    await db.execute('CREATE INDEX IF NOT EXISTS idx_conditions_is_active ON conditions(is_active);');
+    await db.execute('CREATE INDEX IF NOT EXISTS idx_conditions_icd10_code ON conditions(icd10_code);');
+    
+    // Document indexes
+    await db.execute('CREATE INDEX IF NOT EXISTS idx_documents_patient_id ON documents(patient_id);');
+    await db.execute('CREATE INDEX IF NOT EXISTS idx_documents_referral_id ON documents(referral_id);');
+    await db.execute('CREATE INDEX IF NOT EXISTS idx_documents_type ON documents(type);');
+    await db.execute('CREATE INDEX IF NOT EXISTS idx_documents_category ON documents(category);');
+    await db.execute('CREATE INDEX IF NOT EXISTS idx_documents_upload_date ON documents(upload_date);');
+    
+    // Message indexes
+    await db.execute('CREATE INDEX IF NOT EXISTS idx_messages_conversation_id ON messages(conversation_id);');
+    await db.execute('CREATE INDEX IF NOT EXISTS idx_messages_sender_id ON messages(sender_id);');
+    await db.execute('CREATE INDEX IF NOT EXISTS idx_messages_referral_id ON messages(referral_id);');
+    await db.execute('CREATE INDEX IF NOT EXISTS idx_messages_timestamp ON messages(timestamp);');
+    await db.execute('CREATE INDEX IF NOT EXISTS idx_messages_status ON messages(status);');
+    await db.execute('CREATE INDEX IF NOT EXISTS idx_messages_type ON messages(message_type);');
+    
+    // Emergency contact indexes
+    await db.execute('CREATE INDEX IF NOT EXISTS idx_emergency_contacts_patient_id ON emergency_contacts(patient_id);');
+    await db.execute('CREATE INDEX IF NOT EXISTS idx_emergency_contacts_is_primary ON emergency_contacts(is_primary);');
+    
+    // Vital statistics indexes
+    await db.execute('CREATE INDEX IF NOT EXISTS idx_vital_statistics_patient_id ON vital_statistics(patient_id);');
+    await db.execute('CREATE INDEX IF NOT EXISTS idx_vital_statistics_recorded_date ON vital_statistics(recorded_date);');
+    await db.execute('CREATE INDEX IF NOT EXISTS idx_vital_statistics_recorded_by ON vital_statistics(recorded_by);');
+    
+    // Specialist indexes
+    await db.execute('CREATE INDEX IF NOT EXISTS idx_specialists_specialty ON specialists(specialty);');
+    await db.execute('CREATE INDEX IF NOT EXISTS idx_specialists_hospital ON specialists(hospital);');
+    await db.execute('CREATE INDEX IF NOT EXISTS idx_specialists_is_available ON specialists(is_available);');
+    await db.execute('CREATE INDEX IF NOT EXISTS idx_specialists_rating ON specialists(rating);');
+    await db.execute('CREATE INDEX IF NOT EXISTS idx_specialists_latitude_longitude ON specialists(latitude, longitude);');
+  }
+
+  /// Create additional indexes for new features
+  Future<void> _createAdditionalIndexes(Database db) async {
+    // Composite indexes for complex queries
+    await db.execute('CREATE INDEX IF NOT EXISTS idx_referrals_patient_status ON referrals(patient_id, status);');
+    await db.execute('CREATE INDEX IF NOT EXISTS idx_referrals_specialist_status ON referrals(specialist_id, status);');
+    await db.execute('CREATE INDEX IF NOT EXISTS idx_medical_history_patient_type ON medical_history(patient_id, type);');
+    await db.execute('CREATE INDEX IF NOT EXISTS idx_medications_patient_status ON medications(patient_id, status);');
+    await db.execute('CREATE INDEX IF NOT EXISTS idx_conditions_patient_active ON conditions(patient_id, is_active);');
+    await db.execute('CREATE INDEX IF NOT EXISTS idx_documents_patient_type ON documents(patient_id, type);');
+    await db.execute('CREATE INDEX IF NOT EXISTS idx_messages_conversation_timestamp ON messages(conversation_id, timestamp);');
+    
+    // Full-text search indexes (if supported)
+    try {
+      await db.execute('CREATE VIRTUAL TABLE IF NOT EXISTS patients_fts USING fts5(name, medical_record_number, email, phone, content="patients", content_rowid="rowid");');
+      await db.execute('CREATE VIRTUAL TABLE IF NOT EXISTS specialists_fts USING fts5(name, specialty, hospital, content="specialists", content_rowid="rowid");');
+    } catch (e) {
+      // FTS5 might not be available on all platforms
+      debugPrint('FTS5 not available: $e');
     }
   }
 
@@ -405,4 +490,224 @@ class DatabaseHelper {
     final result = await db.rawQuery(query, whereArgs);
     return Sqflite.firstIntValue(result) ?? 0;
   }
+
+  // Advanced query methods for better performance
+  Future<List<Map<String, dynamic>>> queryWithJoins({
+    required String baseTable,
+    required List<String> joinTables,
+    required List<String> selectColumns,
+    String? where,
+    List<dynamic>? whereArgs,
+    String? orderBy,
+    int? limit,
+    int? offset,
+  }) async {
+    final db = await database;
+    
+    String query = 'SELECT ${selectColumns.join(', ')} FROM $baseTable';
+    
+    for (String join in joinTables) {
+      query += ' $join';
+    }
+    
+    if (where != null) {
+      query += ' WHERE $where';
+    }
+    
+    if (orderBy != null) {
+      query += ' ORDER BY $orderBy';
+    }
+    
+    if (limit != null) {
+      query += ' LIMIT $limit';
+      if (offset != null) {
+        query += ' OFFSET $offset';
+      }
+    }
+    
+    return await db.rawQuery(query, whereArgs);
+  }
+
+  // Full-text search
+  Future<List<Map<String, dynamic>>> fullTextSearch({
+    required String table,
+    required String searchTerm,
+    List<String>? columns,
+    int? limit,
+  }) async {
+    final db = await database;
+    
+    try {
+      // Try FTS5 first
+      final ftsTable = '${table}_fts';
+      String query = 'SELECT * FROM $ftsTable WHERE $ftsTable MATCH ?';
+      
+      if (limit != null) {
+        query += ' LIMIT $limit';
+      }
+      
+      return await db.rawQuery(query, [searchTerm]);
+    } catch (e) {
+      // Fallback to LIKE search
+      final searchColumns = columns ?? ['name', 'description'];
+      final likeConditions = searchColumns.map((col) => '$col LIKE ?').join(' OR ');
+      final searchArgs = List.filled(searchColumns.length, '%$searchTerm%');
+      
+      String query = 'SELECT * FROM $table WHERE $likeConditions';
+      
+      if (limit != null) {
+        query += ' LIMIT $limit';
+      }
+      
+      return await db.rawQuery(query, searchArgs);
+    }
+  }
+
+  // Paginated query with total count
+  Future<Map<String, dynamic>> paginatedQuery({
+    required String table,
+    String? where,
+    List<dynamic>? whereArgs,
+    String? orderBy,
+    required int page,
+    required int pageSize,
+  }) async {
+    final offset = (page - 1) * pageSize;
+    
+    // Get total count
+    final totalCount = await getCount(table, where: where, whereArgs: whereArgs);
+    
+    // Get paginated data
+    final data = await query(
+      table,
+      where: where,
+      whereArgs: whereArgs,
+      orderBy: orderBy,
+      limit: pageSize,
+      offset: offset,
+    );
+    
+    return {
+      'data': data,
+      'totalCount': totalCount,
+      'page': page,
+      'pageSize': pageSize,
+      'totalPages': (totalCount / pageSize).ceil(),
+      'hasNextPage': offset + pageSize < totalCount,
+      'hasPreviousPage': page > 1,
+    };
+  }
+
+  // Batch operations with transaction
+  Future<void> batchOperation(List<BatchOperation> operations) async {
+    final db = await database;
+    final batch = db.batch();
+    
+    for (final operation in operations) {
+      switch (operation.type) {
+        case BatchOperationType.insert:
+          batch.insert(operation.table, operation.data, conflictAlgorithm: ConflictAlgorithm.replace);
+          break;
+        case BatchOperationType.update:
+          batch.update(operation.table, operation.data, where: operation.where, whereArgs: operation.whereArgs);
+          break;
+        case BatchOperationType.delete:
+          batch.delete(operation.table, where: operation.where, whereArgs: operation.whereArgs);
+          break;
+      }
+    }
+    
+    await batch.commit(noResult: true);
+  }
+
+  // Database maintenance and optimization
+  Future<void> optimizeDatabase() async {
+    final db = await database;
+    
+    // Analyze tables for query optimization
+    await db.execute('ANALYZE');
+    
+    // Vacuum to reclaim space
+    await db.execute('VACUUM');
+    
+    // Update statistics
+    await db.execute('UPDATE sqlite_stat1 SET stat = (SELECT COUNT(*) FROM patients) WHERE tbl = "patients"');
+    await db.execute('UPDATE sqlite_stat1 SET stat = (SELECT COUNT(*) FROM referrals) WHERE tbl = "referrals"');
+    await db.execute('UPDATE sqlite_stat1 SET stat = (SELECT COUNT(*) FROM specialists) WHERE tbl = "specialists"');
+  }
+
+  // Get database statistics
+  Future<Map<String, dynamic>> getDatabaseStats() async {
+    final db = await database;
+    
+    final tables = ['patients', 'referrals', 'specialists', 'medical_history', 'medications', 'conditions', 'documents', 'messages'];
+    final stats = <String, int>{};
+    
+    for (final table in tables) {
+      final result = await db.rawQuery('SELECT COUNT(*) as count FROM $table');
+      stats[table] = Sqflite.firstIntValue(result) ?? 0;
+    }
+    
+    // Get database size
+    final dbPath = db.path;
+    final dbFile = File(dbPath);
+    final dbSize = await dbFile.length();
+    
+    return {
+      'tableCounts': stats,
+      'databaseSize': dbSize,
+      'databaseSizeMB': (dbSize / (1024 * 1024)).toStringAsFixed(2),
+    };
+  }
+
+  // Backup database
+  Future<String> backupDatabase() async {
+    final db = await database;
+    final timestamp = DateTime.now().toIso8601String().replaceAll(':', '-');
+    final backupPath = '${db.path}.backup.$timestamp';
+    
+    final sourceFile = File(db.path);
+    final backupFile = File(backupPath);
+    
+    await sourceFile.copy(backupFile.path);
+    
+    return backupPath;
+  }
+
+  // Restore database from backup
+  Future<void> restoreDatabase(String backupPath) async {
+    final db = await database;
+    await db.close();
+    
+    final sourceFile = File(backupPath);
+    final targetFile = File(db.path);
+    
+    await sourceFile.copy(targetFile.path);
+    
+    // Reopen database
+    _database = await _initDatabase();
+  }
+}
+
+// Batch operation model
+class BatchOperation {
+  final BatchOperationType type;
+  final String table;
+  final Map<String, dynamic>? data;
+  final String? where;
+  final List<dynamic>? whereArgs;
+
+  BatchOperation({
+    required this.type,
+    required this.table,
+    this.data,
+    this.where,
+    this.whereArgs,
+  });
+}
+
+enum BatchOperationType {
+  insert,
+  update,
+  delete,
 }

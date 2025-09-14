@@ -463,10 +463,11 @@ PerformanceService.trackUserAction('create_referral');
 ## 📚 Documentation
 
 ### Available Documentation
-- **[API Documentation](docs/API_DOCUMENTATION.md)**: Complete API reference
-- **[Database Schema](docs/DATABASE_SCHEMA.md)**: Database structure and relationships
-- **[Deployment Guide](docs/DEPLOYMENT_GUIDE.md)**: Step-by-step deployment instructions
-- **[Screens Documentation](docs/SCREENS_DOCUMENTATION.md)**: Detailed screen documentation
+- **[API Documentation](docs/API_DOCUMENTATION.md)**: Complete API reference with examples
+- **[Development Guide](docs/DEVELOPMENT_GUIDE.md)**: Comprehensive developer guidelines
+- **[User Guide](docs/USER_GUIDE.md)**: End-user documentation and tutorials
+- **[Security & Compliance](docs/SECURITY_COMPLIANCE.md)**: Security measures and HIPAA compliance
+- **[Audit Summary](docs/AUDIT_SUMMARY.md)**: Comprehensive audit results and improvements
 
 ### Code Documentation
 All code is thoroughly documented with:

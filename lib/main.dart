@@ -19,6 +19,9 @@ void main() async {
 
   // Initialize performance optimizations
   await PerformanceService.initialize();
+  
+  // Start performance monitoring
+  PerformanceService.startMonitoring();
 
   // Initialize database service
   final dataService = DataService();
@@ -27,6 +30,22 @@ void main() async {
   // Initialize error handling service
   final errorHandlingService = ErrorHandlingService();
   await errorHandlingService.initialize();
+
+  // Initialize logging service
+  final loggingService = LoggingService();
+  await loggingService.initialize();
+
+  // Initialize accessibility service
+  final accessibilityService = AccessibilityService();
+  await accessibilityService.initialize();
+
+  // Initialize internationalization service
+  final i18nService = InternationalizationService();
+  await i18nService.initialize();
+
+  // Initialize real-time update service
+  final realtimeService = RealtimeUpdateService();
+  await realtimeService.initialize();
 
   // Initialize sync service
   final syncService = SyncService();

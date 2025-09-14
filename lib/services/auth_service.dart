@@ -2,9 +2,11 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:crypto/crypto.dart';
 import 'dart:convert';
+import 'dart:math';
 import '../database/database.dart';
 import 'rbac_service.dart';
 import 'security_audit_service.dart';
+import 'logging_service.dart';
 
 class AuthService extends ChangeNotifier {
   static final AuthService _instance = AuthService._internal();
@@ -24,6 +26,10 @@ class AuthService extends ChangeNotifier {
   bool _isAuthenticated = false;
   String? _authToken;
   DateTime? _tokenExpiry;
+  int _failedLoginAttempts = 0;
+  DateTime? _lastFailedAttempt;
+  DateTime? _accountLockedUntil;
+  final List<String> _activeSessions = [];
 
   // Getters
   User? get currentUser => _currentUser;
@@ -54,10 +60,27 @@ class AuthService extends ChangeNotifier {
     bool rememberMe = false,
   }) async {
     try {
+      // Check if account is locked
+      if (_isAccountLocked()) {
+        throw AuthException('Account is temporarily locked due to multiple failed attempts. Please try again later.');
+      }
+
       // Validate input
       if (email.isEmpty || password.isEmpty) {
         throw AuthException('Email and password are required');
       }
+
+      // Rate limiting check
+      if (_isRateLimited()) {
+        throw AuthException('Too many login attempts. Please wait before trying again.');
+      }
+
+      // Log login attempt
+      final loggingService = LoggingService();
+      loggingService.userAction('login_attempt', userId: email, metadata: {
+        'rememberMe': rememberMe,
+        'timestamp': DateTime.now().toIso8601String(),
+      });
 
       // Hash password for security
       final hashedPassword = _hashPassword(password);
@@ -102,13 +125,30 @@ class AuthService extends ChangeNotifier {
           await _storeAuthData();
         }
 
+        // Reset failed login attempts on successful login
+        _resetFailedLoginAttempts();
+
         // Log successful login
         await _logAuthEvent('login_success', email);
+        
+        final loggingService = LoggingService();
+        loggingService.userAction('login_success', userId: email, metadata: {
+          'userRole': _currentUser!.role.name,
+          'sessionId': _authToken,
+        });
 
         notifyListeners();
         return true;
       } else {
+        _handleFailedLogin();
         await _logAuthEvent('login_failed', email);
+        
+        final loggingService = LoggingService();
+        loggingService.warning('Login failed', context: 'Authentication', metadata: {
+          'email': email,
+          'failedAttempts': _failedLoginAttempts,
+        });
+        
         throw AuthException('Invalid credentials');
       }
     } catch (e) {
@@ -330,9 +370,49 @@ class AuthService extends ChangeNotifier {
   }
 
   String _hashPassword(String password) {
-    final bytes = utf8.encode(password + 'medrefer_salt_2024');
+    // Use a more secure password hashing with salt
+    final salt = _generateSalt();
+    final bytes = utf8.encode(password + salt + 'medrefer_salt_2024');
     final digest = sha256.convert(bytes);
-    return digest.toString();
+    return '$salt:${digest.toString()}';
+  }
+
+  String _generateSalt() {
+    final random = Random.secure();
+    final saltBytes = List<int>.generate(16, (i) => random.nextInt(256));
+    return base64Encode(saltBytes);
+  }
+
+  bool _isAccountLocked() {
+    if (_accountLockedUntil == null) return false;
+    return DateTime.now().isBefore(_accountLockedUntil!);
+  }
+
+  bool _isRateLimited() {
+    if (_lastFailedAttempt == null) return false;
+    final timeSinceLastAttempt = DateTime.now().difference(_lastFailedAttempt!);
+    return timeSinceLastAttempt.inMinutes < 5 && _failedLoginAttempts >= 3;
+  }
+
+  void _handleFailedLogin() {
+    _failedLoginAttempts++;
+    _lastFailedAttempt = DateTime.now();
+    
+    // Lock account after 5 failed attempts
+    if (_failedLoginAttempts >= 5) {
+      _accountLockedUntil = DateTime.now().add(Duration(minutes: 30));
+      
+      final loggingService = LoggingService();
+      loggingService.critical('Account locked due to multiple failed login attempts', 
+        context: 'Security', 
+        metadata: {'failedAttempts': _failedLoginAttempts});
+    }
+  }
+
+  void _resetFailedLoginAttempts() {
+    _failedLoginAttempts = 0;
+    _lastFailedAttempt = null;
+    _accountLockedUntil = null;
   }
 
   bool _validateCredentials(String email, String hashedPassword) {
