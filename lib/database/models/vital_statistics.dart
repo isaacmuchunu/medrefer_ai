@@ -1,123 +1,173 @@
-import 'base_model.dart';
-
-class VitalStatistics extends BaseModel {
-  String patientId;
-  String? bloodPressure;
-  String? heartRate;
-  String? temperature;
-  String? oxygenSaturation;
-  double? weight;
-  double? height;
-  double? bmi;
-  DateTime recordedDate;
-  String? recordedBy;
-  
-  // Getter aliases for compatibility
-  DateTime get recordedAt => recordedDate;
-  String? get bloodPressureSystolic {
-    if (bloodPressure == null) return null;
-    final parts = bloodPressure!.split('/');
-    return parts.isNotEmpty ? parts[0] : null;
-  }
-  
-  String? get bloodPressureDiastolic {
-    if (bloodPressure == null) return null;
-    final parts = bloodPressure!.split('/');
-    return parts.length > 1 ? parts[1] : null;
-  }
+class VitalStatistics {
+  final String id;
+  final String patientId;
+  final double? heartRate;
+  final double? bloodPressureSystolic;
+  final double? bloodPressureDiastolic;
+  final double? oxygenSaturation;
+  final double? temperature;
+  final double? respiratoryRate;
+  final double? glucoseLevel;
+  final double? weight;
+  final double? height;
+  final double? bmi;
+  final DateTime timestamp;
+  final String? deviceId;
+  final String? recordedBy;
+  final String? notes;
+  final Map<String, dynamic>? metadata;
 
   VitalStatistics({
-    super.id,
+    required this.id,
     required this.patientId,
-    this.bloodPressure,
     this.heartRate,
-    this.temperature,
+    this.bloodPressureSystolic,
+    this.bloodPressureDiastolic,
     this.oxygenSaturation,
+    this.temperature,
+    this.respiratoryRate,
+    this.glucoseLevel,
     this.weight,
     this.height,
     this.bmi,
-    DateTime? recordedDate,
+    required this.timestamp,
+    this.deviceId,
     this.recordedBy,
-    super.createdAt,
-    super.updatedAt,
-  }) : recordedDate = recordedDate ?? DateTime.now();
+    this.notes,
+    this.metadata,
+  });
+
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'patientId': patientId,
+      'heartRate': heartRate,
+      'bloodPressureSystolic': bloodPressureSystolic,
+      'bloodPressureDiastolic': bloodPressureDiastolic,
+      'oxygenSaturation': oxygenSaturation,
+      'temperature': temperature,
+      'respiratoryRate': respiratoryRate,
+      'glucoseLevel': glucoseLevel,
+      'weight': weight,
+      'height': height,
+      'bmi': bmi,
+      'timestamp': timestamp.toIso8601String(),
+      'deviceId': deviceId,
+      'recordedBy': recordedBy,
+      'notes': notes,
+      'metadata': metadata != null ? metadata.toString() : null,
+    };
+  }
 
   factory VitalStatistics.fromMap(Map<String, dynamic> map) {
     return VitalStatistics(
       id: map['id'],
-      patientId: map['patient_id'] ?? '',
-      bloodPressure: map['blood_pressure'],
-      heartRate: map['heart_rate'],
-      temperature: map['temperature'],
-      oxygenSaturation: map['oxygen_saturation'],
+      patientId: map['patientId'],
+      heartRate: map['heartRate']?.toDouble(),
+      bloodPressureSystolic: map['bloodPressureSystolic']?.toDouble(),
+      bloodPressureDiastolic: map['bloodPressureDiastolic']?.toDouble(),
+      oxygenSaturation: map['oxygenSaturation']?.toDouble(),
+      temperature: map['temperature']?.toDouble(),
+      respiratoryRate: map['respiratoryRate']?.toDouble(),
+      glucoseLevel: map['glucoseLevel']?.toDouble(),
       weight: map['weight']?.toDouble(),
       height: map['height']?.toDouble(),
       bmi: map['bmi']?.toDouble(),
-      recordedDate: BaseModel.parseDateTime(map['recorded_date']),
-      recordedBy: map['recorded_by'],
-      createdAt: BaseModel.parseDateTime(map['created_at']),
-      updatedAt: BaseModel.parseDateTime(map['updated_at']),
+      timestamp: DateTime.parse(map['timestamp']),
+      deviceId: map['deviceId'],
+      recordedBy: map['recordedBy'],
+      notes: map['notes'],
+      metadata: map['metadata'] != null 
+          ? Map<String, dynamic>.from(map['metadata'])
+          : null,
+    );
+  }
+
+  VitalStatistics copyWith({
+    String? id,
+    String? patientId,
+    double? heartRate,
+    double? bloodPressureSystolic,
+    double? bloodPressureDiastolic,
+    double? oxygenSaturation,
+    double? temperature,
+    double? respiratoryRate,
+    double? glucoseLevel,
+    double? weight,
+    double? height,
+    double? bmi,
+    DateTime? timestamp,
+    String? deviceId,
+    String? recordedBy,
+    String? notes,
+    Map<String, dynamic>? metadata,
+  }) {
+    return VitalStatistics(
+      id: id ?? this.id,
+      patientId: patientId ?? this.patientId,
+      heartRate: heartRate ?? this.heartRate,
+      bloodPressureSystolic: bloodPressureSystolic ?? this.bloodPressureSystolic,
+      bloodPressureDiastolic: bloodPressureDiastolic ?? this.bloodPressureDiastolic,
+      oxygenSaturation: oxygenSaturation ?? this.oxygenSaturation,
+      temperature: temperature ?? this.temperature,
+      respiratoryRate: respiratoryRate ?? this.respiratoryRate,
+      glucoseLevel: glucoseLevel ?? this.glucoseLevel,
+      weight: weight ?? this.weight,
+      height: height ?? this.height,
+      bmi: bmi ?? this.bmi,
+      timestamp: timestamp ?? this.timestamp,
+      deviceId: deviceId ?? this.deviceId,
+      recordedBy: recordedBy ?? this.recordedBy,
+      notes: notes ?? this.notes,
+      metadata: metadata ?? this.metadata,
     );
   }
 
   @override
-  Map<String, dynamic> toMap() {
-    final map = baseToMap();
-    map.addAll({
-      'patient_id': patientId,
-      'blood_pressure': bloodPressure,
-      'heart_rate': heartRate,
-      'temperature': temperature,
-      'oxygen_saturation': oxygenSaturation,
-      'weight': weight,
-      'height': height,
-      'bmi': bmi,
-      'recorded_date': recordedDate.toIso8601String(),
-      'recorded_by': recordedBy,
-    });
-    return map;
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    
+    return other is VitalStatistics &&
+        other.id == id &&
+        other.patientId == patientId &&
+        other.heartRate == heartRate &&
+        other.bloodPressureSystolic == bloodPressureSystolic &&
+        other.bloodPressureDiastolic == bloodPressureDiastolic &&
+        other.oxygenSaturation == oxygenSaturation &&
+        other.temperature == temperature &&
+        other.respiratoryRate == respiratoryRate &&
+        other.glucoseLevel == glucoseLevel &&
+        other.weight == weight &&
+        other.height == height &&
+        other.bmi == bmi &&
+        other.timestamp == timestamp &&
+        other.deviceId == deviceId &&
+        other.recordedBy == recordedBy &&
+        other.notes == notes;
   }
 
-  VitalStatistics copyWith({
-    String? patientId,
-    String? bloodPressure,
-    String? heartRate,
-    String? temperature,
-    String? oxygenSaturation,
-    double? weight,
-    double? height,
-    double? bmi,
-    DateTime? recordedDate,
-    String? recordedBy,
-  }) {
-    return VitalStatistics(
-      id: id,
-      patientId: patientId ?? this.patientId,
-      bloodPressure: bloodPressure ?? this.bloodPressure,
-      heartRate: heartRate ?? this.heartRate,
-      temperature: temperature ?? this.temperature,
-      oxygenSaturation: oxygenSaturation ?? this.oxygenSaturation,
-      weight: weight ?? this.weight,
-      height: height ?? this.height,
-      bmi: bmi ?? this.bmi,
-      recordedDate: recordedDate ?? this.recordedDate,
-      recordedBy: recordedBy ?? this.recordedBy,
-      createdAt: createdAt,
-      updatedAt: DateTime.now(),
-    );
-  }
-
-  // Helper method to calculate BMI if height and weight are available
-  void calculateBmi() {
-    if (weight != null && height != null && height! > 0) {
-      // Convert height from cm to meters for BMI calculation
-      final heightInMeters = height! / 100;
-      bmi = weight! / (heightInMeters * heightInMeters);
-    }
+  @override
+  int get hashCode {
+    return id.hashCode ^
+        patientId.hashCode ^
+        heartRate.hashCode ^
+        bloodPressureSystolic.hashCode ^
+        bloodPressureDiastolic.hashCode ^
+        oxygenSaturation.hashCode ^
+        temperature.hashCode ^
+        respiratoryRate.hashCode ^
+        glucoseLevel.hashCode ^
+        weight.hashCode ^
+        height.hashCode ^
+        bmi.hashCode ^
+        timestamp.hashCode ^
+        deviceId.hashCode ^
+        recordedBy.hashCode ^
+        notes.hashCode;
   }
 
   @override
   String toString() {
-    return 'VitalStatistics{id: $id, patientId: $patientId, recordedDate: $recordedDate}';
+    return 'VitalStatistics(id: $id, patientId: $patientId, heartRate: $heartRate, bloodPressure: $bloodPressureSystolic/$bloodPressureDiastolic, oxygenSaturation: $oxygenSaturation, temperature: $temperature, timestamp: $timestamp)';
   }
 }
