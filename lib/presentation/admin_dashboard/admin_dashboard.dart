@@ -94,6 +94,10 @@ class _AdminDashboardState extends State<AdminDashboard> {
                 ),
               ),
               const SizedBox(height: 24),
+              const Text('Enterprise Features', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+              const SizedBox(height: 16),
+              _buildEnterpriseFeatureGrid(),
+              const SizedBox(height: 24),
               const Text('Recent Activity', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
               const SizedBox(height: 16),
               ListView.builder(
@@ -130,6 +134,123 @@ class _AdminDashboardState extends State<AdminDashboard> {
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildEnterpriseFeatureGrid() {
+    final features = [
+      {
+        'title': 'Data Analytics Hub',
+        'subtitle': 'Advanced BI & ML Analytics',
+        'icon': Icons.analytics,
+        'color': Colors.blue,
+        'route': AppRoutes.dataAnalyticsHubScreen,
+      },
+      {
+        'title': 'System Administration',
+        'subtitle': 'System Health & Configuration',
+        'icon': Icons.admin_panel_settings,
+        'color': Colors.purple,
+        'route': AppRoutes.systemAdministrationScreen,
+      },
+      {
+        'title': 'Enterprise Command Center',
+        'subtitle': 'Comprehensive System Overview',
+        'icon': Icons.dashboard,
+        'color': Colors.green,
+        'route': AppRoutes.enterpriseCommandCenter,
+      },
+      {
+        'title': 'Compliance Dashboard',
+        'subtitle': 'Regulatory Compliance Monitoring',
+        'icon': Icons.security,
+        'color': Colors.orange,
+        'route': AppRoutes.complianceDashboard,
+      },
+      {
+        'title': 'Quality Assurance',
+        'subtitle': 'Quality Metrics & Auditing',
+        'icon': Icons.verified,
+        'color': Colors.teal,
+        'route': AppRoutes.qualityAssuranceDashboard,
+      },
+      {
+        'title': 'Research Analytics',
+        'subtitle': 'Clinical Research & Trials',
+        'icon': Icons.science,
+        'color': Colors.indigo,
+        'route': AppRoutes.researchAnalytics,
+      },
+    ];
+
+    return GridView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        childAspectRatio: 1.8,
+        crossAxisSpacing: 12,
+        mainAxisSpacing: 12,
+      ),
+      itemCount: features.length,
+      itemBuilder: (context, index) {
+        final feature = features[index];
+        return Card(
+          elevation: 2,
+          child: InkWell(
+            onTap: () {
+              Navigator.pushNamed(context, feature['route'] as String);
+            },
+            borderRadius: BorderRadius.circular(8),
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Icon(
+                        feature['icon'] as IconData,
+                        color: feature['color'] as Color,
+                        size: 28,
+                      ),
+                      const Spacer(),
+                      Container(
+                        padding: const EdgeInsets.all(4),
+                        decoration: BoxDecoration(
+                          color: (feature['color'] as Color).withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        child: Icon(
+                          Icons.arrow_forward_ios,
+                          size: 12,
+                          color: feature['color'] as Color,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    feature['title'] as String,
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    feature['subtitle'] as String,
+                    style: TextStyle(
+                      fontSize: 11,
+                      color: Colors.grey[600],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 }

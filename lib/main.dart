@@ -12,6 +12,15 @@ import 'services/iot_medical_device_service.dart';
 import 'services/advanced_telemedicine_service.dart';
 import 'services/ai_workflow_automation_service.dart';
 import 'services/enterprise_integration_service.dart';
+import 'services/enterprise_erp_service.dart';
+import 'services/business_intelligence_service.dart';
+import 'services/multi_tenant_service.dart';
+import 'services/workflow_management_service.dart';
+import 'services/api_gateway_service.dart';
+import 'services/digital_asset_management_service.dart';
+import 'services/advanced_reporting_service.dart';
+import 'services/robotic_process_automation_service.dart';
+import 'services/comprehensive_error_handling_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -100,12 +109,48 @@ void main() async {
   await telemedicineService.initialize();
 
   // Initialize AI workflow automation service
-  final workflowService = AIWorkflowAutomationService();
-  await workflowService.initialize();
+  final aiWorkflowService = AIWorkflowAutomationService();
+  await aiWorkflowService.initialize();
 
   // Initialize enterprise integration service
   final integrationService = EnterpriseIntegrationService();
   await integrationService.initialize();
+
+  // Initialize enterprise ERP service
+  final erpService = EnterpriseERPService();
+  await erpService.initialize();
+
+  // Initialize business intelligence service
+  final biService = BusinessIntelligenceService();
+  await biService.initialize();
+
+  // Initialize multi-tenant service
+  final multiTenantService = MultiTenantService();
+  await multiTenantService.initialize();
+
+  // Initialize workflow management service
+  final workflowMgmtService = WorkflowManagementService();
+  await workflowMgmtService.initialize();
+
+  // Initialize API gateway service
+  final apiGatewayService = APIGatewayService();
+  await apiGatewayService.initialize();
+
+  // Initialize digital asset management service
+  final damService = DigitalAssetManagementService();
+  await damService.initialize();
+
+  // Initialize advanced reporting service
+  final reportingService = AdvancedReportingService();
+  await reportingService.initialize();
+
+  // Initialize robotic process automation service
+  final rpaService = RoboticProcessAutomationService();
+  await rpaService.initialize();
+
+  // Initialize comprehensive error handling service
+  final comprehensiveErrorService = ComprehensiveErrorHandlingService();
+  await comprehensiveErrorService.initialize();
 
   // Note: CollaborationService will be initialized after authentication
   // as it requires userId and authToken
@@ -184,10 +229,37 @@ void main() async {
             create: (context) => telemedicineService,
           ),
           ChangeNotifierProvider<AIWorkflowAutomationService>(
-            create: (context) => workflowService,
+            create: (context) => aiWorkflowService,
           ),
           ChangeNotifierProvider<EnterpriseIntegrationService>(
             create: (context) => integrationService,
+          ),
+          ChangeNotifierProvider<EnterpriseERPService>(
+            create: (context) => erpService,
+          ),
+          ChangeNotifierProvider<BusinessIntelligenceService>(
+            create: (context) => biService,
+          ),
+          ChangeNotifierProvider<MultiTenantService>(
+            create: (context) => multiTenantService,
+          ),
+          ChangeNotifierProvider<WorkflowManagementService>(
+            create: (context) => workflowMgmtService,
+          ),
+          ChangeNotifierProvider<APIGatewayService>(
+            create: (context) => apiGatewayService,
+          ),
+          ChangeNotifierProvider<DigitalAssetManagementService>(
+            create: (context) => damService,
+          ),
+          ChangeNotifierProvider<AdvancedReportingService>(
+            create: (context) => reportingService,
+          ),
+          ChangeNotifierProvider<RoboticProcessAutomationService>(
+            create: (context) => rpaService,
+          ),
+          ChangeNotifierProvider<ComprehensiveErrorHandlingService>(
+            create: (context) => comprehensiveErrorService,
           ),
         ],
         child: MyApp(),
