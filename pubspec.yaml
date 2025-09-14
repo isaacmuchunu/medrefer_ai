@@ -44,6 +44,7 @@ dependencies:
   flutter_secure_storage: ^10.0.0-beta.4
   crypto: ^3.0.3
   encrypt: ^5.0.3
+  email_validator: ^2.1.17
   flutter_webrtc: ^1.2.0
   http: ^1.1.0
   web_socket_channel: ^3.0.3

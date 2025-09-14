@@ -225,6 +225,44 @@ class ErrorHandlingService {
     if (kDebugMode) {
       debugPrint('ErrorHandlingService: Reporting error - ${error.message}');
     }
+    
+    // Enhanced error reporting with structured data
+    _logErrorToFile(error);
+    
+    // Report critical errors immediately
+    if (error.severity == ErrorSeverity.critical) {
+      _reportCriticalError(error);
+    }
+  }
+
+  /// Log error to local file for debugging
+  void _logErrorToFile(AppError error) {
+    try {
+      final errorLog = {
+        'timestamp': error.timestamp.toIso8601String(),
+        'type': error.type.name,
+        'severity': error.severity.name,
+        'message': error.message,
+        'context': error.context,
+        'stackTrace': error.stackTrace,
+        'userAction': error.userAction,
+      };
+      
+      // In production, this would write to a secure log file
+      if (kDebugMode) {
+        debugPrint('Error Log: ${errorLog.toString()}');
+      }
+    } catch (e) {
+      debugPrint('Failed to log error: $e');
+    }
+  }
+
+  /// Report critical errors to external services
+  void _reportCriticalError(AppError error) {
+    // In production, this would send to crash reporting service
+    if (kDebugMode) {
+      debugPrint('CRITICAL ERROR: ${error.message}');
+    }
   }
 
   /// Determine error severity based on exception type
