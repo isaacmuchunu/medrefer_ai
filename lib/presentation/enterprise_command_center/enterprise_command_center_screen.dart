@@ -8,6 +8,15 @@ import '../../services/iot_medical_device_service.dart';
 import '../../services/advanced_telemedicine_service.dart';
 import '../../services/ai_workflow_automation_service.dart';
 import '../../services/enterprise_integration_service.dart';
+import '../../services/enterprise_erp_service.dart';
+import '../../services/business_intelligence_service.dart';
+import '../../services/multi_tenant_service.dart';
+import '../../services/workflow_management_service.dart';
+import '../../services/api_gateway_service.dart';
+import '../../services/digital_asset_management_service.dart';
+import '../../services/advanced_reporting_service.dart';
+import '../../services/robotic_process_automation_service.dart';
+import '../../services/comprehensive_error_handling_service.dart';
 
 /// Enterprise Command Center - Comprehensive dashboard for all advanced features
 class EnterpriseCommandCenterScreen extends StatefulWidget {
@@ -33,7 +42,7 @@ class _EnterpriseCommandCenterScreenState extends State<EnterpriseCommandCenterS
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 6, vsync: this);
+    _tabController = TabController(length: 10, vsync: this);
     _loadDashboardData();
   }
 

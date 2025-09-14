@@ -66,6 +66,8 @@ import '../presentation/consent_management/consent_management_screen.dart';
 import '../presentation/care_plan/care_plan_screen.dart';
 import '../presentation/audit_log_viewer/audit_log_viewer_screen.dart';
 import '../presentation/sync_center/sync_center_screen.dart';
+import '../presentation/data_analytics_hub/data_analytics_hub_screen.dart';
+import '../presentation/system_administration/system_administration_screen.dart';
 
 class AppRoutes {
   static const String initial = '/';
@@ -138,6 +140,8 @@ class AppRoutes {
   static const String carePlanScreen = '/care-plan';
   static const String auditLogViewerScreen = '/audit-log-viewer';
   static const String syncCenterScreen = '/sync-center';
+  static const String dataAnalyticsHubScreen = '/data-analytics-hub';
+  static const String systemAdministrationScreen = '/system-administration';
 
   static Map<String, WidgetBuilder> routes = {
     initial: (context) => const SpecialistDirectory(),
@@ -291,6 +295,8 @@ class AppRoutes {
     },
     auditLogViewerScreen: (context) => const AuditLogViewerScreen(),
     syncCenterScreen: (context) => const SyncCenterScreen(),
+    dataAnalyticsHubScreen: (context) => const DataAnalyticsHubScreen(),
+    systemAdministrationScreen: (context) => const SystemAdministrationScreen(),
     enterpriseCommandCenter: (context) => const EnterpriseCommandCenterScreen(),
   };
 }
