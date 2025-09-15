@@ -69,6 +69,12 @@ import '../presentation/sync_center/sync_center_screen.dart';
 import '../presentation/data_analytics_hub/data_analytics_hub_screen.dart';
 import '../presentation/system_administration/system_administration_screen.dart';
 
+// New Advanced Features
+import '../presentation/patient_monitoring_dashboard/patient_monitoring_dashboard.dart';
+import '../presentation/drug_interaction_screen/drug_interaction_screen.dart';
+import '../presentation/clinical_workflow_screen/clinical_workflow_screen.dart';
+import '../presentation/medical_image_analysis_screen/medical_image_analysis_screen.dart';
+
 class AppRoutes {
   static const String initial = '/';
   static const String specialistDirectory = '/specialist-directory';
@@ -142,6 +148,13 @@ class AppRoutes {
   static const String syncCenterScreen = '/sync-center';
   static const String dataAnalyticsHubScreen = '/data-analytics-hub';
   static const String systemAdministrationScreen = '/system-administration';
+
+  // New Advanced Features
+  static const String patientMonitoringDashboardScreen = '/patient-monitoring-dashboard';
+  static const String drugInteractionScreen = '/drug-interaction';
+  static const String clinicalWorkflowScreen = '/clinical-workflow';
+  static const String medicalImageAnalysisScreen = '/medical-image-analysis';
+  static const String smartAppointmentScreen = '/smart-appointment';
 
   static Map<String, WidgetBuilder> routes = {
     initial: (context) => const SpecialistDirectory(),
@@ -298,5 +311,36 @@ class AppRoutes {
     dataAnalyticsHubScreen: (context) => const DataAnalyticsHubScreen(),
     systemAdministrationScreen: (context) => const SystemAdministrationScreen(),
     enterpriseCommandCenter: (context) => const EnterpriseCommandCenterScreen(),
+
+    // New Advanced Features
+    patientMonitoringDashboardScreen: (context) {
+      final args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+      final patientId = args?['patientId'] as String?;
+      if (patientId == null || patientId.isEmpty) {
+        return const Scaffold(body: Center(child: Text('Missing patientId')));
+      }
+      return PatientMonitoringDashboard(patientId: patientId);
+    },
+    drugInteractionScreen: (context) {
+      final args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+      final patientId = args?['patientId'] as String?;
+      if (patientId == null || patientId.isEmpty) {
+        return const Scaffold(body: Center(child: Text('Missing patientId')));
+      }
+      return DrugInteractionScreen(patientId: patientId);
+    },
+    clinicalWorkflowScreen: (context) {
+      final args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+      return ClinicalWorkflowScreen(
+        patientId: args?['patientId'],
+        userId: args?['userId'],
+      );
+    },
+    medicalImageAnalysisScreen: (context) {
+      final args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+      return MedicalImageAnalysisScreen(
+        patientId: args?['patientId'],
+      );
+    },
   };
 }
