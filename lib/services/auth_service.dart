@@ -9,9 +9,9 @@ import 'security_audit_service.dart';
 import 'logging_service.dart';
 
 class AuthService extends ChangeNotifier {
-  static final AuthService _instance = AuthService._internal();
+  AuthService._();
+  static final AuthService _instance = AuthService._();
   factory AuthService() => _instance;
-  AuthService._internal();
 
   static const _storage = FlutterSecureStorage(
     aOptions: AndroidOptions(
@@ -29,7 +29,7 @@ class AuthService extends ChangeNotifier {
   int _failedLoginAttempts = 0;
   DateTime? _lastFailedAttempt;
   DateTime? _accountLockedUntil;
-  final List<String> _activeSessions = [];
+  // final List<String> _activeSessions = [];
 
   // Getters
   User? get currentUser => _currentUser;
@@ -83,26 +83,26 @@ class AuthService extends ChangeNotifier {
       });
 
       // Hash password for security
-      final hashedPassword = _hashPassword(password);
+      final hashedPassword = hashPassword(password);
       
       // Simulate API call - in production, this would call your backend
       await Future.delayed(Duration(seconds: 1));
       
       // Authenticate against database/backend
-      if (await _authenticateUser(email, hashedPassword)) {
+      if (await validateCredentials(email, hashedPassword)) {
         // Generate auth token
-        _authToken = _generateAuthToken();
+        _authToken = generateAuthToken();
         _tokenExpiry = DateTime.now().add(Duration(hours: 24));
         
         // Create user object
-        final name = _extractNameFromEmail(email);
+        final name = extractNameFromEmail(email);
         final nameParts = name.split(' ');
         _currentUser = User(
           id: 'user_${DateTime.now().millisecondsSinceEpoch}',
           firstName: nameParts.isNotEmpty ? nameParts[0] : 'User',
           lastName: nameParts.length > 1 ? nameParts.sublist(1).join(' ') : '',
           email: email,
-          role: _determineUserRole(email),
+          role: determineUserRole(email),
         );
         
         _isAuthenticated = true;
@@ -208,24 +208,24 @@ class AuthService extends ChangeNotifier {
         throw AuthException('All required fields must be filled');
       }
 
-      if (!_isValidPassword(password)) {
+      if (!isValidPassword(password)) {
         throw AuthException('Password does not meet security requirements');
       }
 
       // Check if user already exists
-      if (await _userExists(email)) {
+      if (await userExists(email)) {
         throw AuthException('User with this email already exists');
       }
 
       // Hash password
-      final hashedPassword = _hashPassword(password);
+      final hashedPassword = hashPassword(password);
       
       // Simulate API call
       await Future.delayed(Duration(seconds: 2));
       
       // Create user
       final nameParts = name.split(' ');
-      final userRole = _parseUserRole(role);
+      final userRole = parseUserRole(role);
       final user = User(
         id: 'user_${DateTime.now().millisecondsSinceEpoch}',
         firstName: nameParts.isNotEmpty ? nameParts[0] : 'User',
@@ -285,7 +285,7 @@ class AuthService extends ChangeNotifier {
         throw AuthException('Email is required');
       }
 
-      if (!await _userExists(email)) {
+      if (!await userExists(email)) {
         throw AuthException('No account found with this email');
       }
 
@@ -308,17 +308,17 @@ class AuthService extends ChangeNotifier {
     required String newPassword,
   }) async {
     try {
-      if (!_isValidPassword(newPassword)) {
+      if (!isValidPassword(newPassword)) {
         throw AuthException('Password does not meet security requirements');
       }
 
       // Validate reset token against database
-      if (!_validateResetToken(email, token)) {
+      if (!validateResetToken(email, token)) {
         throw AuthException('Invalid or expired reset token');
       }
 
       // Hash new password
-      final hashedPassword = _hashPassword(newPassword);
+      final hashedPassword = hashPassword(newPassword);
       
       // Update password (in production, this would be done on the backend)
       await _updateUserPassword(email, hashedPassword);
@@ -369,15 +369,15 @@ class AuthService extends ChangeNotifier {
     }
   }
 
-  String _hashPassword(String password) {
+  String hashPassword(String password) {
     // Use a more secure password hashing with salt
-    final salt = _generateSalt();
+    final salt = generateSalt();
     final bytes = utf8.encode('$password${salt}medrefer_salt_2024');
     final digest = sha256.convert(bytes);
     return '$salt:${digest.toString()}';
   }
 
-  String _generateSalt() {
+  String generateSalt() {
     final random = Random.secure();
     final saltBytes = List<int>.generate(16, (i) => random.nextInt(256));
     return base64Encode(saltBytes);
@@ -416,7 +416,7 @@ class AuthService extends ChangeNotifier {
   }
 
   // Authenticate user against database
-  Future<bool> _authenticateUser(String email, String hashedPassword) async {
+  Future<bool> validateCredentials(String email, String hashedPassword) async {
     try {
       // In a real implementation, this would query your user database
       // For now, we'll check if the email exists and password is valid
@@ -441,7 +441,7 @@ class AuthService extends ChangeNotifier {
     }
   }
 
-  bool _isValidPassword(String password) {
+  bool isValidPassword(String password) {
     // Password requirements: at least 8 characters, uppercase, lowercase, number, special char
     return password.length >= 8 &&
            RegExp(r'[A-Z]').hasMatch(password) &&
@@ -450,20 +450,20 @@ class AuthService extends ChangeNotifier {
            RegExp(r'[!@#$%^&*(),.?":{}|<>]').hasMatch(password);
   }
 
-  String _generateAuthToken() {
+  String generateAuthToken() {
     final timestamp = DateTime.now().millisecondsSinceEpoch;
     final random = DateTime.now().microsecond;
     return 'auth_${timestamp}_${random}';
   }
 
-  String _extractNameFromEmail(String email) {
+  String extractNameFromEmail(String email) {
     final username = email.split('@')[0];
     return username.split('.').map((part) => 
       part[0].toUpperCase() + part.substring(1)
     ).join(' ');
   }
 
-  UserRole _determineUserRole(String email) {
+  UserRole determineUserRole(String email) {
     if (email.contains('admin')) return UserRole.admin;
     if (email.contains('doctor') || email.contains('physician')) return UserRole.doctor;
     if (email.contains('specialist')) return UserRole.specialist;
@@ -472,7 +472,7 @@ class AuthService extends ChangeNotifier {
     return UserRole.patient; // Default role
   }
 
-  Future<bool> _userExists(String email) async {
+  Future<bool> userExists(String email) async {
     // Check email verification status from database
     await Future.delayed(Duration(milliseconds: 500));
     final validUsers = ['doctor@medrefer.com', 'admin@medrefer.com', 'nurse@medrefer.com'];
@@ -489,7 +489,7 @@ class AuthService extends ChangeNotifier {
     await Future.delayed(Duration(milliseconds: 500));
   }
 
-  bool _validateResetToken(String email, String token) {
+  bool validateResetToken(String email, String token) {
     // Validate token against database
     return token.length == 6 && RegExp(r'^[0-9]+$').hasMatch(token);
   }
@@ -505,7 +505,7 @@ class AuthService extends ChangeNotifier {
     // In production, this would log to your security audit system
   }
 
-  UserRole _parseUserRole(String role) {
+  UserRole parseUserRole(String role) {
     switch (role.toLowerCase()) {
       case 'doctor':
       case 'physician':
@@ -533,9 +533,10 @@ class AuthService extends ChangeNotifier {
 
 // Auth exception
 class AuthException implements Exception {
-  final String message;
   AuthException(this.message);
   
+  final String message;
+
   @override
   String toString() => 'AuthException: $message';
 }

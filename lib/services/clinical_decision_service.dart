@@ -3,9 +3,9 @@ import '../database/dao/clinical_decision_dao.dart';
 import '../database/models/clinical_decision.dart';
 
 class ClinicalDecisionService {
-  static final ClinicalDecisionService _instance = ClinicalDecisionService._internal();
+  ClinicalDecisionService._();
+  static final ClinicalDecisionService _instance = ClinicalDecisionService._();
   factory ClinicalDecisionService() => _instance;
-  ClinicalDecisionService._internal();
 
   final ClinicalDecisionDao _dao = ClinicalDecisionDao();
   final StreamController<List<ClinicalDecision>> _decisionsController = 
@@ -184,7 +184,7 @@ class ClinicalDecisionService {
       final endDate = DateTime.now();
       final startDate = endDate.subtract(Duration(days: days));
       
-      final allDecisions = await _dao.getAll();
+      final allDecisions = await getAllDecisions();
       final recentDecisions = allDecisions.where((d) => 
         d.createdAt.isAfter(startDate) && d.createdAt.isBefore(endDate)
       ).toList();
@@ -218,7 +218,7 @@ class ClinicalDecisionService {
   // Refresh decisions stream
   Future<void> _refreshDecisions() async {
     try {
-      final decisions = await _dao.getAll();
+      final decisions = await getAllDecisions();
       _decisionsController.add(decisions);
     } catch (e) {
       _decisionsController.addError(e);

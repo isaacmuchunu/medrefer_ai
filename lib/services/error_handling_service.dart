@@ -2,13 +2,13 @@ import 'dart:async';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
 /// Comprehensive error handling service for the MedRefer AI app
 class ErrorHandlingService {
-  static final ErrorHandlingService _instance = ErrorHandlingService._internal();
+  ErrorHandlingService._();
+
+  static final ErrorHandlingService _instance = ErrorHandlingService._();
   factory ErrorHandlingService() => _instance;
-  ErrorHandlingService._internal();
 
   // Error tracking
   final List<AppError> _errorHistory = [];
@@ -420,14 +420,6 @@ enum ErrorSeverity {
 
 /// App error model
 class AppError {
-  final ErrorType type;
-  final String message;
-  final String stackTrace;
-  final DateTime timestamp;
-  final ErrorSeverity severity;
-  final String context;
-  final String userAction;
-
   AppError({
     required this.type,
     required this.message,
@@ -437,18 +429,6 @@ class AppError {
     required this.context,
     required this.userAction,
   });
-
-  Map<String, dynamic> toJson() {
-    return {
-      'type': type.name,
-      'message': message,
-      'stackTrace': stackTrace,
-      'timestamp': timestamp.toIso8601String(),
-      'severity': severity.name,
-      'context': context,
-      'userAction': userAction,
-    };
-  }
 
   factory AppError.fromJson(Map<String, dynamic> json) {
     return AppError(
@@ -460,5 +440,25 @@ class AppError {
       context: json['context'],
       userAction: json['userAction'],
     );
+  }
+
+  final ErrorType type;
+  final String message;
+  final String stackTrace;
+  final DateTime timestamp;
+  final ErrorSeverity severity;
+  final String context;
+  final String userAction;
+
+  Map<String, dynamic> toJson() {
+    return {
+      'type': type.name,
+      'message': message,
+      'stackTrace': stackTrace,
+      'timestamp': timestamp.toIso8601String(),
+      'severity': severity.name,
+      'context': context,
+      'userAction': userAction,
+    };
   }
 }

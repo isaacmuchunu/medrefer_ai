@@ -5,9 +5,9 @@ import 'logging_service.dart';
 
 /// Comprehensive validation service for MedRefer AI
 class ValidationService {
-  static final ValidationService _instance = ValidationService._internal();
+  static final ValidationService _instance = _ValidationService();
   factory ValidationService() => _instance;
-  ValidationService._internal();
+  _ValidationService();
 
   final LoggingService _loggingService = LoggingService();
 

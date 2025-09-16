@@ -6,9 +6,9 @@ import '../database/services/data_service.dart';
 
 /// IoT Medical Device Integration Service for real-time patient monitoring
 class IoTMedicalDeviceService extends ChangeNotifier {
-  static final IoTMedicalDeviceService _instance = IoTMedicalDeviceService._internal();
+  static final IoTMedicalDeviceService _instance = _IoTMedicalDeviceService();
   factory IoTMedicalDeviceService() => _instance;
-  IoTMedicalDeviceService._internal();
+  _IoTMedicalDeviceService();
 
   final DataService _dataService = DataService();
   bool _isInitialized = false;
@@ -553,6 +553,90 @@ class IoTMedicalDeviceService extends ChangeNotifier {
     });
   }
 
+  List<DeviceAlert> _getPatientAlerts(String patientId) {
+    return _activeAlerts.values.where((alert) => alert.patientId == patientId).toList();
+  }
+
+  String _getCalibrationStatus(MedicalDevice device) {
+    final calibration = _deviceCalibrations[device.id];
+    if (calibration == null) return 'not_calibrated';
+    if (calibration.nextCalibrationDue.isBefore(DateTime.now())) {
+      return 'due_for_calibration';
+    }
+    return 'calibrated';
+  }
+
+  Future<void> _collectRealTimeData() async {
+    for (final device in _connectedDevices.values) {
+      if (device.isConnected) {
+        // In a real scenario, you would request data from the device.
+        // Here we simulate receiving data.
+        _startSimulatedDataCollection(device);
+      }
+    }
+  }
+
+  Future<void> _processAlerts() async {
+    // Process and escalate alerts as needed
+  }
+
+  Future<void> _processAndAnalyzeData() async {
+    // Perform batch analysis on collected data
+  }
+
+  Map<String, dynamic> _parseXmlData(String xmlString) {
+    // In a real implementation, use an XML parsing library
+    return {'xml_data': xmlString};
+  }
+
+  Map<String, dynamic> _parseBinaryData(dynamic binaryData) {
+    // In a real implementation, parse binary data according to the device protocol
+    return {'binary_data': binaryData.toString()};
+  }
+
+  double _calculateDataQuality(Map<String, dynamic> data, DeviceProtocol protocol) {
+    // Simple quality check
+    return data.isNotEmpty ? 1.0 : 0.0;
+  }
+
+  String _generateReadingId() {
+    return 'reading_${DateTime.now().millisecondsSinceEpoch}';
+  }
+
+  String _generateAlertId() {
+    return 'alert_${DateTime.now().millisecondsSinceEpoch}';
+  }
+
+  void _triggerAlertNotifications(List<DeviceAlert> alerts) {
+    // Integrate with notification service
+  }
+
+  TrendDirection _calculateTrendDirection(List<num> values) {
+    if (values.length < 2) return TrendDirection.stable;
+    final last = values.last;
+    final previous = values[values.length - 2];
+    if (last > previous) return TrendDirection.increasing;
+    if (last < previous) return TrendDirection.decreasing;
+    return TrendDirection.stable;
+  }
+
+  void _startSimulatedDataCollection(MedicalDevice device) {
+    // Simulate data for demonstration
+  }
+
+  Future<void> _loadPatientDeviceAssociations() async {
+    // Load from database
+  }
+
+  void _handleDeviceDisconnection(String deviceId) {
+    final device = _connectedDevices[deviceId];
+    if (device != null) {
+      device.isConnected = false;
+      debugPrint('🔌 Device disconnected: ${device.name}');
+      notifyListeners();
+    }
+  }
+
   // Helper methods and additional functionality...
   // Due to space constraints, showing key structure and main methods
 
@@ -574,22 +658,6 @@ class IoTMedicalDeviceService extends ChangeNotifier {
 // Data models for IoT devices
 
 class MedicalDevice {
-  String id;
-  String name;
-  DeviceType type;
-  String manufacturer;
-  String model;
-  String serialNumber;
-  String firmwareVersion;
-  int batteryLevel;
-  DateTime lastCalibration;
-  bool isConnected;
-  CommunicationMethod connectionMethod;
-  String macAddress;
-  String? assignedPatientId;
-  DateTime? assignedAt;
-  DateTime? lastConnected;
-
   MedicalDevice({
     required this.id,
     required this.name,
@@ -607,6 +675,21 @@ class MedicalDevice {
     this.assignedAt,
     this.lastConnected,
   });
+  String id;
+  String name;
+  DeviceType type;
+  String manufacturer;
+  String model;
+  String serialNumber;
+  String firmwareVersion;
+  int batteryLevel;
+  DateTime lastCalibration;
+  bool isConnected;
+  CommunicationMethod connectionMethod;
+  String macAddress;
+  String? assignedPatientId;
+  DateTime? assignedAt;
+  DateTime? lastConnected;
 
   Map<String, dynamic> toJson() {
     return {
@@ -630,14 +713,6 @@ class MedicalDevice {
 }
 
 class DeviceProtocol {
-  DeviceType type;
-  CommunicationMethod communicationMethod;
-  DataFormat dataFormat;
-  Duration readingFrequency;
-  List<String> parameters;
-  Map<String, Map<String, num>> normalRanges;
-  Map<String, Map<String, num>> alertThresholds;
-
   DeviceProtocol({
     required this.type,
     required this.communicationMethod,
@@ -647,9 +722,25 @@ class DeviceProtocol {
     required this.normalRanges,
     required this.alertThresholds,
   });
+  DeviceType type;
+  CommunicationMethod communicationMethod;
+  DataFormat dataFormat;
+  Duration readingFrequency;
+  List<String> parameters;
+  Map<String, Map<String, num>> normalRanges;
+  Map<String, Map<String, num>> alertThresholds;
 }
 
 class DeviceReading {
+  DeviceReading({
+    required this.id,
+    required this.deviceId,
+    required this.patientId,
+    required this.timestamp,
+    required this.parameters,
+    required this.qualityScore,
+    required this.isValidated,
+  });
   String id;
   String deviceId;
   String? patientId;
@@ -670,6 +761,19 @@ class DeviceReading {
 }
 
 class DeviceAlert {
+  DeviceAlert({
+    required this.id,
+    required this.deviceId,
+    required this.patientId,
+    required this.parameter,
+    required this.value,
+    required this.severity,
+    required this.message,
+    required this.timestamp,
+    required this.isAcknowledged,
+    this.acknowledgedAt,
+    this.acknowledgedBy,
+  });
   String id;
   String deviceId;
   String? patientId;
@@ -698,6 +802,11 @@ class DeviceAlert {
 }
 
 class PatientVitalTrends {
+  PatientVitalTrends({
+    required this.patientId,
+    required this.trends,
+    required this.lastUpdated,
+  });
   String patientId;
   Map<String, VitalTrend> trends;
   DateTime lastUpdated;
@@ -718,12 +827,6 @@ class PatientVitalTrends {
 }
 
 class VitalTrend {
-  String parameter;
-  List<num> values;
-  List<DateTime> timestamps;
-  TrendDirection trend;
-  num lastValue;
-
   VitalTrend({
     required this.parameter,
     required this.values,
@@ -731,6 +834,11 @@ class VitalTrend {
     required this.trend,
     required this.lastValue,
   });
+  String parameter;
+  List<num> values;
+  List<DateTime> timestamps;
+  TrendDirection trend;
+  num lastValue;
 
   Map<String, dynamic> toJson() {
     return {
@@ -744,6 +852,13 @@ class VitalTrend {
 }
 
 class DeviceCalibration {
+  DeviceCalibration({
+    required this.deviceId,
+    required this.calibratedAt,
+    required this.calibratedBy,
+    required this.calibrationData,
+    required this.nextCalibrationDue,
+  });
   String deviceId;
   DateTime calibratedAt;
   String calibratedBy;
@@ -760,6 +875,16 @@ class DeviceCalibration {
 }
 
 class AnomalyDetection {
+  AnomalyDetection({
+    required this.id,
+    required this.patientId,
+    required this.parameter,
+    required this.value,
+    required this.expectedValue,
+    required this.anomalyScore,
+    required this.detectedAt,
+    required this.description,
+  });
   String id;
   String patientId;
   String parameter;

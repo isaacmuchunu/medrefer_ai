@@ -311,9 +311,7 @@ class AppointmentRecommendation {
 }
 
 class SmartAppointmentService {
-  static SmartAppointmentService? _instance;
-  static SmartAppointmentService get instance => _instance ??= SmartAppointmentService._();
-  SmartAppointmentService._();
+  SmartAppointmentService._internal();
 
   final DataService _dataService = DataService();
   final AIService _aiService = AIService();
@@ -330,6 +328,9 @@ class SmartAppointmentService {
   Timer? _reminderTimer;
 
   Stream<SmartAppointment> get appointmentStream => _appointmentController.stream;
+
+  static final SmartAppointmentService _instance = SmartAppointmentService._internal();
+  factory SmartAppointmentService() => _instance;
 
   Future<void> initialize() async {
     if (_isInitialized) return;
@@ -587,7 +588,7 @@ class SmartAppointmentService {
       (slot) => slot.isAvailable &&
                 slot.startTime.isBefore(startTime.add(const Duration(minutes: 1))) &&
                 slot.endTime.isAfter(endTime.subtract(const Duration(minutes: 1))),
-      orElse: () => null as AppointmentSlot,
+      
     );
 
     // Check for conflicts with existing appointments
@@ -884,7 +885,7 @@ class SmartAppointmentService {
     final slot = providerSlots.firstWhere(
       (slot) => slot.startTime.isBefore(startTime.add(const Duration(minutes: 1))) &&
                 slot.endTime.isAfter(startTime.subtract(const Duration(minutes: 1))),
-      orElse: () => null as AppointmentSlot,
+      
     );
 
     // Mark slot as available

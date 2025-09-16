@@ -6,9 +6,9 @@ import 'package:path_provider/path_provider.dart';
 
 /// Document security service for handling secure document operations
 class DocumentSecurityService {
+  DocumentSecurityService._internal();
   static final DocumentSecurityService _instance = DocumentSecurityService._internal();
   factory DocumentSecurityService() => _instance;
-  DocumentSecurityService._internal();
 
   // Security configuration
   static const String _encryptionKey = 'medrefer_ai_doc_key_2024'; // In production, use secure key management
@@ -291,27 +291,21 @@ class DocumentSecurityService {
 
 /// Document validation result
 class DocumentValidationResult {
-  final bool isValid;
-  final String? error;
-  final int? fileSize;
-  final String? mimeType;
-
   DocumentValidationResult({
     required this.isValid,
     this.error,
     this.fileSize,
     this.mimeType,
   });
+
+  final bool isValid;
+  final String? error;
+  final int? fileSize;
+  final String? mimeType;
 }
 
 /// Document access control
 class DocumentAccess {
-  final String documentId;
-  final String ownerId;
-  final Map<String, List<DocumentPermission>> userPermissions;
-  final DateTime createdAt;
-  DateTime? expiresAt;
-
   DocumentAccess({
     required this.documentId,
     required this.ownerId,
@@ -319,6 +313,12 @@ class DocumentAccess {
     required this.createdAt,
     this.expiresAt,
   });
+
+  final String documentId;
+  final String ownerId;
+  final Map<String, List<DocumentPermission>> userPermissions;
+  final DateTime createdAt;
+  DateTime? expiresAt;
 }
 
 /// Document permissions
@@ -342,12 +342,6 @@ enum DocumentAccessType {
 
 /// Document access log entry
 class DocumentAccessLog {
-  final String documentId;
-  final String userId;
-  final DocumentAccessType accessType;
-  final DateTime timestamp;
-  final Map<String, dynamic> metadata;
-
   DocumentAccessLog({
     required this.documentId,
     required this.userId,
@@ -355,6 +349,12 @@ class DocumentAccessLog {
     required this.timestamp,
     required this.metadata,
   });
+
+  final String documentId;
+  final String userId;
+  final DocumentAccessType accessType;
+  final DateTime timestamp;
+  final Map<String, dynamic> metadata;
 
   Map<String, dynamic> toJson() {
     return {
@@ -369,12 +369,6 @@ class DocumentAccessLog {
 
 /// Document access statistics
 class DocumentAccessStats {
-  final String documentId;
-  final int totalViewers;
-  final List<String> uniqueViewers;
-  final bool hasAccess;
-  final DateTime? createdAt;
-
   DocumentAccessStats({
     required this.documentId,
     required this.totalViewers,
@@ -382,4 +376,10 @@ class DocumentAccessStats {
     required this.hasAccess,
     this.createdAt,
   });
+
+  final String documentId;
+  final int totalViewers;
+  final List<String> uniqueViewers;
+  final bool hasAccess;
+  final DateTime? createdAt;
 }

@@ -303,24 +303,3 @@ Future<bool> _validateAssets() async {
   return allAssetsExist;
 }
 
-Future<bool> _validateDocumentation() async {
-  print('\n📚 Validating Documentation...');
-  
-  final docFiles = [
-    'README.md',
-    'docs/SCREENS_DOCUMENTATION.md',
-  ];
-
-  var allDocsExist = true;
-  for (final doc in docFiles) {
-    final file = File(doc);
-    if (await file.exists()) {
-      print('  ✅ ${doc.split('/').last}');
-    } else {
-      print('  ❌ ${doc.split('/').last} - Missing');
-      allDocsExist = false;
-    }
-  }
-
-  return allDocsExist;
-}

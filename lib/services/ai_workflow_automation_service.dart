@@ -5,9 +5,9 @@ import '../database/services/data_service.dart';
 
 /// AI-Powered Workflow Automation Service for healthcare administrative tasks
 class AIWorkflowAutomationService extends ChangeNotifier {
-  static final AIWorkflowAutomationService _instance = AIWorkflowAutomationService._internal();
+  static final AIWorkflowAutomationService _instance = _AIWorkflowAutomationService();
   factory AIWorkflowAutomationService() => _instance;
-  AIWorkflowAutomationService._internal();
+  _AIWorkflowAutomationService();
 
   final DataService _dataService = DataService();
   bool _isInitialized = false;

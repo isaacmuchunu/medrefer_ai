@@ -337,15 +337,17 @@ void main() {
       final patientId = await dataService.createPatient(patient);
 
       final vital = VitalStatistics(
+        id: 'vital_${DateTime.now().millisecondsSinceEpoch}',
         patientId: patientId,
-        bloodPressure: '120/80',
-        heartRate: '72',
-        temperature: '98.6',
-        oxygenSaturation: '98',
+        bloodPressureSystolic: 120,
+        bloodPressureDiastolic: 80,
+        heartRate: 72,
+        temperature: 98.6,
+        oxygenSaturation: 98,
         weight: 70.0,
         height: 170.0,
         bmi: 24.2,
-        recordedDate: DateTime.now(),
+        timestamp: DateTime.now(),
         recordedBy: 'Nurse Test',
       );
 
@@ -354,7 +356,8 @@ void main() {
 
       final retrieved = await dataService.getVitalStatisticsById(vitalId);
       expect(retrieved, isNotNull);
-      expect(retrieved!.bloodPressure, equals('120/80'));
+      expect(retrieved!.bloodPressureSystolic, equals(120));
+      expect(retrieved.bloodPressureDiastolic, equals(80));
     });
   });
 }

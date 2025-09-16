@@ -10,9 +10,9 @@ import 'ai_service.dart';
 /// Advanced Analytics Service
 /// Provides comprehensive analytics with predictive models, trend analysis, and KPI tracking
 class AnalyticsService extends ChangeNotifier {
-  static final AnalyticsService _instance = AnalyticsService._internal();
+  static final AnalyticsService _instance = _AnalyticsService();
   factory AnalyticsService() => _instance;
-  AnalyticsService._internal();
+  _AnalyticsService();
 
   // Configuration
   static const Duration _refreshInterval = Duration(minutes: 5);

@@ -101,24 +101,22 @@ class MockDataService extends _i1.Mock implements _i21.DataService {
       ) as _i3.Future<_i14.Patient?>);
 
   @override
-  _i3.Future<void> updatePatient(_i14.Patient? patient) => (super.noSuchMethod(
+  _i3.Future<bool> updatePatient(_i14.Patient? patient) => (super.noSuchMethod(
         Invocation.method(
           #updatePatient,
           [patient],
         ),
-        returnValue: _i3.Future<void>.value(),
-        returnValueForMissingStub: _i3.Future<void>.value(),
-      ) as _i3.Future<void>);
+        returnValue: _i3.Future<bool>.value(false),
+      ) as _i3.Future<bool>);
 
   @override
-  _i3.Future<void> deletePatient(String? id) => (super.noSuchMethod(
+  _i3.Future<bool> deletePatient(String? id) => (super.noSuchMethod(
         Invocation.method(
           #deletePatient,
           [id],
         ),
-        returnValue: _i3.Future<void>.value(),
-        returnValueForMissingStub: _i3.Future<void>.value(),
-      ) as _i3.Future<void>);
+        returnValue: _i3.Future<bool>.value(false),
+      ) as _i3.Future<bool>);
 
   @override
   _i3.Future<List<_i14.Patient>> searchPatients(String? query) =>

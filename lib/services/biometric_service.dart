@@ -3,11 +3,13 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:local_auth/local_auth.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:local_auth_android/local_auth_android.dart';
+import 'package:local_auth_ios/local_auth_ios.dart';
 
 class BiometricService {
-  static final BiometricService _instance = BiometricService._internal();
+  BiometricService._();
+  static final BiometricService _instance = BiometricService._();
   factory BiometricService() => _instance;
-  BiometricService._internal();
 
   final LocalAuthentication _localAuth = LocalAuthentication();
   static const _storage = FlutterSecureStorage();
@@ -49,8 +51,8 @@ class BiometricService {
 
       final didAuthenticate = await _localAuth.authenticate(
         localizedReason: reason,
-        authMessages: const [
-          AndroidAuthMessages(
+        authMessages: [
+          const AndroidAuthMessages(
             signInTitle: 'MedRefer AI Authentication',
             biometricHint: 'Touch sensor',
             biometricNotRecognized: 'Biometric not recognized. Try again.',
@@ -61,14 +63,14 @@ class BiometricService {
             goToSettingsButton: 'Go to Settings',
             goToSettingsDescription: 'Please set up biometric authentication in settings',
           ),
-          IOSAuthMessages(
+          const IOSAuthMessages(
             lockOut: 'Biometric authentication is disabled. Please lock and unlock your screen to enable it.',
             goToSettingsButton: 'Go to Settings',
             goToSettingsDescription: 'Please set up biometric authentication in settings',
             cancelButton: 'Cancel',
           ),
         ],
-        options: AuthenticationOptions(
+        options: const AuthenticationOptions(
           useErrorDialogs: useErrorDialogs,
           stickyAuth: stickyAuth,
           biometricOnly: false,
@@ -204,9 +206,10 @@ class BiometricService {
 
 // Biometric exception
 class BiometricException implements Exception {
-  final String message;
   BiometricException(this.message);
   
+  final String message;
+
   @override
   String toString() => 'BiometricException: $message';
 }

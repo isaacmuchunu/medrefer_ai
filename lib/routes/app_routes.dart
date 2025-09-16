@@ -47,7 +47,6 @@ import '../presentation/booking_screen/booking_screen.dart';
 import '../presentation/booking_success_screen/booking_success_screen.dart';
 import '../presentation/audio_call_screen/audio_call_screen.dart';
 import '../presentation/schedule_screen/schedule_screen.dart';
-import '../presentation/emergency_alerts_screen/emergency_alerts_screen.dart';
 import '../presentation/articles_screen/articles_screen.dart';
 import '../presentation/profile_screen/profile_screen.dart';
 

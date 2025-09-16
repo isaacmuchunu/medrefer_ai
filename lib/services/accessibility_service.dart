@@ -3,9 +3,9 @@ import 'logging_service.dart';
 
 /// Accessibility service for MedRefer AI
 class AccessibilityService {
-  static final AccessibilityService _instance = AccessibilityService._internal();
+  static final AccessibilityService _instance = _AccessibilityService();
   factory AccessibilityService() => _instance;
-  AccessibilityService._internal();
+  _AccessibilityService();
 
   final LoggingService _loggingService = LoggingService();
   bool _isInitialized = false;

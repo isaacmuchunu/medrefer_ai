@@ -8,9 +8,9 @@ import '../database/models/appointment.dart';
 
 /// Enterprise-grade ML Analytics Service with predictive modeling and real-time insights
 class AdvancedMLAnalyticsService extends ChangeNotifier {
-  static final AdvancedMLAnalyticsService _instance = AdvancedMLAnalyticsService._internal();
+  static final AdvancedMLAnalyticsService _instance = _AdvancedMLAnalyticsService();
   factory AdvancedMLAnalyticsService() => _instance;
-  AdvancedMLAnalyticsService._internal();
+  _AdvancedMLAnalyticsService();
 
   final DataService _dataService = DataService();
   Timer? _analyticsTimer;

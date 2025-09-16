@@ -5,9 +5,9 @@ import 'package:medrefer_ai/database/models/search_models.dart';
 
 /// Advanced Search Service with Elasticsearch-like capabilities
 class AdvancedSearchService extends ChangeNotifier {
-  static final AdvancedSearchService _instance = AdvancedSearchService._internal();
+  static final AdvancedSearchService _instance = _AdvancedSearchService();
   factory AdvancedSearchService() => _instance;
-  AdvancedSearchService._internal();
+  _AdvancedSearchService();
 
   late LoggingService _loggingService;
   final Map<String, List<SearchResult>> _searchIndex = {};

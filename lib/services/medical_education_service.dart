@@ -3,8 +3,6 @@ import '../database/dao/medical_education_dao.dart';
 import '../database/models/medical_education.dart';
 
 class MedicalEducationService {
-  static final MedicalEducationService _instance = MedicalEducationService._internal();
-  factory MedicalEducationService() => _instance;
   MedicalEducationService._internal();
 
   final MedicalEducationDao _dao = MedicalEducationDao();
@@ -13,12 +11,15 @@ class MedicalEducationService {
 
   Stream<List<MedicalEducation>> get educationStream => _educationController.stream;
 
+  static final MedicalEducationService _instance = MedicalEducationService._internal();
+  factory MedicalEducationService() => _instance;
+
   // Create a new medical education
   Future<MedicalEducation> createEducation(MedicalEducation education) async {
     try {
-      final createdEducation = await _dao.insert(education);
+      await _dao.insert(education);
       await _refreshEducation();
-      return createdEducation;
+      return education;
     } catch (e) {
       throw Exception('Failed to create medical education: $e');
     }
@@ -27,7 +28,7 @@ class MedicalEducationService {
   // Get all education
   Future<List<MedicalEducation>> getAllEducation() async {
     try {
-      return await _dao.getAll();
+      return await _dao.getAllEducation();
     } catch (e) {
       throw Exception('Failed to get medical education: $e');
     }
@@ -194,7 +195,7 @@ class MedicalEducationService {
       final endDate = DateTime.now();
       final startDate = endDate.subtract(Duration(days: days));
       
-      final allEducation = await _dao.getAll();
+      final allEducation = await _dao.getAllEducation();
       final recentEducation = allEducation.where((e) => 
         e.startDate.isAfter(startDate) && e.startDate.isBefore(endDate)
       ).toList();
@@ -296,7 +297,7 @@ class MedicalEducationService {
   // Get CME tracking
   Future<Map<String, dynamic>> getCMETracking() async {
     try {
-      final allEducation = await _dao.getAll();
+      final allEducation = await _dao.getAllEducation();
       final completedEducation = allEducation.where((e) => e.status == 'completed').toList();
       final cmeEducation = allEducation.where((e) => e.cmeCredits > 0).toList();
       
@@ -334,7 +335,7 @@ class MedicalEducationService {
   // Refresh education stream
   Future<void> _refreshEducation() async {
     try {
-      final education = await _dao.getAll();
+      final education = await _dao.getAllEducation();
       _educationController.add(education);
     } catch (e) {
       _educationController.addError(e);

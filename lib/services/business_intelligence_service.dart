@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
 import 'package:sqflite/sqflite.dart';
 import 'dart:async';
 import 'dart:math';
@@ -18,9 +19,9 @@ import '../core/app_export.dart';
 /// - Multi-dimensional analysis
 /// - Self-service BI tools
 class BusinessIntelligenceService extends ChangeNotifier {
-  static final BusinessIntelligenceService _instance = BusinessIntelligenceService._internal();
+  BusinessIntelligenceService._();
+  static final BusinessIntelligenceService _instance = BusinessIntelligenceService._();
   factory BusinessIntelligenceService() => _instance;
-  BusinessIntelligenceService._internal();
 
   final Dio _dio = Dio();
   Database? _warehouseDb;
@@ -34,7 +35,7 @@ class BusinessIntelligenceService extends ChangeNotifier {
   final List<DataSource> _dataSources = [];
   
   // Data Warehouse Components
-  final Map<String, DataWarehouseSchema> _warehouseSchemas = {};
+  // final Map<String, DataWarehouseSchema> _warehouseSchemas = {};
   final Map<String, OLAPCube> _olapCubes = {};
   
   // Analytics Components
@@ -43,7 +44,7 @@ class BusinessIntelligenceService extends ChangeNotifier {
   final Map<String, Report> _reports = {};
   
   // Performance Metrics
-  final Map<String, BIPerformanceMetrics> _performanceMetrics = {};
+  // final Map<String, BIPerformanceMetrics> _performanceMetrics = {};
   
   // Data Quality
   final Map<String, DataQualityProfile> _dataQualityProfiles = {};
@@ -1018,7 +1019,7 @@ class BusinessIntelligenceService extends ChangeNotifier {
     };
   }
 
-  Future<DashboardWidgetValidationResult> _validateDashboardWidget(Widget widget) async {
+  Future<DashboardWidgetValidationResult> _validateDashboardWidget(DashboardWidget widget) async {
     // Validate dashboard widget configuration
     return DashboardWidgetValidationResult(
       isValid: true,
@@ -1095,13 +1096,6 @@ enum ReportFormat { pdf, excel, csv, html }
 enum ReportStatus { generating, completed, failed }
 
 class DataSource {
-  final String sourceId;
-  final String name;
-  final DataSourceType type;
-  final String connectionString;
-  final bool isActive;
-  final Map<String, dynamic> metadata;
-
   DataSource({
     required this.sourceId,
     required this.name,
@@ -1110,19 +1104,16 @@ class DataSource {
     this.isActive = true,
     this.metadata = const {},
   });
+
+  final String sourceId;
+  final String name;
+  final DataSourceType type;
+  final String connectionString;
+  final bool isActive;
+  final Map<String, dynamic> metadata;
 }
 
 class ETLPipeline {
-  final String pipelineId;
-  final String name;
-  final List<ETLStage> stages;
-  final ETLSchedule schedule;
-  final Map<String, dynamic> parameters;
-  final bool isActive;
-  final DateTime createdAt;
-  DateTime? lastRun;
-  ETLPipelineStatus status;
-
   ETLPipeline({
     required this.pipelineId,
     required this.name,
@@ -1134,16 +1125,19 @@ class ETLPipeline {
     this.lastRun,
     required this.status,
   });
+
+  final String pipelineId;
+  final String name;
+  final List<ETLStage> stages;
+  final ETLSchedule schedule;
+  final Map<String, dynamic> parameters;
+  final bool isActive;
+  final DateTime createdAt;
+  DateTime? lastRun;
+  ETLPipelineStatus status;
 }
 
 class ETLStage {
-  final String stageId;
-  final String name;
-  final ETLStageType type;
-  final String sourceId;
-  final Map<String, dynamic> configuration;
-  final int order;
-
   ETLStage({
     required this.stageId,
     required this.name,
@@ -1152,15 +1146,16 @@ class ETLStage {
     required this.configuration,
     required this.order,
   });
+
+  final String stageId;
+  final String name;
+  final ETLStageType type;
+  final String sourceId;
+  final Map<String, dynamic> configuration;
+  final int order;
 }
 
 class ETLSchedule {
-  final ETLFrequency frequency;
-  final DateTime? startTime;
-  final DateTime? endTime;
-  final List<int>? daysOfWeek;
-  final int? dayOfMonth;
-
   ETLSchedule({
     required this.frequency,
     this.startTime,
@@ -1168,16 +1163,15 @@ class ETLSchedule {
     this.daysOfWeek,
     this.dayOfMonth,
   });
+
+  final ETLFrequency frequency;
+  final DateTime? startTime;
+  final DateTime? endTime;
+  final List<int>? daysOfWeek;
+  final int? dayOfMonth;
 }
 
 class ETLJobStatus {
-  final String pipelineId;
-  final ETLJobStatusType status;
-  final DateTime? startTime;
-  final DateTime? endTime;
-  final int recordsProcessed;
-  final List<String> errors;
-
   ETLJobStatus({
     required this.pipelineId,
     required this.status,
@@ -1186,18 +1180,16 @@ class ETLJobStatus {
     required this.recordsProcessed,
     required this.errors,
   });
+
+  final String pipelineId;
+  final ETLJobStatusType status;
+  final DateTime? startTime;
+  final DateTime? endTime;
+  final int recordsProcessed;
+  final List<String> errors;
 }
 
 class OLAPCube {
-  final String cubeId;
-  final String name;
-  final List<Dimension> dimensions;
-  final List<Measure> measures;
-  final String dataSource;
-  bool isBuilt;
-  final DateTime createdAt;
-  DateTime? lastBuilt;
-
   OLAPCube({
     required this.cubeId,
     required this.name,
@@ -1208,43 +1200,42 @@ class OLAPCube {
     required this.createdAt,
     this.lastBuilt,
   });
+
+  final String cubeId;
+  final String name;
+  final List<Dimension> dimensions;
+  final List<Measure> measures;
+  final String dataSource;
+  bool isBuilt;
+  final DateTime createdAt;
+  DateTime? lastBuilt;
 }
 
 class Dimension {
-  final String name;
-  final List<String> hierarchy;
-  final Map<String, dynamic> attributes;
-
   Dimension({
     required this.name,
     required this.hierarchy,
     this.attributes = const {},
   });
+
+  final String name;
+  final List<String> hierarchy;
+  final Map<String, dynamic> attributes;
 }
 
 class Measure {
-  final String name;
-  final String aggregation;
-  final String? format;
-
   Measure({
     required this.name,
     required this.aggregation,
     this.format,
   });
+
+  final String name;
+  final String aggregation;
+  final String? format;
 }
 
 class AnalyticsModel {
-  final String modelId;
-  final String name;
-  final AnalyticsModelType type;
-  final String dataSource;
-  final Map<String, dynamic> configuration;
-  bool isTrained;
-  double accuracy;
-  final DateTime createdAt;
-  DateTime? lastTrained;
-
   AnalyticsModel({
     required this.modelId,
     required this.name,
@@ -1256,17 +1247,19 @@ class AnalyticsModel {
     required this.createdAt,
     this.lastTrained,
   });
+
+  final String modelId;
+  final String name;
+  final AnalyticsModelType type;
+  final String dataSource;
+  final Map<String, dynamic> configuration;
+  bool isTrained;
+  double accuracy;
+  final DateTime createdAt;
+  DateTime? lastTrained;
 }
 
 class Dashboard {
-  final String dashboardId;
-  final String name;
-  final List<DashboardWidget> widgets;
-  final Map<String, dynamic> parameters;
-  bool isPublished;
-  final DateTime createdAt;
-  DateTime lastModified;
-
   Dashboard({
     required this.dashboardId,
     required this.name,
@@ -1276,15 +1269,17 @@ class Dashboard {
     required this.createdAt,
     required this.lastModified,
   });
+
+  final String dashboardId;
+  final String name;
+  final List<DashboardWidget> widgets;
+  final Map<String, dynamic> parameters;
+  bool isPublished;
+  final DateTime createdAt;
+  DateTime lastModified;
 }
 
 class DashboardWidget {
-  final String widgetId;
-  final String type;
-  final String title;
-  final Map<String, dynamic> configuration;
-  final Map<String, dynamic> position;
-
   DashboardWidget({
     required this.widgetId,
     required this.type,
@@ -1292,19 +1287,15 @@ class DashboardWidget {
     required this.configuration,
     required this.position,
   });
+
+  final String widgetId;
+  final String type;
+  final String title;
+  final Map<String, dynamic> configuration;
+  final Map<String, dynamic> position;
 }
 
 class Report {
-  final String reportId;
-  final String name;
-  final ReportType type;
-  final String dataSource;
-  final Map<String, dynamic> parameters;
-  final ReportFormat format;
-  final DateTime createdAt;
-  ReportStatus status;
-  String? filePath;
-
   Report({
     required this.reportId,
     required this.name,
@@ -1316,21 +1307,19 @@ class Report {
     required this.status,
     this.filePath,
   });
+
+  final String reportId;
+  final String name;
+  final ReportType type;
+  final String dataSource;
+  final Map<String, dynamic> parameters;
+  final ReportFormat format;
+  final DateTime createdAt;
+  ReportStatus status;
+  String? filePath;
 }
 
 class DataQualityProfile {
-  final String dataSourceId;
-  final List<String> tablesToAnalyze;
-  double completeness;
-  double accuracy;
-  double consistency;
-  double validity;
-  double uniqueness;
-  double timeliness;
-  double overallScore;
-  final List<DataQualityIssue> issues;
-  final DateTime analyzedAt;
-
   DataQualityProfile({
     required this.dataSourceId,
     required this.tablesToAnalyze,
@@ -1344,30 +1333,35 @@ class DataQualityProfile {
     required this.issues,
     required this.analyzedAt,
   });
+
+  final String dataSourceId;
+  final List<String> tablesToAnalyze;
+  double completeness;
+  double accuracy;
+  double consistency;
+  double validity;
+  double uniqueness;
+  double timeliness;
+  double overallScore;
+  final List<DataQualityIssue> issues;
+  final DateTime analyzedAt;
 }
 
 class DataQualityIssue {
-  final String type;
-  final String description;
-  final String severity;
-  final String? suggestedAction;
-
   DataQualityIssue({
     required this.type,
     required this.description,
     required this.severity,
     this.suggestedAction,
   });
+
+  final String type;
+  final String description;
+  final String severity;
+  final String? suggestedAction;
 }
 
 class BIPerformanceMetrics {
-  final String componentId;
-  final double averageResponseTime;
-  final double throughput;
-  final double errorRate;
-  final int totalQueries;
-  final DateTime lastUpdated;
-
   BIPerformanceMetrics({
     required this.componentId,
     required this.averageResponseTime,
@@ -1376,57 +1370,58 @@ class BIPerformanceMetrics {
     required this.totalQueries,
     required this.lastUpdated,
   });
+
+  final String componentId;
+  final double averageResponseTime;
+  final double throughput;
+  final double errorRate;
+  final int totalQueries;
+  final DateTime lastUpdated;
 }
 
 class DataWarehouseSchema {
-  final String schemaId;
-  final String name;
-  final List<String> tables;
-  final Map<String, String> relationships;
-
   DataWarehouseSchema({
     required this.schemaId,
     required this.name,
     required this.tables,
     required this.relationships,
   });
+
+  final String schemaId;
+  final String name;
+  final List<String> tables;
+  final Map<String, String> relationships;
 }
 
 // Result Classes
 
 class ETLPipelineResult {
-  final bool success;
-  final String pipelineId;
-  final String? error;
-
   ETLPipelineResult({
     required this.success,
     required this.pipelineId,
     this.error,
   });
+
+  final bool success;
+  final String pipelineId;
+  final String? error;
 }
 
 class ETLExecutionResult {
-  final bool success;
-  final String pipelineId;
-  final int recordsProcessed;
-  final List<String> errors;
-
   ETLExecutionResult({
     required this.success,
     required this.pipelineId,
     required this.recordsProcessed,
     required this.errors,
   });
+
+  final bool success;
+  final String pipelineId;
+  final int recordsProcessed;
+  final List<String> errors;
 }
 
 class ETLStageResult {
-  final bool success;
-  final String stageId;
-  final int recordsProcessed;
-  final List<Map<String, dynamic>>? data;
-  final String? error;
-
   ETLStageResult({
     required this.success,
     required this.stageId,
@@ -1434,66 +1429,65 @@ class ETLStageResult {
     this.data,
     this.error,
   });
+
+  final bool success;
+  final String stageId;
+  final int recordsProcessed;
+  final List<Map<String, dynamic>>? data;
+  final String? error;
 }
 
 class ETLValidationResult {
-  final bool isValid;
-  final List<String> errors;
-
   ETLValidationResult({
     required this.isValid,
     required this.errors,
   });
+
+  final bool isValid;
+  final List<String> errors;
 }
 
 class OLAPCubeResult {
-  final bool success;
-  final String cubeId;
-  final String? error;
-
   OLAPCubeResult({
     required this.success,
     required this.cubeId,
     this.error,
   });
+
+  final bool success;
+  final String cubeId;
+  final String? error;
 }
 
 class OLAPQueryResult {
-  final bool success;
-  final String cubeId;
-  final List<Map<String, dynamic>> rows;
-  final String? error;
-
   OLAPQueryResult({
     required this.success,
     required this.cubeId,
     required this.rows,
     this.error,
   });
+
+  final bool success;
+  final String cubeId;
+  final List<Map<String, dynamic>> rows;
+  final String? error;
 }
 
 class AnalyticsModelResult {
-  final bool success;
-  final String modelId;
-  final double? accuracy;
-  final String? error;
-
   AnalyticsModelResult({
     required this.success,
     required this.modelId,
     this.accuracy,
     this.error,
   });
+
+  final bool success;
+  final String modelId;
+  final double? accuracy;
+  final String? error;
 }
 
 class PredictionResult {
-  final bool success;
-  final String modelId;
-  final dynamic prediction;
-  final double? confidence;
-  final Map<String, dynamic>? inputData;
-  final String? error;
-
   PredictionResult({
     required this.success,
     required this.modelId,
@@ -1502,51 +1496,52 @@ class PredictionResult {
     this.inputData,
     this.error,
   });
+
+  final bool success;
+  final String modelId;
+  final dynamic prediction;
+  final double? confidence;
+  final Map<String, dynamic>? inputData;
+  final String? error;
 }
 
 class DashboardResult {
-  final bool success;
-  final String dashboardId;
-  final String? error;
-
   DashboardResult({
     required this.success,
     required this.dashboardId,
     this.error,
   });
+
+  final bool success;
+  final String dashboardId;
+  final String? error;
 }
 
 class DashboardWidgetValidationResult {
-  final bool isValid;
-  final List<String> errors;
-
   DashboardWidgetValidationResult({
     required this.isValid,
     required this.errors,
   });
+
+  final bool isValid;
+  final List<String> errors;
 }
 
 class ReportResult {
-  final bool success;
-  final String reportId;
-  final String? filePath;
-  final String? error;
-
   ReportResult({
     required this.success,
     required this.reportId,
     this.filePath,
     this.error,
   });
+
+  final bool success;
+  final String reportId;
+  final String? filePath;
+  final String? error;
 }
 
 class DataQualityResult {
-  final bool success;
-  final String dataSourceId;
-  final double? overallScore;
-  final DataQualityProfile? profile;
-  final String? error;
-
   DataQualityResult({
     required this.success,
     required this.dataSourceId,
@@ -1554,4 +1549,10 @@ class DataQualityResult {
     this.profile,
     this.error,
   });
+
+  final bool success;
+  final String dataSourceId;
+  final double? overallScore;
+  final DataQualityProfile? profile;
+  final String? error;
 }

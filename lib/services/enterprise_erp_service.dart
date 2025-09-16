@@ -24,9 +24,9 @@ import '../core/app_export.dart';
 /// - Multi-tenant support
 /// - Advanced security and compliance
 class EnterpriseERPService extends ChangeNotifier {
-  static final EnterpriseERPService _instance = EnterpriseERPService._internal();
+  static final EnterpriseERPService _instance = _EnterpriseERPService();
   factory EnterpriseERPService() => _instance;
-  EnterpriseERPService._internal();
+  _EnterpriseERPService();
 
   final Dio _dio = Dio();
   bool _isInitialized = false;

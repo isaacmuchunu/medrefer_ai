@@ -5,11 +5,14 @@ import 'package:medrefer_ai/database/models/compliance_models.dart';
 
 /// Compliance Management Service for enterprise compliance tracking
 class ComplianceManagementService extends ChangeNotifier {
+  ComplianceManagementService._internal() {
+    _loggingService = LoggingService();
+  }
+
   static final ComplianceManagementService _instance = ComplianceManagementService._internal();
   factory ComplianceManagementService() => _instance;
-  ComplianceManagementService._internal();
 
-  late LoggingService _loggingService;
+  late final LoggingService _loggingService;
   final List<AuditLog> _auditLogs = [];
   final List<CompliancePolicy> _policies = [];
   final List<ComplianceAssessment> _assessments = [];
@@ -25,8 +28,6 @@ class ComplianceManagementService extends ChangeNotifier {
   /// Initialize the compliance service
   Future<void> initialize() async {
     try {
-      _loggingService = LoggingService();
-      
       // Initialize with sample data
       await _initializeSampleData();
       
@@ -314,6 +315,39 @@ class ComplianceManagementService extends ChangeNotifier {
       _loggingService.error('Failed to log audit event', error: e);
       rethrow;
     }
+  }
+
+  /// Create a private compliance violation
+  Future<void> _createComplianceViolation({
+    required String policyId,
+    required String violationType,
+    required String severity,
+    required String description,
+    String? organizationId,
+    String? departmentId,
+    required String reportedBy,
+    String? assignedTo,
+    String? rootCause,
+    String? impact,
+    List<String>? affectedUsers,
+    List<String>? affectedData,
+    DateTime? dueDate,
+  }) async {
+    await createViolation(
+      policyId: policyId,
+      violationType: violationType,
+      severity: severity,
+      description: description,
+      organizationId: organizationId,
+      departmentId: departmentId,
+      reportedBy: reportedBy,
+      assignedTo: assignedTo,
+      rootCause: rootCause,
+      impact: impact,
+      affectedUsers: affectedUsers,
+      affectedData: affectedData,
+      dueDate: dueDate,
+    );
   }
 
   /// Check for suspicious activities

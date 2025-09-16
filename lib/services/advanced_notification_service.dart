@@ -5,9 +5,9 @@ import 'package:medrefer_ai/database/models/notification_models.dart';
 
 /// Advanced Notification Service for enterprise-level notifications
 class AdvancedNotificationService extends ChangeNotifier {
-  static final AdvancedNotificationService _instance = AdvancedNotificationService._internal();
+  static final AdvancedNotificationService _instance = _AdvancedNotificationService();
   factory AdvancedNotificationService() => _instance;
-  AdvancedNotificationService._internal();
+  _AdvancedNotificationService();
 
   late LoggingService _loggingService;
   final List<NotificationModel> _notifications = [];

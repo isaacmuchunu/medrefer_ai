@@ -8,6 +8,8 @@ import '../database/database.dart';
 /// Advanced AI/ML Service for Medical Intelligence
 /// Provides diagnostic suggestions, predictive analytics, and smart recommendations
 class AIService extends ChangeNotifier {
+  _AIService();
+
   static final AIService _instance = AIService._internal();
   factory AIService() => _instance;
   AIService._internal();
@@ -342,6 +344,16 @@ class AIService extends ChangeNotifier {
       debugPrint('Error in medical note analysis: $e');
       throw AIException('Failed to analyze medical note: $e');
     }
+  }
+
+  /// AI-Powered Clinical Workflow Optimization
+  Future<List<Workflow>> optimizeWorkflows({required List<Workflow> workflows}) async {
+    // In a real implementation, this would use AI to optimize workflows.
+    // For now, it just returns the original workflows.
+    debugPrint('Optimizing ${workflows.length} workflows...');
+    await Future.delayed(const Duration(milliseconds: 300));
+    debugPrint('Workflows optimization complete.');
+    return workflows;
   }
 
   // Private helper methods
@@ -1283,14 +1295,6 @@ class AIService extends ChangeNotifier {
 // Data Models for AI Service
 
 class DiagnosticPrediction {
-  final String id;
-  final List<PossibleCondition> conditions;
-  final double confidence;
-  final Map<String, String> explanations;
-  final List<String> recommendedTests;
-  final String urgencyLevel;
-  final DateTime timestamp;
-
   DiagnosticPrediction({
     required this.id,
     required this.conditions,
@@ -1300,29 +1304,31 @@ class DiagnosticPrediction {
     required this.urgencyLevel,
     required this.timestamp,
   });
+
+  final String id;
+  final List<PossibleCondition> conditions;
+  final double confidence;
+  final Map<String, String> explanations;
+  final List<String> recommendedTests;
+  final String urgencyLevel;
+  final DateTime timestamp;
 }
 
 class PossibleCondition {
-  final String name;
-  final String icd10Code;
-  final double probability;
-  final String severity;
-
   PossibleCondition({
     required this.name,
     required this.icd10Code,
     required this.probability,
     required this.severity,
   });
+
+  final String name;
+  final String icd10Code;
+  final double probability;
+  final String severity;
 }
 
 class SpecialistRecommendation {
-  final Specialist specialist;
-  final double matchScore;
-  final List<String> reasons;
-  final Duration estimatedWaitTime;
-  final double successRate;
-
   SpecialistRecommendation({
     required this.specialist,
     required this.matchScore,
@@ -1330,31 +1336,25 @@ class SpecialistRecommendation {
     required this.estimatedWaitTime,
     required this.successRate,
   });
+
+  final Specialist specialist;
+  final double matchScore;
+  final List<String> reasons;
+  final Duration estimatedWaitTime;
+  final double successRate;
 }
 
 class SpecialistScore {
-  final double totalScore;
-  final List<String> reasons;
-
   SpecialistScore({
     required this.totalScore,
     required this.reasons,
   });
+
+  final double totalScore;
+  final List<String> reasons;
 }
 
 class RiskAssessment {
-  final String id;
-  final String patientId;
-  final double overallRisk;
-  final double cardiovascularRisk;
-  final double diabetesRisk;
-  final double readmissionRisk;
-  final double medicationRisk;
-  final double fallRisk;
-  final List<String> recommendations;
-  final DateTime nextAssessmentDate;
-  final DateTime timestamp;
-
   RiskAssessment({
     required this.id,
     required this.patientId,
@@ -1368,18 +1368,21 @@ class RiskAssessment {
     required this.nextAssessmentDate,
     required this.timestamp,
   });
+
+  final String id;
+  final String patientId;
+  final double overallRisk;
+  final double cardiovascularRisk;
+  final double diabetesRisk;
+  final double readmissionRisk;
+  final double medicationRisk;
+  final double fallRisk;
+  final List<String> recommendations;
+  final DateTime nextAssessmentDate;
+  final DateTime timestamp;
 }
 
 class TreatmentPrediction {
-  final String id;
-  final String treatmentPlan;
-  final double successProbability;
-  final Duration expectedDuration;
-  final List<String> possibleComplications;
-  final List<String> alternativeTreatments;
-  final double confidence;
-  final DateTime timestamp;
-
   TreatmentPrediction({
     required this.id,
     required this.treatmentPlan,
@@ -1390,20 +1393,29 @@ class TreatmentPrediction {
     required this.confidence,
     required this.timestamp,
   });
+
+  final String id;
+  final String treatmentPlan;
+  final double successProbability;
+  final Duration expectedDuration;
+  final List<String> possibleComplications;
+  final List<String> alternativeTreatments;
+  final double confidence;
+  final DateTime timestamp;
 }
 
 class DataAnomaly {
-  final String type;
-  final String description;
-  final AnomalySeverity severity;
-  final DateTime timestamp;
-
   DataAnomaly({
     required this.type,
     required this.description,
     required this.severity,
     required this.timestamp,
   });
+
+  final String type;
+  final String description;
+  final AnomalySeverity severity;
+  final DateTime timestamp;
 }
 
 enum AnomalySeverity {
@@ -1414,13 +1426,6 @@ enum AnomalySeverity {
 }
 
 class MedicalNoteAnalysis {
-  final List<MedicalEntity> entities;
-  final String sentiment;
-  final List<String> keyFindings;
-  final List<String> actionItems;
-  final String summary;
-  final double confidence;
-
   MedicalNoteAnalysis({
     required this.entities,
     required this.sentiment,
@@ -1429,30 +1434,30 @@ class MedicalNoteAnalysis {
     required this.summary,
     required this.confidence,
   });
+
+  final List<MedicalEntity> entities;
+  final String sentiment;
+  final List<String> keyFindings;
+  final List<String> actionItems;
+  final String summary;
+  final double confidence;
 }
 
 class MedicalEntity {
-  final String type;
-  final String value;
-  final int startIndex;
-  final int endIndex;
-
   MedicalEntity({
     required this.type,
     required this.value,
     required this.startIndex,
     required this.endIndex,
   });
+
+  final String type;
+  final String value;
+  final int startIndex;
+  final int endIndex;
 }
 
 class PredictionAccuracy {
-  final String predictionId;
-  final Map<String, dynamic> features;
-  final DiagnosticPrediction prediction;
-  final DateTime timestamp;
-  double? actualAccuracy;
-  String? feedback;
-
   PredictionAccuracy({
     required this.predictionId,
     required this.features,
@@ -1461,17 +1466,16 @@ class PredictionAccuracy {
     this.actualAccuracy,
     this.feedback,
   });
+
+  final String predictionId;
+  final Map<String, dynamic> features;
+  final DiagnosticPrediction prediction;
+  final DateTime timestamp;
+  double? actualAccuracy;
+  String? feedback;
 }
 
 class LabResult {
-  final String id;
-  final String testName;
-  final String? value;
-  final String? unit;
-  final String? normalRange;
-  final bool isCritical;
-  final DateTime performedAt;
-
   LabResult({
     required this.id,
     required this.testName,
@@ -1481,12 +1485,29 @@ class LabResult {
     required this.isCritical,
     required this.performedAt,
   });
+
+  final String id;
+  final String testName;
+  final String? value;
+  final String? unit;
+  final String? normalRange;
+  final bool isCritical;
+  final DateTime performedAt;
 }
 
 class AIException implements Exception {
-  final String message;
   AIException(this.message);
+
+  final String message;
   
   @override
   String toString() => 'AIException: $message';
+}
+
+// Placeholder for Workflow model, assuming it's defined elsewhere
+class Workflow {
+  final String id;
+  final List<String> steps;
+
+  Workflow({required this.id, required this.steps});
 }

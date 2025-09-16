@@ -10,9 +10,10 @@ import '../database/database.dart';
 /// Advanced Offline Sync Queue Service
 /// Manages offline operations, conflict resolution, and intelligent retry logic
 class OfflineSyncService extends ChangeNotifier {
-  static final OfflineSyncService _instance = OfflineSyncService._internal();
+  _OfflineSyncService();
+
+  static final OfflineSyncService _instance = _OfflineSyncService();
   factory OfflineSyncService() => _instance;
-  OfflineSyncService._internal();
 
   // Configuration
   static const int _maxRetries = 5;
@@ -981,20 +982,6 @@ class OfflineSyncService extends ChangeNotifier {
 // Data Models
 
 class SyncOperation {
-  String id;
-  OperationType operationType;
-  String entityType;
-  String? entityId;
-  Map<String, dynamic> data;
-  DateTime timestamp;
-  SyncPriority priority;
-  SyncStatus status;
-  int retryCount;
-  DateTime? nextRetryTime;
-  DateTime? completedAt;
-  String? lastError;
-  Map<String, dynamic>? metadata;
-
   SyncOperation({
     required this.id,
     required this.operationType,
@@ -1010,6 +997,19 @@ class SyncOperation {
     this.lastError,
     this.metadata,
   });
+  String id;
+  OperationType operationType;
+  String entityType;
+  String? entityId;
+  Map<String, dynamic> data;
+  DateTime timestamp;
+  SyncPriority priority;
+  SyncStatus status;
+  int retryCount;
+  DateTime? nextRetryTime;
+  DateTime? completedAt;
+  String? lastError;
+  Map<String, dynamic>? metadata;
 
   Map<String, dynamic> toMap() => {
     'id': id,
@@ -1065,15 +1065,6 @@ enum SyncStatus {
 }
 
 class SyncConflict {
-  final String id;
-  final String operationId;
-  final String entityType;
-  final String entityId;
-  final Map<String, dynamic> localData;
-  final Map<String, dynamic> remoteData;
-  final List<DataDifference> differences;
-  final DateTime detectedAt;
-
   SyncConflict({
     required this.id,
     required this.operationId,
@@ -1084,20 +1075,27 @@ class SyncConflict {
     required this.differences,
     required this.detectedAt,
   });
+  final String id;
+  final String operationId;
+  final String entityType;
+  final String entityId;
+  final Map<String, dynamic> localData;
+  final Map<String, dynamic> remoteData;
+  final List<DataDifference> differences;
+  final DateTime detectedAt;
 }
 
 class DataDifference {
-  final String field;
-  final dynamic localValue;
-  final dynamic remoteValue;
-  final DifferenceType type;
-
   DataDifference({
     required this.field,
     this.localValue,
     this.remoteValue,
     required this.type,
   });
+  final String field;
+  final dynamic localValue;
+  final dynamic remoteValue;
+  final DifferenceType type;
 }
 
 enum DifferenceType {
@@ -1107,13 +1105,6 @@ enum DifferenceType {
 }
 
 class ConflictResolution {
-  final String id;
-  final String conflictId;
-  final ConflictStrategy strategy;
-  final Map<String, dynamic> resolvedData;
-  final DateTime resolvedAt;
-  String? resolvedBy;
-
   ConflictResolution({
     required this.id,
     required this.conflictId,
@@ -1122,6 +1113,12 @@ class ConflictResolution {
     required this.resolvedAt,
     this.resolvedBy,
   });
+  final String id;
+  final String conflictId;
+  final ConflictStrategy strategy;
+  final Map<String, dynamic> resolvedData;
+  final DateTime resolvedAt;
+  String? resolvedBy;
 
   Map<String, dynamic> toMap() => {
     'id': id,
@@ -1153,13 +1150,6 @@ class BatchResult {
 }
 
 class SyncResult {
-  final bool success;
-  final String? message;
-  final int? successCount;
-  final int? failureCount;
-  final List<String>? errors;
-  final Duration? duration;
-
   SyncResult({
     required this.success,
     this.message,
@@ -1168,16 +1158,15 @@ class SyncResult {
     this.errors,
     this.duration,
   });
+  final bool success;
+  final String? message;
+  final int? successCount;
+  final int? failureCount;
+  final List<String>? errors;
+  final Duration? duration;
 }
 
 class SyncHistory {
-  final String id;
-  final String status;
-  final DateTime syncTime;
-  final Duration? duration;
-  final String? errorMessage;
-  final Map<String, dynamic>? metadata;
-
   SyncHistory({
     required this.id,
     required this.status,
@@ -1186,6 +1175,12 @@ class SyncHistory {
     this.errorMessage,
     this.metadata,
   });
+  final String id;
+  final String status;
+  final DateTime syncTime;
+  final Duration? duration;
+  final String? errorMessage;
+  final Map<String, dynamic>? metadata;
 
   Map<String, dynamic> toMap() => {
     'id': id,
@@ -1199,12 +1194,6 @@ class SyncHistory {
 }
 
 class SyncMetrics {
-  final int successfulSyncs;
-  final int failedSyncs;
-  final int conflictsResolved;
-  final int queueSize;
-  final DateTime? lastSyncTime;
-
   SyncMetrics({
     required this.successfulSyncs,
     required this.failedSyncs,
@@ -1212,16 +1201,14 @@ class SyncMetrics {
     required this.queueSize,
     this.lastSyncTime,
   });
+  final int successfulSyncs;
+  final int failedSyncs;
+  final int conflictsResolved;
+  final int queueSize;
+  final DateTime? lastSyncTime;
 }
 
 class SyncStatistics {
-  final int pendingCount;
-  final int completedCount;
-  final int failedCount;
-  final int conflictsResolved;
-  final DateTime? lastSyncTime;
-  final Duration averageSyncTime;
-
   SyncStatistics({
     required this.pendingCount,
     required this.completedCount,
@@ -1230,6 +1217,12 @@ class SyncStatistics {
     this.lastSyncTime,
     required this.averageSyncTime,
   });
+  final int pendingCount;
+  final int completedCount;
+  final int failedCount;
+  final int conflictsResolved;
+  final DateTime? lastSyncTime;
+  final Duration averageSyncTime;
 }
 
 class SyncException implements Exception {

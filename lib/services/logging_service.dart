@@ -6,8 +6,6 @@ import 'package:path_provider/path_provider.dart';
 
 /// Comprehensive logging service for the MedRefer AI app
 class LoggingService {
-  static final LoggingService _instance = LoggingService._internal();
-  factory LoggingService() => _instance;
   LoggingService._internal();
 
   // Configuration
@@ -25,6 +23,9 @@ class LoggingService {
   Stream<LogEntry> get logStream => _logStreamController.stream;
   List<LogEntry> get recentLogs => List.unmodifiable(_inMemoryLogs);
   bool get isInitialized => _isInitialized;
+
+  static final LoggingService _instance = LoggingService._internal();
+  factory LoggingService() => _instance;
 
   /// Initialize the logging service
   Future<void> initialize() async {

@@ -7,9 +7,9 @@ import '../database/database.dart';
 
 /// Service for managing offline-first architecture with sync capabilities
 class SyncService extends ChangeNotifier {
-  static final SyncService _instance = SyncService._internal();
+  static final SyncService _instance = _SyncService();
   factory SyncService() => _instance;
-  SyncService._internal();
+  _SyncService();
 
   final DataService _dataService = DataService();
   final Connectivity _connectivity = Connectivity();

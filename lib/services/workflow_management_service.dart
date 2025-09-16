@@ -19,9 +19,9 @@ import '../core/app_export.dart';
 /// - Performance monitoring and analytics
 /// - Integration with external systems
 class WorkflowManagementService extends ChangeNotifier {
-  static final WorkflowManagementService _instance = WorkflowManagementService._internal();
+  static final WorkflowManagementService _instance = _WorkflowManagementService();
   factory WorkflowManagementService() => _instance;
-  WorkflowManagementService._internal();
+  _WorkflowManagementService();
 
   Database? _workflowDb;
   bool _isInitialized = false;
@@ -859,6 +859,9 @@ class WorkflowManagementService extends ChangeNotifier {
         break;
       case NodeType.timerEvent:
         await _executeTimerEvent(execution, node);
+        break;
+      case NodeType.intermediateEvent:
+        // Intermediate events are typically handled by the event queue
         break;
     }
   }

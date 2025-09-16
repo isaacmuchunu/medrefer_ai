@@ -46,12 +46,12 @@ void main() {
       });
 
       test('should determine user role from email', () {
-        expect(authService._determineUserRole('admin@medrefer.com'), UserRole.admin);
-        expect(authService._determineUserRole('doctor@medrefer.com'), UserRole.doctor);
-        expect(authService._determineUserRole('specialist@medrefer.com'), UserRole.specialist);
-        expect(authService._determineUserRole('nurse@medrefer.com'), UserRole.nurse);
-        expect(authService._determineUserRole('pharmacist@medrefer.com'), UserRole.pharmacist);
-        expect(authService._determineUserRole('patient@medrefer.com'), UserRole.patient);
+        expect(authService.determineUserRole('admin@medrefer.com'), UserRole.admin);
+        expect(authService.determineUserRole('doctor@medrefer.com'), UserRole.doctor);
+        expect(authService.determineUserRole('specialist@medrefer.com'), UserRole.specialist);
+        expect(authService.determineUserRole('nurse@medrefer.com'), UserRole.nurse);
+        expect(authService.determineUserRole('pharmacist@medrefer.com'), UserRole.pharmacist);
+        expect(authService.determineUserRole('patient@medrefer.com'), UserRole.patient);
       });
     });
 
@@ -90,16 +90,16 @@ void main() {
       });
 
       test('should parse user role correctly', () {
-        expect(authService._parseUserRole('doctor'), UserRole.doctor);
-        expect(authService._parseUserRole('physician'), UserRole.doctor);
-        expect(authService._parseUserRole('specialist'), UserRole.specialist);
-        expect(authService._parseUserRole('nurse'), UserRole.nurse);
-        expect(authService._parseUserRole('pharmacist'), UserRole.pharmacist);
-        expect(authService._parseUserRole('admin'), UserRole.admin);
-        expect(authService._parseUserRole('administrator'), UserRole.admin);
-        expect(authService._parseUserRole('superadmin'), UserRole.superAdmin);
-        expect(authService._parseUserRole('patient'), UserRole.patient);
-        expect(authService._parseUserRole('unknown'), UserRole.patient);
+        expect(authService.parseUserRole('doctor'), UserRole.doctor);
+        expect(authService.parseUserRole('physician'), UserRole.doctor);
+        expect(authService.parseUserRole('specialist'), UserRole.specialist);
+        expect(authService.parseUserRole('nurse'), UserRole.nurse);
+        expect(authService.parseUserRole('pharmacist'), UserRole.pharmacist);
+        expect(authService.parseUserRole('admin'), UserRole.admin);
+        expect(authService.parseUserRole('administrator'), UserRole.admin);
+        expect(authService.parseUserRole('superadmin'), UserRole.superAdmin);
+        expect(authService.parseUserRole('patient'), UserRole.patient);
+        expect(authService.parseUserRole('unknown'), UserRole.patient);
       });
     });
 
@@ -112,7 +112,7 @@ void main() {
         ];
 
         for (final password in strongPasswords) {
-          expect(authService._isValidPassword(password), true);
+          expect(authService.isValidPassword(password), true);
         }
       });
 
@@ -127,7 +127,7 @@ void main() {
         ];
 
         for (final password in weakPasswords) {
-          expect(authService._isValidPassword(password), false);
+          expect(authService.isValidPassword(password), false);
         }
       });
     });
@@ -135,8 +135,8 @@ void main() {
     group('Password Hashing', () {
       test('should hash passwords consistently', () {
         final password = 'TestPassword123!';
-        final hash1 = authService._hashPassword(password);
-        final hash2 = authService._hashPassword(password);
+        final hash1 = authService.hashPassword(password);
+        final hash2 = authService.hashPassword(password);
         
         // Hashes should be different due to salt
         expect(hash1, isNot(equals(hash2)));
@@ -149,8 +149,8 @@ void main() {
       });
 
       test('should generate different salts', () {
-        final salt1 = authService._generateSalt();
-        final salt2 = authService._generateSalt();
+        final salt1 = authService.generateSalt();
+        final salt2 = authService.generateSalt();
         
         expect(salt1, isNot(equals(salt2)));
         expect(salt1, isA<String>());
@@ -160,8 +160,8 @@ void main() {
 
     group('Token Generation', () {
       test('should generate unique auth tokens', () {
-        final token1 = authService._generateAuthToken();
-        final token2 = authService._generateAuthToken();
+        final token1 = authService.generateAuthToken();
+        final token2 = authService.generateAuthToken();
         
         expect(token1, isNot(equals(token2)));
         expect(token1, isA<String>());
@@ -173,9 +173,9 @@ void main() {
 
     group('Name Extraction', () {
       test('should extract names from email addresses', () {
-        expect(authService._extractNameFromEmail('john.doe@example.com'), 'John Doe');
-        expect(authService._extractNameFromEmail('maryjane@example.com'), 'Maryjane');
-        expect(authService._extractNameFromEmail('dr.smith@example.com'), 'Dr Smith');
+        expect(authService.extractNameFromEmail('john.doe@example.com'), 'John Doe');
+        expect(authService.extractNameFromEmail('maryjane@example.com'), 'Maryjane');
+        expect(authService.extractNameFromEmail('dr.smith@example.com'), 'Dr Smith');
       });
     });
 
@@ -215,10 +215,10 @@ void main() {
       });
 
       test('should validate reset token format', () {
-        expect(authService._validateResetToken('doctor@medrefer.com', '123456'), true);
-        expect(authService._validateResetToken('doctor@medrefer.com', '12345'), false);
-        expect(authService._validateResetToken('doctor@medrefer.com', 'abcdef'), false);
-        expect(authService._validateResetToken('doctor@medrefer.com', ''), false);
+        expect(authService.validateResetToken('doctor@medrefer.com', '123456'), true);
+        expect(authService.validateResetToken('doctor@medrefer.com', '12345'), false);
+        expect(authService.validateResetToken('doctor@medrefer.com', 'abcdef'), false);
+        expect(authService.validateResetToken('doctor@medrefer.com', ''), false);
       });
 
       test('should reset password with valid token', () async {
@@ -261,10 +261,10 @@ void main() {
 
     group('User Existence Check', () {
       test('should check if user exists', () async {
-        final exists = await authService._userExists('doctor@medrefer.com');
+        final exists = await authService.userExists('doctor@medrefer.com');
         expect(exists, true);
         
-        final notExists = await authService._userExists('nonexistent@example.com');
+        final notExists = await authService.userExists('nonexistent@example.com');
         expect(notExists, false);
       });
     });
@@ -273,11 +273,11 @@ void main() {
       test('should validate credentials correctly', () {
         final validEmail = 'doctor@medrefer.com';
         final validPassword = 'Doctor123!';
-        final hashedPassword = authService._hashPassword(validPassword);
+        final hashedPassword = authService.hashPassword(validPassword);
         
-        expect(authService._validateCredentials(validEmail, hashedPassword), true);
-        expect(authService._validateCredentials(validEmail, 'wronghash'), false);
-        expect(authService._validateCredentials('wrong@email.com', hashedPassword), false);
+        expect(authService.validateCredentials(validEmail, hashedPassword), true);
+        expect(authService.validateCredentials(validEmail, 'wronghash'), false);
+        expect(authService.validateCredentials('wrong@email.com', hashedPassword), false);
       });
     });
   });

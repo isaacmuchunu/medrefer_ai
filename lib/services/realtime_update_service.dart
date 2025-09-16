@@ -7,9 +7,10 @@ import 'logging_service.dart';
 
 /// Real-time update service for MedRefer AI
 class RealtimeUpdateService extends ChangeNotifier {
-  static final RealtimeUpdateService _instance = RealtimeUpdateService._internal();
+  _RealtimeUpdateService();
+
+  static final RealtimeUpdateService _instance = _RealtimeUpdateService();
   factory RealtimeUpdateService() => _instance;
-  RealtimeUpdateService._internal();
 
   final LoggingService _loggingService = LoggingService();
   
@@ -328,14 +329,6 @@ class RealtimeUpdateService extends ChangeNotifier {
 
 /// Real-time message model
 class RealtimeMessage {
-  final String id;
-  final String type;
-  final String? channel;
-  final Map<String, dynamic> data;
-  final DateTime timestamp;
-  final String? senderId;
-  final Map<String, dynamic>? metadata;
-
   RealtimeMessage({
     required this.id,
     required this.type,
@@ -345,6 +338,13 @@ class RealtimeMessage {
     this.senderId,
     this.metadata,
   });
+  final String id;
+  final String type;
+  final String? channel;
+  final Map<String, dynamic> data;
+  final DateTime timestamp;
+  final String? senderId;
+  final Map<String, dynamic>? metadata;
 
   factory RealtimeMessage.fromJson(Map<String, dynamic> json) {
     return RealtimeMessage(

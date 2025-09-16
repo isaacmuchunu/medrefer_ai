@@ -13,9 +13,9 @@ import '../database/dao/feature_flag_dao.dart';
 /// Advanced Security and Compliance Service
 /// Provides enterprise-grade security, GDPR compliance, and penetration testing utilities
 class AdvancedSecurityService extends ChangeNotifier {
-  static final AdvancedSecurityService _instance = AdvancedSecurityService._internal();
+  static final AdvancedSecurityService _instance = _AdvancedSecurityService();
   factory AdvancedSecurityService() => _instance;
-  AdvancedSecurityService._internal();
+  _AdvancedSecurityService();
 
   // Encryption configuration
   static const int _keySize = 32; // 256-bit AES

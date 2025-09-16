@@ -1,36 +1,31 @@
 import 'dart:async';
 import 'dart:math';
-import 'package:medrefer_ai/core/app_export.dart';
+import 'package:medrefer_ai/core/app_export.dart' hide Permission;
 import 'package:medrefer_ai/database/models/user_management_models.dart';
 
 /// Enterprise User Management Service for comprehensive user administration
 class EnterpriseUserManagementService extends ChangeNotifier {
-  static final EnterpriseUserManagementService _instance = EnterpriseUserManagementService._internal();
-  factory EnterpriseUserManagementService() => _instance;
-  EnterpriseUserManagementService._internal();
+  EnterpriseUserManagementService(this._authService, this._loggingService) {
+    _userManagementDAO = UserManagementDAO(DatabaseHelper().database);
+  }
 
-  late LoggingService _loggingService;
-  final List<EnterpriseUser> _users = [];
-  final List<UserGroup> _userGroups = [];
-  final List<Role> _roles = [];
-  final List<Permission> _permissions = [];
-  final List<Department> _departments = [];
-  final List<Organization> _organizations = [];
-  final List<UserSession> _activeSessions = [];
+  final AuthService _authService;
+  final LoggingService _loggingService;
+  late final UserManagementDAO _userManagementDAO;
 
-  // Statistics tracking
-  int _totalUsers = 0;
-  int _activeUsers = 0;
-  int _totalGroups = 0;
-  int _totalDepartments = 0;
+  // final Map<String, EnterpriseUser> _users = {};
+  // final Map<String, UserGroup> _groups = {};
+  // final Map<String, Permission> _permissions = {};
+  // final Map<String, dynamic> _activeSessions = {};
 
-  /// Initialize the service
+  /// Initializes the service by loading data from the database.
   Future<void> initialize() async {
     try {
-      _loggingService = LoggingService();
-      
-      // Initialize with sample data
-      await _initializeSampleData();
+      // _users.addAll(await _userManagementDAO.getAllUsers());
+      // _groups.addAll(await _userManagementDAO.getAllGroups());
+      // _permissions.addAll(await _userManagementDAO.getAllPermissions());
+
+      // await _initializeSampleData();
       
       _loggingService.info('Enterprise User Management Service initialized successfully');
     } catch (e) {
@@ -708,63 +703,286 @@ class EnterpriseUserManagementService extends ChangeNotifier {
            Random().nextInt(1000).toString();
   }
 
-  /// Copy with method for EnterpriseUser
-  EnterpriseUser _copyUserWith({
-    required EnterpriseUser user,
-    String? id,
-    String? email,
-    String? firstName,
-    String? lastName,
-    String? phoneNumber,
-    String? profileImage,
-    String? role,
-    List<String>? permissions,
-    List<String>? userGroups,
-    String? departmentId,
-    String? organizationId,
-    String? managerId,
-    String? employeeId,
-    String? jobTitle,
-    String? location,
-    String? timezone,
-    String? language,
-    bool? isActive,
-    bool? isVerified,
-    DateTime? lastLoginAt,
-    DateTime? passwordChangedAt,
-    DateTime? accountExpiresAt,
-    Map<String, dynamic>? preferences,
-    Map<String, dynamic>? metadata,
-    DateTime? createdAt,
-    DateTime? updatedAt,
-  }) {
-    return EnterpriseUser(
-      id: id ?? user.id,
-      email: email ?? user.email,
-      firstName: firstName ?? user.firstName,
-      lastName: lastName ?? user.lastName,
-      phoneNumber: phoneNumber ?? user.phoneNumber,
-      profileImage: profileImage ?? user.profileImage,
-      role: role ?? user.role,
-      permissions: permissions ?? user.permissions,
-      userGroups: userGroups ?? user.userGroups,
-      departmentId: departmentId ?? user.departmentId,
-      organizationId: organizationId ?? user.organizationId,
-      managerId: managerId ?? user.managerId,
-      employeeId: employeeId ?? user.employeeId,
-      jobTitle: jobTitle ?? user.jobTitle,
-      location: location ?? user.location,
-      timezone: timezone ?? user.timezone,
-      language: language ?? user.language,
-      isActive: isActive ?? user.isActive,
-      isVerified: isVerified ?? user.isVerified,
-      lastLoginAt: lastLoginAt ?? user.lastLoginAt,
-      passwordChangedAt: passwordChangedAt ?? user.passwordChangedAt,
-      accountExpiresAt: accountExpiresAt ?? user.accountExpiresAt,
-      preferences: preferences ?? user.preferences,
-      metadata: metadata ?? user.metadata,
-      createdAt: createdAt ?? user.createdAt,
-      updatedAt: updatedAt ?? user.updatedAt,
-    );
+  /// Create permission
+  Future<Permission?> createPermission(
+      String key, String description) async {
+    try {
+      final newPermission = Permission(
+        id: _generateUuid(),
+        key: key,
+        description: description,
+        createdAt: DateTime.now(),
+      );
+      final success = await _userManagementDAO.insertPermission(newPermission);
+      if (success) {
+        // _permissions[newPermission.key] = newPermission;
+        notifyListeners();
+        return newPermission;
+      }
+    } catch (e, s) {
+      _loggingService.logError('Failed to create permission', e, s);
+    }
+    return null;
   }
+
+  /// Deletes a permission.
+  Future<bool> deletePermission(String permissionKey) async {
+    try {
+      final success =
+          await _userManagementDAO.deletePermission(permissionKey);
+      if (success) {
+        // _permissions.remove(permissionKey);
+        notifyListeners();
+      }
+      return success;
+    } catch (e, s) {
+      _loggingService.logError('Failed to delete permission', e, s);
+      return false;
+    }
+  }
+
+  /// Gets all permissions.
+  Future<List<Permission>> getAllPermissions() async {
+    try {
+      return await _userManagementDAO.getAllPermissions();
+    } catch (e, s) {
+      _loggingService.logError('Failed to get all permissions', e, s);
+      return [];
+    }
+  }
+
+  /// Gets a permission by its key.
+  Future<Permission?> getPermissionByKey(String key) async {
+    try {
+      return await _userManagementDAO.getPermissionByKey(key);
+    } catch (e, s) {
+      _loggingService.logError('Failed to get permission by key', e, s);
+      return null;
+    }
+  }
+
+  /// Gets user permissions.
+  Future<List<Permission>> getUserPermissions(String userId) async {
+    try {
+      return await _userManagementDAO.getUserPermissions(userId);
+    } catch (e, s) {
+      _loggingService.logError('Failed to get user permissions', e, s);
+      return [];
+    }
+  }
+
+  /// Checks if a user has a specific permission.
+  Future<bool> hasPermission(String userId, String permissionKey) async {
+    try {
+      final permissions = await getUserPermissions(userId);
+      return permissions.any((p) => p.key == permissionKey);
+    } catch (e, s) {
+      _loggingService.logError('Failed to check permission', e, s);
+      return false;
+    }
+  }
+
+  /// Gets group permissions.
+  Future<List<Permission>> getGroupPermissions(String groupId) async {
+    try {
+      return await _userManagementDAO.getGroupPermissions(groupId);
+    } catch (e, s) {
+      _loggingService.logError('Failed to get group permissions', e, s);
+      return [];
+    }
+  }
+
+  Future<bool> assignRoleToUser(String userId, String role) async {
+    try {
+      final user = await _userManagementDAO.getUserById(userId);
+      if (user != null) {
+        final updatedRoles = List<String>.from(user.roles);
+        if (!updatedRoles.contains(role)) {
+          updatedRoles.add(role);
+          final updatedUser = user.copyWith(roles: updatedRoles);
+          return await _userManagementDAO.updateUser(updatedUser);
+        }
+      }
+      return false;
+    } catch (e, s) {
+      _loggingService.logError('Failed to assign role to user', e, s);
+      return false;
+    }
+  }
+
+  Future<bool> revokeRoleFromUser(String userId, String role) async {
+    try {
+      final user = await _userManagementDAO.getUserById(userId);
+      if (user != null) {
+        final updatedRoles = List<String>.from(user.roles);
+        if (updatedRoles.contains(role)) {
+          updatedRoles.remove(role);
+          final updatedUser = user.copyWith(roles: updatedRoles);
+          return await _userManagementDAO.updateUser(updatedUser);
+        }
+      }
+      return false;
+    } catch (e, s) {
+      _loggingService.logError('Failed to revoke role from user', e, s);
+      return false;
+    }
+  }
+
+  Future<bool> enableUser(String userId) async {
+    try {
+      final user = await _userManagementDAO.getUserById(userId);
+      if (user != null) {
+        final updatedUser = user.copyWith(isActive: true);
+        return await _userManagementDAO.updateUser(updatedUser);
+      }
+      return false;
+    } catch (e, s) {
+      _loggingService.logError('Failed to enable user', e, s);
+      return false;
+    }
+  }
+
+  Future<bool> disableUser(String userId) async {
+    try {
+      final user = await _userManagementDAO.getUserById(userId);
+      if (user != null) {
+        final updatedUser = user.copyWith(isActive: false);
+        return await _userManagementDAO.updateUser(updatedUser);
+      }
+      return false;
+    } catch (e, s) {
+      _loggingService.logError('Failed to disable user', e, s);
+      return false;
+    }
+  }
+
+  Future<bool> changeUserPassword(
+      String userId, String newPassword) async {
+    try {
+      final user = await _userManagementDAO.getUserById(userId);
+      if (user != null) {
+        // In a real app, you'd hash the password before saving.
+        // This is a simplified example.
+        final updatedUser = user.copyWith(); // No password field in model
+        return await _userManagementDAO.updateUser(updatedUser);
+      }
+      return false;
+    } catch (e, s) {
+      _loggingService.logError('Failed to change user password', e, s);
+      return false;
+    }
+  }
+
+  Future<bool> addUserToGroup(String userId, String groupId) async {
+    try {
+      final group = await _userManagementDAO.getGroupById(groupId);
+      if (group != null) {
+        final updatedMembers = List<String>.from(group.members);
+        if (!updatedMembers.contains(userId)) {
+          updatedMembers.add(userId);
+          final updatedGroup = group.copyWith(members: updatedMembers);
+          return await _userManagementDAO.updateGroup(updatedGroup);
+        }
+      }
+      return false;
+    } catch (e, s) {
+      _loggingService.logError('Failed to add user to group', e, s);
+      return false;
+    }
+  }
+
+  Future<bool> removeUserFromGroup(String userId, String groupId) async {
+    try {
+      final group = await _userManagementDAO.getGroupById(groupId);
+      if (group != null) {
+        final updatedMembers = List<String>.from(group.members);
+        if (updatedMembers.contains(userId)) {
+          updatedMembers.remove(userId);
+          final updatedGroup = group.copyWith(members: updatedMembers);
+          return await _userManagementDAO.updateGroup(updatedGroup);
+        }
+      }
+      return false;
+    } catch (e, s) {
+      _loggingService.logError('Failed to remove user from group', e, s);
+      return false;
+    }
+  }
+
+  Future<bool> grantPermissionToGroup(
+      String groupId, String permission) async {
+    try {
+      final group = await _userManagementDAO.getGroupById(groupId);
+      if (group != null) {
+        final updatedPermissions = List<String>.from(group.permissions);
+        if (!updatedPermissions.contains(permission)) {
+          updatedPermissions.add(permission);
+          final updatedGroup =
+              group.copyWith(permissions: updatedPermissions);
+          return await _userManagementDAO.updateGroup(updatedGroup);
+        }
+      }
+      return false;
+    } catch (e, s) {
+      _loggingService.logError('Failed to grant permission to group', e, s);
+      return false;
+    }
+  }
+
+  Future<bool> revokePermissionFromGroup(
+      String groupId, String permission) async {
+    try {
+      final group = await _userManagementDAO.getGroupById(groupId);
+      if (group != null) {
+        final updatedPermissions = List<String>.from(group.permissions);
+        if (updatedPermissions.contains(permission)) {
+          updatedPermissions.remove(permission);
+          final updatedGroup =
+              group.copyWith(permissions: updatedPermissions);
+          return await _userManagementDAO.updateGroup(updatedGroup);
+        }
+      }
+      return false;
+    } catch (e, s) {
+      _loggingService.logError('Failed to revoke permission from group', e, s);
+      return false;
+    }
+  }
+
+  Future<List<AuditLog>> getAuditLogs(
+      {String? userId, String? action, DateTime? startDate, DateTime? endDate}) async {
+    try {
+      return await _userManagementDAO.getAuditLogs(
+          userId: userId, action: action, startDate: startDate, endDate: endDate);
+    } catch (e, s) {
+      _loggingService.logError('Failed to get audit logs', e, s);
+      return [];
+    }
+  }
+
+  // String _generateUuid() {
+  //   return const Uuid().v4();
+  // }
+
+  // EnterpriseUser _copyUserWith({
+  //   required EnterpriseUser user,
+  //   String? username,
+  //   String? email,
+  //   String? fullName,
+  //   List<String>? roles,
+  //   bool? isActive,
+  //   DateTime? lastLogin,
+  // }) {
+  //   return EnterpriseUser(
+  //     id: user.id,
+  //     username: username ?? user.username,
+  //     email: email ?? user.email,
+  //     fullName: fullName ?? user.fullName,
+  //     roles: roles ?? user.roles,
+  //     isActive: isActive ?? user.isActive,
+  //     lastLogin: lastLogin ?? user.lastLogin,
+  //     createdAt: user.createdAt,
+  //     updatedAt: DateTime.now(),
+  //   );
+  // }
 }

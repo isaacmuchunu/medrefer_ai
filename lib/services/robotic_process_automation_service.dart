@@ -19,9 +19,9 @@ import '../core/app_export.dart';
 /// - Exception handling and error recovery
 /// - Performance monitoring and optimization
 class RoboticProcessAutomationService extends ChangeNotifier {
-  static final RoboticProcessAutomationService _instance = RoboticProcessAutomationService._internal();
+  static final RoboticProcessAutomationService _instance = _RoboticProcessAutomationService();
   factory RoboticProcessAutomationService() => _instance;
-  RoboticProcessAutomationService._internal();
+  _RoboticProcessAutomationService();
 
   Database? _rpaDb;
   bool _isInitialized = false;
@@ -35,7 +35,7 @@ class RoboticProcessAutomationService extends ChangeNotifier {
   
   // Task and Activity Management
   final Map<String, RPATask> _tasks = {};
-  final Map<String, ActivityDefinition> _activityDefinitions = {};
+  // final Map<String, ActivityDefinition> _activityDefinitions = {};
   final List<TaskExecution> _executionQueue = [];
   
   // Automation Components
@@ -45,16 +45,16 @@ class RoboticProcessAutomationService extends ChangeNotifier {
   
   // Monitoring and Analytics
   final Map<String, BotPerformance> _botPerformance = {};
-  final Map<String, ExecutionMetrics> _executionMetrics = {};
+  // final Map<String, ExecutionMetrics> _executionMetrics = {};
   final List<RPALog> _executionLogs = [];
   
   // Error Handling and Recovery
-  final Map<String, ErrorHandler> _errorHandlers = {};
-  final Map<String, RecoveryStrategy> _recoveryStrategies = {};
+  // final Map<String, ErrorHandler> _errorHandlers = {};
+  // final Map<String, RecoveryStrategy> _recoveryStrategies = {};
   
   // Scheduling and Triggers
   final Map<String, RPASchedule> _schedules = {};
-  final Map<String, EventTrigger> _eventTriggers = {};
+  // final Map<String, EventTrigger> _eventTriggers = {};
 
   // Getters
   bool get isInitialized => _isInitialized;
@@ -1164,7 +1164,7 @@ class RoboticProcessAutomationService extends ChangeNotifier {
     // Execute database operation
     final config = step.configuration;
     final operation = config['operation'] as String;
-    final table = config['table'] as String;
+    // final table = config['table'] as String;
     
     switch (operation.toLowerCase()) {
       case 'insert':
@@ -1199,7 +1199,7 @@ class RoboticProcessAutomationService extends ChangeNotifier {
   Future<StepExecutionResult> _executeEmailSending(ProcessStep step, Map<String, dynamic> variables) async {
     // Execute email sending
     final config = step.configuration;
-    final template = config['template'] as String;
+    // final template = config['template'] as String;
     final recipient = _replaceVariables(config['recipient'] as String, variables);
     final subject = _replaceVariables(config['subject'] as String, variables);
     

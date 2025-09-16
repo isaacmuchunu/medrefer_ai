@@ -21,9 +21,10 @@ import '../core/app_export.dart';
 /// - Audit trails and compliance
 /// - Backup and archival
 class DigitalAssetManagementService extends ChangeNotifier {
+  DigitalAssetManagementService._internal();
+
   static final DigitalAssetManagementService _instance = DigitalAssetManagementService._internal();
   factory DigitalAssetManagementService() => _instance;
-  DigitalAssetManagementService._internal();
 
   final Dio _dio = Dio();
   Database? _damDb;
@@ -1500,24 +1501,6 @@ enum AnalysisType { medicalImage, document, video, other }
 enum AuditEventType { upload, download, view, edit, delete, share }
 
 class DigitalAsset {
-  final String assetId;
-  final String fileName;
-  final String originalFileName;
-  final AssetType assetType;
-  final int fileSize;
-  final String fileHash;
-  final String mimeType;
-  final String storageLocation;
-  final String storagePath;
-  final String? collectionId;
-  final AssetStatus status;
-  final DateTime uploadedAt;
-  final String uploadedBy;
-  DateTime? lastAccessedAt;
-  int accessCount;
-  final List<String> tags;
-  final int version;
-
   DigitalAsset({
     required this.assetId,
     required this.fileName,
@@ -1537,19 +1520,27 @@ class DigitalAsset {
     required this.tags,
     required this.version,
   });
+
+  final String assetId;
+  final String fileName;
+  final String originalFileName;
+  final AssetType assetType;
+  final int fileSize;
+  final String fileHash;
+  final String mimeType;
+  final String storageLocation;
+  final String storagePath;
+  final String? collectionId;
+  final AssetStatus status;
+  final DateTime uploadedAt;
+  final String uploadedBy;
+  DateTime? lastAccessedAt;
+  int accessCount;
+  final List<String> tags;
+  final int version;
 }
 
 class AssetCollection {
-  final String collectionId;
-  final String name;
-  final String description;
-  final String? parentCollectionId;
-  final List<String> assetIds;
-  final Map<String, dynamic> metadata;
-  final DateTime createdAt;
-  DateTime updatedAt;
-  final String createdBy;
-
   AssetCollection({
     required this.collectionId,
     required this.name,
@@ -1561,17 +1552,19 @@ class AssetCollection {
     required this.updatedAt,
     required this.createdBy,
   });
+
+  final String collectionId;
+  final String name;
+  final String description;
+  final String? parentCollectionId;
+  final List<String> assetIds;
+  final Map<String, dynamic> metadata;
+  final DateTime createdAt;
+  DateTime updatedAt;
+  final String createdBy;
 }
 
 class AssetVersion {
-  final String versionId;
-  final String assetId;
-  final int versionNumber;
-  final String storagePath;
-  final DateTime createdAt;
-  final String createdBy;
-  final String? changeDescription;
-
   AssetVersion({
     required this.versionId,
     required this.assetId,
@@ -1581,16 +1574,17 @@ class AssetVersion {
     required this.createdBy,
     this.changeDescription,
   });
+
+  final String versionId;
+  final String assetId;
+  final int versionNumber;
+  final String storagePath;
+  final DateTime createdAt;
+  final String createdBy;
+  final String? changeDescription;
 }
 
 class AssetMetadata {
-  final String assetId;
-  final Map<String, dynamic> extractedMetadata;
-  final Map<String, dynamic> customMetadata;
-  final Map<String, dynamic> technicalMetadata;
-  final DateTime createdAt;
-  DateTime updatedAt;
-
   AssetMetadata({
     required this.assetId,
     required this.extractedMetadata,
@@ -1599,23 +1593,16 @@ class AssetMetadata {
     required this.createdAt,
     required this.updatedAt,
   });
+
+  final String assetId;
+  final Map<String, dynamic> extractedMetadata;
+  final Map<String, dynamic> customMetadata;
+  final Map<String, dynamic> technicalMetadata;
+  final DateTime createdAt;
+  DateTime updatedAt;
 }
 
 class DICOMStudy {
-  final String studyInstanceUID;
-  final String studyId;
-  final DateTime studyDate;
-  final DateTime studyTime;
-  final String studyDescription;
-  final String patientId;
-  final String patientName;
-  final DateTime? patientBirthDate;
-  final String patientSex;
-  final String modality;
-  final List<String> seriesIds;
-  final List<String> assetIds;
-  final DateTime createdAt;
-
   DICOMStudy({
     required this.studyInstanceUID,
     required this.studyId,
@@ -1631,18 +1618,23 @@ class DICOMStudy {
     required this.assetIds,
     required this.createdAt,
   });
+
+  final String studyInstanceUID;
+  final String studyId;
+  final DateTime studyDate;
+  final DateTime studyTime;
+  final String studyDescription;
+  final String patientId;
+  final String patientName;
+  final DateTime? patientBirthDate;
+  final String patientSex;
+  final String modality;
+  final List<String> seriesIds;
+  final List<String> assetIds;
+  final DateTime createdAt;
 }
 
 class DICOMSeries {
-  final String seriesInstanceUID;
-  final String seriesId;
-  final String studyInstanceUID;
-  final int seriesNumber;
-  final String seriesDescription;
-  final String modality;
-  final List<String> instanceIds;
-  final DateTime createdAt;
-
   DICOMSeries({
     required this.seriesInstanceUID,
     required this.seriesId,
@@ -1653,17 +1645,18 @@ class DICOMSeries {
     required this.instanceIds,
     required this.createdAt,
   });
+
+  final String seriesInstanceUID;
+  final String seriesId;
+  final String studyInstanceUID;
+  final int seriesNumber;
+  final String seriesDescription;
+  final String modality;
+  final List<String> instanceIds;
+  final DateTime createdAt;
 }
 
 class DICOMInstance {
-  final String sopInstanceUID;
-  final String assetId;
-  final String seriesInstanceUID;
-  final String studyInstanceUID;
-  final int instanceNumber;
-  final String imageType;
-  final DateTime createdAt;
-
   DICOMInstance({
     required this.sopInstanceUID,
     required this.assetId,
@@ -1673,19 +1666,17 @@ class DICOMInstance {
     required this.imageType,
     required this.createdAt,
   });
+
+  final String sopInstanceUID;
+  final String assetId;
+  final String seriesInstanceUID;
+  final String studyInstanceUID;
+  final int instanceNumber;
+  final String imageType;
+  final DateTime createdAt;
 }
 
 class Document {
-  final String documentId;
-  final String assetId;
-  final String documentType;
-  final String title;
-  final String content;
-  final String extractedText;
-  final int pageCount;
-  final String language;
-  final DateTime createdAt;
-
   Document({
     required this.documentId,
     required this.assetId,
@@ -1697,16 +1688,19 @@ class Document {
     required this.language,
     required this.createdAt,
   });
+
+  final String documentId;
+  final String assetId;
+  final String documentType;
+  final String title;
+  final String content;
+  final String extractedText;
+  final int pageCount;
+  final String language;
+  final DateTime createdAt;
 }
 
 class DocumentTemplate {
-  final String templateId;
-  final String name;
-  final String description;
-  final String templateContent;
-  final Map<String, dynamic> fields;
-  final DateTime createdAt;
-
   DocumentTemplate({
     required this.templateId,
     required this.name,
@@ -1715,16 +1709,16 @@ class DocumentTemplate {
     required this.fields,
     required this.createdAt,
   });
+
+  final String templateId;
+  final String name;
+  final String description;
+  final String templateContent;
+  final Map<String, dynamic> fields;
+  final DateTime createdAt;
 }
 
 class StorageLocation {
-  final String locationId;
-  final String name;
-  final StorageType type;
-  final Map<String, dynamic> configuration;
-  final bool isActive;
-  final int priority;
-
   StorageLocation({
     required this.locationId,
     required this.name,
@@ -1733,15 +1727,16 @@ class StorageLocation {
     required this.isActive,
     required this.priority,
   });
+
+  final String locationId;
+  final String name;
+  final StorageType type;
+  final Map<String, dynamic> configuration;
+  final bool isActive;
+  final int priority;
 }
 
 class CDNConfiguration {
-  final String configId;
-  final String name;
-  final String baseUrl;
-  final Duration cacheTtl;
-  final bool isActive;
-
   CDNConfiguration({
     required this.configId,
     required this.name,
@@ -1749,17 +1744,15 @@ class CDNConfiguration {
     required this.cacheTtl,
     required this.isActive,
   });
+
+  final String configId;
+  final String name;
+  final String baseUrl;
+  final Duration cacheTtl;
+  final bool isActive;
 }
 
 class ProcessingJob {
-  final String jobId;
-  final String assetId;
-  final String jobType;
-  final Map<String, dynamic> parameters;
-  final String status;
-  final DateTime createdAt;
-  final DateTime? completedAt;
-
   ProcessingJob({
     required this.jobId,
     required this.assetId,
@@ -1769,16 +1762,17 @@ class ProcessingJob {
     required this.createdAt,
     this.completedAt,
   });
+
+  final String jobId;
+  final String assetId;
+  final String jobType;
+  final Map<String, dynamic> parameters;
+  final String status;
+  final DateTime createdAt;
+  final DateTime? completedAt;
 }
 
 class AnalysisResult {
-  final String assetId;
-  final AnalysisType analysisType;
-  final Map<String, dynamic> results;
-  final double confidence;
-  final DateTime analyzedAt;
-  final String analyzedBy;
-
   AnalysisResult({
     required this.assetId,
     required this.analysisType,
@@ -1787,56 +1781,56 @@ class AnalysisResult {
     required this.analyzedAt,
     required this.analyzedBy,
   });
+
+  final String assetId;
+  final AnalysisType analysisType;
+  final Map<String, dynamic> results;
+  final double confidence;
+  final DateTime analyzedAt;
+  final String analyzedBy;
 }
 
 class SearchIndex {
-  final String assetId;
-  final String searchableText;
-  final List<String> keywords;
-  final DateTime createdAt;
-
   SearchIndex({
     required this.assetId,
     required this.searchableText,
     required this.keywords,
     required this.createdAt,
   });
+
+  final String assetId;
+  final String searchableText;
+  final List<String> keywords;
+  final DateTime createdAt;
 }
 
 class AccessPolicy {
-  final String policyId;
-  final String name;
-  final List<AccessRule> rules;
-  final bool isActive;
-
   AccessPolicy({
     required this.policyId,
     required this.name,
     required this.rules,
     required this.isActive,
   });
+
+  final String policyId;
+  final String name;
+  final List<AccessRule> rules;
+  final bool isActive;
 }
 
 class AccessRule {
-  final String action;
-  final String resource;
-  final String condition;
-
   AccessRule({
     required this.action,
     required this.resource,
     required this.condition,
   });
+
+  final String action;
+  final String resource;
+  final String condition;
 }
 
 class AuditLog {
-  final String eventId;
-  final String? assetId;
-  final AuditEventType eventType;
-  final String userId;
-  final DateTime timestamp;
-  final Map<String, dynamic> details;
-
   AuditLog({
     required this.eventId,
     this.assetId,
@@ -1845,16 +1839,16 @@ class AuditLog {
     required this.timestamp,
     required this.details,
   });
-}
 
-class AssetAuditEvent {
   final String eventId;
   final String? assetId;
   final AuditEventType eventType;
   final String userId;
   final DateTime timestamp;
   final Map<String, dynamic> details;
+}
 
+class AssetAuditEvent {
   AssetAuditEvent({
     required this.eventId,
     this.assetId,
@@ -1863,18 +1857,16 @@ class AssetAuditEvent {
     required this.timestamp,
     required this.details,
   });
+
+  final String eventId;
+  final String? assetId;
+  final AuditEventType eventType;
+  final String userId;
+  final DateTime timestamp;
+  final Map<String, dynamic> details;
 }
 
 class AssetAnalytics {
-  final int totalAssets;
-  final int totalFileSize;
-  final Map<AssetType, int> assetsByType;
-  final Map<String, int> uploadsByDate;
-  final List<CollectionUsage> topCollections;
-  final Map<String, StorageUtilization> storageUtilization;
-  final Map<String, int> accessStatistics;
-  final DateRange period;
-
   AssetAnalytics({
     required this.totalAssets,
     required this.totalFileSize,
@@ -1885,27 +1877,30 @@ class AssetAnalytics {
     required this.accessStatistics,
     required this.period,
   });
+
+  final int totalAssets;
+  final int totalFileSize;
+  final Map<AssetType, int> assetsByType;
+  final Map<String, int> uploadsByDate;
+  final List<CollectionUsage> topCollections;
+  final Map<String, StorageUtilization> storageUtilization;
+  final Map<String, int> accessStatistics;
+  final DateRange period;
 }
 
 class CollectionUsage {
-  final String collectionId;
-  final String name;
-  final int assetCount;
-
   CollectionUsage({
     required this.collectionId,
     required this.name,
     required this.assetCount,
   });
+
+  final String collectionId;
+  final String name;
+  final int assetCount;
 }
 
 class StorageUtilization {
-  final String locationId;
-  final String locationName;
-  final int usedSpace;
-  final int totalSpace;
-  final int assetCount;
-
   StorageUtilization({
     required this.locationId,
     required this.locationName,
@@ -1913,25 +1908,22 @@ class StorageUtilization {
     required this.totalSpace,
     required this.assetCount,
   });
+
+  final String locationId;
+  final String locationName;
+  final int usedSpace;
+  final int totalSpace;
+  final int assetCount;
 }
 
 class DateRange {
+  DateRange({required this.start, required this.end});
+
   final DateTime start;
   final DateTime end;
-
-  DateRange({required this.start, required this.end});
 }
 
 class AssetSearchResultItem {
-  final String assetId;
-  final String fileName;
-  final AssetType assetType;
-  final int fileSize;
-  final DateTime uploadedAt;
-  final String thumbnailUrl;
-  final Map<String, dynamic> metadata;
-  final List<String> tags;
-
   AssetSearchResultItem({
     required this.assetId,
     required this.fileName,
@@ -1942,59 +1934,60 @@ class AssetSearchResultItem {
     required this.metadata,
     required this.tags,
   });
+
+  final String assetId;
+  final String fileName;
+  final AssetType assetType;
+  final int fileSize;
+  final DateTime uploadedAt;
+  final String thumbnailUrl;
+  final Map<String, dynamic> metadata;
+  final List<String> tags;
 }
 
 // Helper Classes
 
 class FileAnalysisResult {
-  final Map<String, dynamic> metadata;
-  final String? dimensions;
-  final String? colorSpace;
-  final String? compression;
-
   FileAnalysisResult({
     required this.metadata,
     this.dimensions,
     this.colorSpace,
     this.compression,
   });
+
+  final Map<String, dynamic> metadata;
+  final String? dimensions;
+  final String? colorSpace;
+  final String? compression;
 }
 
 class StorageUploadResult {
-  final bool success;
-  final String? storagePath;
-  final String? error;
-
   StorageUploadResult({
     required this.success,
     this.storagePath,
     this.error,
   });
+
+  final bool success;
+  final String? storagePath;
+  final String? error;
 }
 
 class StorageDownloadResult {
-  final bool success;
-  final Uint8List? fileData;
-  final String? error;
-
   StorageDownloadResult({
     required this.success,
     this.fileData,
     this.error,
   });
+
+  final bool success;
+  final Uint8List? fileData;
+  final String? error;
 }
 
 // Result Classes
 
 class AssetUploadResult {
-  final bool success;
-  final String? assetId;
-  final String? fileUrl;
-  final String? thumbnailUrl;
-  final bool isDuplicate;
-  final String? message;
-  final String? error;
-
   AssetUploadResult({
     required this.success,
     this.assetId,
@@ -2004,15 +1997,17 @@ class AssetUploadResult {
     this.message,
     this.error,
   });
+
+  final bool success;
+  final String? assetId;
+  final String? fileUrl;
+  final String? thumbnailUrl;
+  final bool isDuplicate;
+  final String? message;
+  final String? error;
 }
 
 class AssetDownloadResult {
-  final bool success;
-  final String? fileName;
-  final Uint8List? fileData;
-  final String? mimeType;
-  final String? error;
-
   AssetDownloadResult({
     required this.success,
     this.fileName,
@@ -2020,42 +2015,41 @@ class AssetDownloadResult {
     this.mimeType,
     this.error,
   });
+
+  final bool success;
+  final String? fileName;
+  final Uint8List? fileData;
+  final String? mimeType;
+  final String? error;
 }
 
 class CollectionCreationResult {
-  final bool success;
-  final String? collectionId;
-  final String? error;
-
   CollectionCreationResult({
     required this.success,
     this.collectionId,
     this.error,
   });
+
+  final bool success;
+  final String? collectionId;
+  final String? error;
 }
 
 class DICOMProcessingResult {
-  final bool success;
-  final String studyInstanceUID;
-  final String? studyId;
-  final String? error;
-
   DICOMProcessingResult({
     required this.success,
     required this.studyInstanceUID,
     this.studyId,
     this.error,
   });
+
+  final bool success;
+  final String studyInstanceUID;
+  final String? studyId;
+  final String? error;
 }
 
 class AssetSearchResult {
-  final bool success;
-  final List<AssetSearchResultItem> results;
-  final int totalCount;
-  final int limit;
-  final int offset;
-  final String? error;
-
   AssetSearchResult({
     required this.success,
     required this.results,
@@ -2064,29 +2058,28 @@ class AssetSearchResult {
     required this.offset,
     this.error,
   });
+
+  final bool success;
+  final List<AssetSearchResultItem> results;
+  final int totalCount;
+  final int limit;
+  final int offset;
+  final String? error;
 }
 
 class ThumbnailGenerationResult {
-  final bool success;
-  final String? thumbnailUrl;
-  final String? error;
-
   ThumbnailGenerationResult({
     required this.success,
     this.thumbnailUrl,
     this.error,
   });
+
+  final bool success;
+  final String? thumbnailUrl;
+  final String? error;
 }
 
 class ImageAnalysisResult {
-  final bool success;
-  final List<String>? findings;
-  final List<String>? abnormalities;
-  final Map<String, dynamic>? measurements;
-  final double? confidence;
-  final List<String>? recommendations;
-  final String? error;
-
   ImageAnalysisResult({
     required this.success,
     this.findings,
@@ -2096,16 +2089,24 @@ class ImageAnalysisResult {
     this.recommendations,
     this.error,
   });
+
+  final bool success;
+  final List<String>? findings;
+  final List<String>? abnormalities;
+  final Map<String, dynamic>? measurements;
+  final double? confidence;
+  final List<String>? recommendations;
+  final String? error;
 }
 
 class AssetAnalyticsResult {
-  final bool success;
-  final AssetAnalytics? analytics;
-  final String? error;
-
   AssetAnalyticsResult({
     required this.success,
     this.analytics,
     this.error,
   });
+
+  final bool success;
+  final AssetAnalytics? analytics;
+  final String? error;
 }

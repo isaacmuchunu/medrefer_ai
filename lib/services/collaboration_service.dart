@@ -7,6 +7,8 @@ import 'package:web_socket_channel/status.dart' as status;
 /// Advanced Real-time Collaboration Service
 /// Provides WebSocket-based live updates, collaborative editing, and presence tracking
 class CollaborationService extends ChangeNotifier {
+  _CollaborationService();
+
   static final CollaborationService _instance = CollaborationService._internal();
   factory CollaborationService() => _instance;
   CollaborationService._internal();
@@ -45,7 +47,6 @@ class CollaborationService extends ChangeNotifier {
   // Getters
   bool get isConnected => _isConnected;
   Map<String, CollaborationSession> get activeSessions => Map.unmodifiable(_activeSessions);
-  Map<String, List<UserPresence>> get presenceData => Map.unmodifiable(_presenceData);
 
   /// Initialize the collaboration service
   Future<void> initialize(String userId, String authToken) async {
@@ -816,15 +817,6 @@ class CollaborationService extends ChangeNotifier {
 // Data Models for Collaboration
 
 class CollaborationSession {
-  final String id;
-  final String documentId;
-  final String documentType;
-  final String creatorId;
-  final List<String> participants;
-  final SessionPermissions permissions;
-  final DateTime createdAt;
-  bool isActive;
-
   CollaborationSession({
     required this.id,
     required this.documentId,
@@ -836,16 +828,14 @@ class CollaborationSession {
     this.isActive = true,
   });
 
-  Map<String, dynamic> toJson() => {
-    'id': id,
-    'documentId': documentId,
-    'documentType': documentType,
-    'creatorId': creatorId,
-    'participants': participants,
-    'permissions': permissions.toJson(),
-    'createdAt': createdAt.toIso8601String(),
-    'isActive': isActive,
-  };
+  final String id;
+  final String documentId;
+  final String documentType;
+  final String creatorId;
+  final List<String> participants;
+  final SessionPermissions permissions;
+  final DateTime createdAt;
+  bool isActive;
 
   factory CollaborationSession.fromJson(Map<String, dynamic> json) => CollaborationSession(
     id: json['id'],
@@ -857,20 +847,31 @@ class CollaborationSession {
     createdAt: DateTime.parse(json['createdAt']),
     isActive: json['isActive'] ?? true,
   );
+
+  Map<String, dynamic> toJson() => {
+    'id': id,
+    'documentId': documentId,
+    'documentType': documentType,
+    'creatorId': creatorId,
+    'participants': participants,
+    'permissions': permissions.toJson(),
+    'createdAt': createdAt.toIso8601String(),
+    'isActive': isActive,
+  };
 }
 
 class SessionPermissions {
-  final bool allCanEdit;
-  final bool allCanComment;
-  final List<String> editUsers;
-  final List<String> viewUsers;
-
   SessionPermissions({
     required this.allCanEdit,
     required this.allCanComment,
     required this.editUsers,
     required this.viewUsers,
   });
+
+  final bool allCanEdit;
+  final bool allCanComment;
+  final List<String> editUsers;
+  final List<String> viewUsers;
 
   factory SessionPermissions.defaultPermissions() => SessionPermissions(
     allCanEdit: false,
@@ -879,30 +880,22 @@ class SessionPermissions {
     viewUsers: [],
   );
 
-  Map<String, dynamic> toJson() => {
-    'allCanEdit': allCanEdit,
-    'allCanComment': allCanComment,
-    'editUsers': editUsers,
-    'viewUsers': viewUsers,
-  };
-
   factory SessionPermissions.fromJson(Map<String, dynamic> json) => SessionPermissions(
     allCanEdit: json['allCanEdit'],
     allCanComment: json['allCanComment'],
     editUsers: List<String>.from(json['editUsers']),
     viewUsers: List<String>.from(json['viewUsers']),
   );
+
+  Map<String, dynamic> toJson() => {
+    'allCanEdit': allCanEdit,
+    'allCanComment': allCanComment,
+    'editUsers': editUsers,
+    'viewUsers': viewUsers,
+  };
 }
 
 class UserPresence {
-  final String userId;
-  PresenceStatus status;
-  DateTime lastActivity;
-  int? cursorPosition;
-  int? selectionStart;
-  int? selectionEnd;
-  String? activeDocument;
-
   UserPresence({
     required this.userId,
     required this.status,
@@ -912,6 +905,14 @@ class UserPresence {
     this.selectionEnd,
     this.activeDocument,
   });
+
+  final String userId;
+  PresenceStatus status;
+  DateTime lastActivity;
+  int? cursorPosition;
+  int? selectionStart;
+  int? selectionEnd;
+  String? activeDocument;
 }
 
 enum PresenceStatus {
@@ -923,18 +924,18 @@ enum PresenceStatus {
 }
 
 class DocumentState {
-  final String documentId;
-  int version;
-  String content;
-  DateTime lastModified;
-  final List<DocumentChange> pendingChanges = [];
-
   DocumentState({
     required this.documentId,
     required this.version,
     required this.content,
     required this.lastModified,
   });
+
+  final String documentId;
+  int version;
+  String content;
+  DateTime lastModified;
+  final List<DocumentChange> pendingChanges = [];
 
   void applyChange(DocumentChange change) {
     switch (change.type) {
@@ -967,12 +968,6 @@ class DocumentState {
 }
 
 class DocumentChange {
-  final ChangeType type;
-  final int position;
-  final String? text;
-  final int? length;
-  final Map<String, dynamic>? attributes;
-
   DocumentChange({
     required this.type,
     required this.position,
@@ -981,13 +976,11 @@ class DocumentChange {
     this.attributes,
   });
 
-  Map<String, dynamic> toJson() => {
-    'type': type.toString().split('.').last,
-    'position': position,
-    if (text != null) 'text': text,
-    if (length != null) 'length': length,
-    if (attributes != null) 'attributes': attributes,
-  };
+  final ChangeType type;
+  final int position;
+  final String? text;
+  final int? length;
+  final Map<String, dynamic>? attributes;
 
   factory DocumentChange.fromJson(Map<String, dynamic> json) => DocumentChange(
     type: ChangeType.values.firstWhere(
@@ -998,6 +991,14 @@ class DocumentChange {
     length: json['length'],
     attributes: json['attributes'],
   );
+
+  Map<String, dynamic> toJson() => {
+    'type': type.toString().split('.').last,
+    'position': position,
+    if (text != null) 'text': text,
+    if (length != null) 'length': length,
+    if (attributes != null) 'attributes': attributes,
+  };
 }
 
 enum ChangeType {
@@ -1008,12 +1009,6 @@ enum ChangeType {
 }
 
 class DocumentUpdate {
-  final String sessionId;
-  final String documentId;
-  final DocumentChange change;
-  final String userId;
-  final DateTime timestamp;
-
   DocumentUpdate({
     required this.sessionId,
     required this.documentId,
@@ -1021,31 +1016,29 @@ class DocumentUpdate {
     required this.userId,
     required this.timestamp,
   });
+
+  final String sessionId;
+  final String documentId;
+  final DocumentChange change;
+  final String userId;
+  final DateTime timestamp;
 }
 
 class PresenceUpdate {
-  final String sessionId;
-  final String userId;
-  final PresenceStatus status;
-  final DateTime timestamp;
-
   PresenceUpdate({
     required this.sessionId,
     required this.userId,
     required this.status,
     required this.timestamp,
   });
+
+  final String sessionId;
+  final String userId;
+  final PresenceStatus status;
+  final DateTime timestamp;
 }
 
 class DocumentComment {
-  final String id;
-  final String documentId;
-  final String userId;
-  final String comment;
-  final int position;
-  final DateTime timestamp;
-  bool resolved;
-
   DocumentComment({
     required this.id,
     required this.documentId,
@@ -1056,15 +1049,13 @@ class DocumentComment {
     this.resolved = false,
   });
 
-  Map<String, dynamic> toJson() => {
-    'id': id,
-    'documentId': documentId,
-    'userId': userId,
-    'comment': comment,
-    'position': position,
-    'timestamp': timestamp.toIso8601String(),
-    'resolved': resolved,
-  };
+  final String id;
+  final String documentId;
+  final String userId;
+  final String comment;
+  final int position;
+  final DateTime timestamp;
+  bool resolved;
 
   factory DocumentComment.fromJson(Map<String, dynamic> json) => DocumentComment(
     id: json['id'],
@@ -1075,20 +1066,30 @@ class DocumentComment {
     timestamp: DateTime.parse(json['timestamp']),
     resolved: json['resolved'] ?? false,
   );
+
+  Map<String, dynamic> toJson() => {
+    'id': id,
+    'documentId': documentId,
+    'userId': userId,
+    'comment': comment,
+    'position': position,
+    'timestamp': timestamp.toIso8601String(),
+    'resolved': resolved,
+  };
 }
 
 class CollaborationNotification {
-  final NotificationType type;
-  final String message;
-  final dynamic data;
-  final DateTime timestamp;
-
   CollaborationNotification({
     required this.type,
     required this.message,
     this.data,
     required this.timestamp,
   });
+
+  final NotificationType type;
+  final String message;
+  final dynamic data;
+  final DateTime timestamp;
 
   factory CollaborationNotification.fromJson(Map<String, dynamic> json) => CollaborationNotification(
     type: NotificationType.values.firstWhere(
@@ -1110,29 +1111,29 @@ enum NotificationType {
 }
 
 class CollaborationEvent {
-  final String type;
-  final Map<String, dynamic> payload;
-  final DateTime timestamp;
-
   CollaborationEvent({
     required this.type,
     required this.payload,
     required this.timestamp,
   });
+
+  final String type;
+  final Map<String, dynamic> payload;
+  final DateTime timestamp;
 }
 
 class ConflictInfo {
-  final String id;
-  final List<DocumentChange> changes;
-  final bool autoResolvable;
-  final ResolutionStrategy strategy;
-
   ConflictInfo({
     required this.id,
     required this.changes,
     required this.autoResolvable,
     required this.strategy,
   });
+
+  final String id;
+  final List<DocumentChange> changes;
+  final bool autoResolvable;
+  final ResolutionStrategy strategy;
 
   factory ConflictInfo.fromJson(Map<String, dynamic> json) => ConflictInfo(
     id: json['id'],
@@ -1153,8 +1154,9 @@ enum ResolutionStrategy {
 }
 
 class CollaborationException implements Exception {
-  final String message;
   CollaborationException(this.message);
+
+  final String message;
   
   @override
   String toString() => 'CollaborationException: $message';

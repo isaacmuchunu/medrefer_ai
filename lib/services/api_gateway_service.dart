@@ -20,9 +20,9 @@ import '../core/app_export.dart';
 /// - API documentation and discovery
 /// - Developer portal and API keys
 class APIGatewayService extends ChangeNotifier {
-  static final APIGatewayService _instance = APIGatewayService._internal();
+  static final APIGatewayService _instance = _APIGatewayService();
   factory APIGatewayService() => _instance;
-  APIGatewayService._internal();
+  _APIGatewayService();
 
   final Dio _dio = Dio();
   Database? _gatewayDb;

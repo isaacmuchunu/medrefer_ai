@@ -3,9 +3,10 @@ import '../database/dao/research_study_dao.dart';
 import '../database/models/research_study.dart';
 
 class ResearchAnalyticsService {
-  static final ResearchAnalyticsService _instance = ResearchAnalyticsService._internal();
+  _ResearchAnalyticsService();
+
+  static final ResearchAnalyticsService _instance = _ResearchAnalyticsService();
   factory ResearchAnalyticsService() => _instance;
-  ResearchAnalyticsService._internal();
 
   final ResearchStudyDao _dao = ResearchStudyDao();
   final StreamController<List<ResearchStudy>> _studiesController = 

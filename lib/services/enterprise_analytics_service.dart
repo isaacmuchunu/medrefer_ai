@@ -4,9 +4,9 @@ import 'package:medrefer_ai/core/app_export.dart';
 
 /// Enterprise Analytics Service for business intelligence
 class EnterpriseAnalyticsService extends ChangeNotifier {
-  static final EnterpriseAnalyticsService _instance = EnterpriseAnalyticsService._internal();
+  static final EnterpriseAnalyticsService _instance = _EnterpriseAnalyticsService();
   factory EnterpriseAnalyticsService() => _instance;
-  EnterpriseAnalyticsService._internal();
+  _EnterpriseAnalyticsService();
 
   late LoggingService _loggingService;
   Timer? _metricsTimer;

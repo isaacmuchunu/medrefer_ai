@@ -8,9 +8,9 @@ import 'logging_service.dart';
 
 /// Enhanced security service for MedRefer AI
 class EnhancedSecurityService {
-  static final EnhancedSecurityService _instance = EnhancedSecurityService._internal();
+  static final EnhancedSecurityService _instance = _EnhancedSecurityService();
   factory EnhancedSecurityService() => _instance;
-  EnhancedSecurityService._internal();
+  _EnhancedSecurityService();
 
   static const _storage = FlutterSecureStorage(
     aOptions: AndroidOptions(

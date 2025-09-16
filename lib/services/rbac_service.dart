@@ -5,9 +5,10 @@ import '../database/dao/rbac_dao.dart';
 
 /// Role-Based Access Control Service for MedRefer AI
 class RBACService extends ChangeNotifier {
-  static final RBACService _instance = RBACService._internal();
+  _RBACService();
+
+  static final RBACService _instance = _RBACService();
   factory RBACService() => _instance;
-  RBACService._internal();
 
   User? _currentUser;
   UserRole? _currentRole;

@@ -3,9 +3,9 @@ import '../database/dao/inventory_item_dao.dart';
 import '../database/models/inventory_item.dart';
 
 class InventoryService {
-  static final InventoryService _instance = InventoryService._internal();
+  InventoryService._();
+  static final InventoryService _instance = InventoryService._();
   factory InventoryService() => _instance;
-  InventoryService._internal();
 
   final InventoryItemDao _dao = InventoryItemDao();
   final StreamController<List<InventoryItem>> _inventoryController = 

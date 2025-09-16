@@ -8,8 +8,6 @@ import '../database/database.dart';
 
 /// Advanced Search Service with full-text search, filtering, and AI-powered features
 class SearchService extends ChangeNotifier {
-  static final SearchService _instance = SearchService._internal();
-  factory SearchService() => _instance;
   SearchService._internal();
 
   // Configuration
@@ -22,7 +20,7 @@ class SearchService extends ChangeNotifier {
   final List<SearchResult> _currentResults = [];
   final List<String> _recentSearches = [];
   final Map<String, SavedSearch> _savedSearches = {};
-  final Map<String, SearchIndex> _searchIndexes = {};
+  // final Map<String, SearchIndex> _searchIndexes = {};
   final List<SearchFilter> _activeFilters = [];
   
   // Search suggestions
@@ -44,6 +42,9 @@ class SearchService extends ChangeNotifier {
   List<String> get suggestions => List.unmodifiable(_suggestions);
   List<SearchFilter> get activeFilters => List.unmodifiable(_activeFilters);
   Map<String, SavedSearch> get savedSearches => Map.unmodifiable(_savedSearches);
+
+  static final SearchService _instance = SearchService._internal();
+  factory SearchService() => _instance;
 
   /// Initialize search service
   Future<void> initialize() async {

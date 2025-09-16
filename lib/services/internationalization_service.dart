@@ -4,9 +4,10 @@ import 'logging_service.dart';
 
 /// Internationalization service for MedRefer AI
 class InternationalizationService {
-  static final InternationalizationService _instance = InternationalizationService._internal();
+  InternationalizationService._();
+
+  static final InternationalizationService _instance = InternationalizationService._();
   factory InternationalizationService() => _instance;
-  InternationalizationService._internal();
 
   final LoggingService _loggingService = LoggingService();
   bool _isInitialized = false;

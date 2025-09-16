@@ -7,9 +7,10 @@ import '../config/mpesa_config.dart';
 
 /// M-Pesa payment service for handling mobile money transactions
 class MpesaService extends ChangeNotifier {
-  static final MpesaService _instance = MpesaService._internal();
+  _MpesaService();
+
+  static final MpesaService _instance = _MpesaService();
   factory MpesaService() => _instance;
-  MpesaService._internal();
 
   // M-Pesa API Configuration using MpesaConfig
   static String get _baseUrl => MpesaConfig.baseUrl;
@@ -173,7 +174,7 @@ class MpesaService extends ChangeNotifier {
         notifyListeners();
 
         // Start polling for transaction status
-        _pollTransactionStatus(transactionId);
+        unawaited(_pollTransactionStatus(transactionId));
 
         return MpesaPaymentResult(
           success: true,
@@ -364,17 +365,6 @@ class MpesaService extends ChangeNotifier {
 
 /// M-Pesa transaction model
 class MpesaTransaction {
-  final String id;
-  final String checkoutRequestId;
-  final String merchantRequestId;
-  final String phoneNumber;
-  final double amount;
-  final String accountReference;
-  final String transactionDesc;
-  final MpesaTransactionStatus status;
-  final DateTime timestamp;
-  final String? mpesaReceiptNumber;
-
   MpesaTransaction({
     required this.id,
     required this.checkoutRequestId,
@@ -387,6 +377,16 @@ class MpesaTransaction {
     required this.timestamp,
     this.mpesaReceiptNumber,
   });
+  final String id;
+  final String checkoutRequestId;
+  final String merchantRequestId;
+  final String phoneNumber;
+  final double amount;
+  final String accountReference;
+  final String transactionDesc;
+  final MpesaTransactionStatus status;
+  final DateTime timestamp;
+  final String? mpesaReceiptNumber;
 
   MpesaTransaction copyWith({
     MpesaTransactionStatus? status,
@@ -409,12 +409,6 @@ class MpesaTransaction {
 
 /// M-Pesa payment result
 class MpesaPaymentResult {
-  final bool success;
-  final String? transactionId;
-  final String? checkoutRequestId;
-  final String message;
-  final String? errorCode;
-
   MpesaPaymentResult({
     required this.success,
     this.transactionId,
@@ -422,6 +416,11 @@ class MpesaPaymentResult {
     required this.message,
     this.errorCode,
   });
+  final bool success;
+  final String? transactionId;
+  final String? checkoutRequestId;
+  final String message;
+  final String? errorCode;
 }
 
 /// M-Pesa transaction status

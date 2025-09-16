@@ -136,6 +136,64 @@ class EnterpriseUser extends BaseModel {
       updatedAt: DateTime.parse(map['updated_at'] ?? DateTime.now().toIso8601String()),
     );
   }
+
+  EnterpriseUser copyWith({
+    String? id,
+    String? email,
+    String? firstName,
+    String? lastName,
+    String? phoneNumber,
+    String? profileImage,
+    String? role,
+    List<String>? permissions,
+    List<String>? userGroups,
+    String? departmentId,
+    String? organizationId,
+    String? managerId,
+    String? employeeId,
+    String? jobTitle,
+    String? location,
+    String? timezone,
+    String? language,
+    bool? isActive,
+    bool? isVerified,
+    DateTime? lastLoginAt,
+    DateTime? passwordChangedAt,
+    DateTime? accountExpiresAt,
+    Map<String, dynamic>? preferences,
+    Map<String, dynamic>? metadata,
+    DateTime? createdAt,
+    DateTime? updatedAt,
+  }) {
+    return EnterpriseUser(
+      id: id ?? this.id,
+      email: email ?? this.email,
+      firstName: firstName ?? this.firstName,
+      lastName: lastName ?? this.lastName,
+      phoneNumber: phoneNumber ?? this.phoneNumber,
+      profileImage: profileImage ?? this.profileImage,
+      role: role ?? this.role,
+      permissions: permissions ?? this.permissions,
+      userGroups: userGroups ?? this.userGroups,
+      departmentId: departmentId ?? this.departmentId,
+      organizationId: organizationId ?? this.organizationId,
+      managerId: managerId ?? this.managerId,
+      employeeId: employeeId ?? this.employeeId,
+      jobTitle: jobTitle ?? this.jobTitle,
+      location: location ?? this.location,
+      timezone: timezone ?? this.timezone,
+      language: language ?? this.language,
+      isActive: isActive ?? this.isActive,
+      isVerified: isVerified ?? this.isVerified,
+      lastLoginAt: lastLoginAt ?? this.lastLoginAt,
+      passwordChangedAt: passwordChangedAt ?? this.passwordChangedAt,
+      accountExpiresAt: accountExpiresAt ?? this.accountExpiresAt,
+      preferences: preferences ?? this.preferences,
+      metadata: metadata ?? this.metadata,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+    );
+  }
 }
 
 /// User Group model for organizing users
@@ -214,6 +272,26 @@ class UserGroup extends BaseModel {
           : {},
       createdAt: DateTime.parse(map['created_at'] ?? DateTime.now().toIso8601String()),
       updatedAt: DateTime.parse(map['updated_at'] ?? DateTime.now().toIso8601String()),
+    );
+  }
+
+  UserGroup copyWith({
+    String? id,
+    String? name,
+    String? description,
+    List<String>? members,
+    List<String>? permissions,
+    DateTime? createdAt,
+    DateTime? updatedAt,
+  }) {
+    return UserGroup(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      description: description ?? this.description,
+      members: members ?? this.members,
+      permissions: permissions ?? this.permissions,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
     );
   }
 }

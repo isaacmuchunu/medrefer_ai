@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import '../database/database.dart';
 
 class PharmacyService extends ChangeNotifier {
+  PharmacyService(this._dataService);
   final DataService _dataService;
   late PharmacyDAO _pharmacyDAO;
   
@@ -9,8 +10,6 @@ class PharmacyService extends ChangeNotifier {
   List<PharmacyDrug> _drugs = [];
   List<CartItem> _cartItems = [];
   List<PharmacyOrder> _orders = [];
-
-  PharmacyService(this._dataService);
 
   // Getters
   bool get isInitialized => _isInitialized;

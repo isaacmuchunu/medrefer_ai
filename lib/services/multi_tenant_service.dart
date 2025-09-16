@@ -18,9 +18,10 @@ import '../core/app_export.dart';
 /// - Database partitioning strategies
 /// - Tenant monitoring and analytics
 class MultiTenantService extends ChangeNotifier {
-  static final MultiTenantService _instance = MultiTenantService._internal();
+  _MultiTenantService();
+
+  static final MultiTenantService _instance = _MultiTenantService();
   factory MultiTenantService() => _instance;
-  MultiTenantService._internal();
 
   Database? _tenantDb;
   bool _isInitialized = false;
@@ -1198,16 +1199,6 @@ enum ResourceType { users, storage, bandwidth, connections, requests }
 enum ViolationSeverity { low, medium, high, critical }
 
 class Tenant {
-  final String tenantId;
-  final String name;
-  final String adminEmail;
-  TenantPlan plan;
-  TenantStatus status;
-  final DateTime createdAt;
-  DateTime? lastActiveAt;
-  String? suspensionReason;
-  final Map<String, dynamic> settings;
-
   Tenant({
     required this.tenantId,
     required this.name,
@@ -1219,16 +1210,18 @@ class Tenant {
     this.suspensionReason,
     required this.settings,
   });
+  final String tenantId;
+  final String name;
+  final String adminEmail;
+  TenantPlan plan;
+  TenantStatus status;
+  final DateTime createdAt;
+  DateTime? lastActiveAt;
+  String? suspensionReason;
+  final Map<String, dynamic> settings;
 }
 
 class TenantConfiguration {
-  final String tenantId;
-  final Map<String, dynamic> databaseSettings;
-  final Map<String, dynamic> securitySettings;
-  final Map<String, bool> featureFlags;
-  final Map<String, dynamic> integrationSettings;
-  final Map<String, dynamic> customSettings;
-
   TenantConfiguration({
     required this.tenantId,
     required this.databaseSettings,
@@ -1237,29 +1230,28 @@ class TenantConfiguration {
     required this.integrationSettings,
     required this.customSettings,
   });
+  final String tenantId;
+  final Map<String, dynamic> databaseSettings;
+  final Map<String, dynamic> securitySettings;
+  final Map<String, bool> featureFlags;
+  final Map<String, dynamic> integrationSettings;
+  final Map<String, dynamic> customSettings;
 }
 
 class TenantCustomization {
-  final String tenantId;
-  TenantBranding branding;
-  TenantLocalization localization;
-  final Map<String, dynamic> uiCustomizations;
-
   TenantCustomization({
     required this.tenantId,
     required this.branding,
     required this.localization,
     required this.uiCustomizations,
   });
+  final String tenantId;
+  TenantBranding branding;
+  TenantLocalization localization;
+  final Map<String, dynamic> uiCustomizations;
 }
 
 class TenantBranding {
-  String primaryColor;
-  String secondaryColor;
-  String? logo;
-  String? favicon;
-  String? customCss;
-
   TenantBranding({
     required this.primaryColor,
     required this.secondaryColor,
@@ -1267,30 +1259,25 @@ class TenantBranding {
     this.favicon,
     this.customCss,
   });
+  String primaryColor;
+  String secondaryColor;
+  String? logo;
+  String? favicon;
+  String? customCss;
 }
 
 class TenantLocalization {
-  String defaultLanguage;
-  List<String> supportedLanguages;
-  Map<String, Map<String, String>> customTranslations;
-
   TenantLocalization({
     required this.defaultLanguage,
     required this.supportedLanguages,
     required this.customTranslations,
   });
+  String defaultLanguage;
+  List<String> supportedLanguages;
+  Map<String, Map<String, String>> customTranslations;
 }
 
 class ResourceQuota {
-  final String tenantId;
-  int maxUsers;
-  int maxStorage;
-  int maxBandwidth;
-  int maxConnections;
-  int maxRequests;
-  final DateTime createdAt;
-  DateTime updatedAt;
-
   ResourceQuota({
     required this.tenantId,
     required this.maxUsers,
@@ -1301,18 +1288,17 @@ class ResourceQuota {
     required this.createdAt,
     required this.updatedAt,
   });
+  final String tenantId;
+  int maxUsers;
+  int maxStorage;
+  int maxBandwidth;
+  int maxConnections;
+  int maxRequests;
+  final DateTime createdAt;
+  DateTime updatedAt;
 }
 
 class ResourceUsage {
-  final String tenantId;
-  double cpuUsage;
-  int memoryUsage;
-  int storageUsage;
-  int bandwidthUsage;
-  int activeConnections;
-  int activeUsers;
-  DateTime lastUpdated;
-
   ResourceUsage({
     required this.tenantId,
     required this.cpuUsage,
@@ -1323,18 +1309,17 @@ class ResourceUsage {
     this.activeUsers = 0,
     required this.lastUpdated,
   });
+  final String tenantId;
+  double cpuUsage;
+  int memoryUsage;
+  int storageUsage;
+  int bandwidthUsage;
+  int activeConnections;
+  int activeUsers;
+  DateTime lastUpdated;
 }
 
 class Subscription {
-  final String tenantId;
-  final String subscriptionId;
-  TenantPlan plan;
-  SubscriptionStatus status;
-  final DateTime startDate;
-  DateTime endDate;
-  bool autoRenew;
-  List<String> features;
-
   Subscription({
     required this.tenantId,
     required this.subscriptionId,
@@ -1345,17 +1330,17 @@ class Subscription {
     required this.autoRenew,
     required this.features,
   });
+  final String tenantId;
+  final String subscriptionId;
+  TenantPlan plan;
+  SubscriptionStatus status;
+  final DateTime startDate;
+  DateTime endDate;
+  bool autoRenew;
+  List<String> features;
 }
 
 class BillingAccount {
-  final String tenantId;
-  final String accountId;
-  TenantPlan plan;
-  BillingCycle billingCycle;
-  DateTime nextBillingDate;
-  String? paymentMethod;
-  Map<String, dynamic>? billingAddress;
-
   BillingAccount({
     required this.tenantId,
     required this.accountId,
@@ -1365,15 +1350,16 @@ class BillingAccount {
     this.paymentMethod,
     this.billingAddress,
   });
+  final String tenantId;
+  final String accountId;
+  TenantPlan plan;
+  BillingCycle billingCycle;
+  DateTime nextBillingDate;
+  String? paymentMethod;
+  Map<String, dynamic>? billingAddress;
 }
 
 class TenantSecurity {
-  final String tenantId;
-  String encryptionKey;
-  Map<String, dynamic> accessPolicies;
-  Map<String, dynamic> auditSettings;
-  Map<String, dynamic>? ssoSettings;
-
   TenantSecurity({
     required this.tenantId,
     required this.encryptionKey,
@@ -1381,17 +1367,14 @@ class TenantSecurity {
     required this.auditSettings,
     this.ssoSettings,
   });
+  final String tenantId;
+  String encryptionKey;
+  Map<String, dynamic> accessPolicies;
+  Map<String, dynamic> auditSettings;
+  Map<String, dynamic>? ssoSettings;
 }
 
 class TenantUser {
-  final String userId;
-  final String tenantId;
-  final String email;
-  final String role;
-  final DateTime createdAt;
-  DateTime? lastLoginAt;
-  bool isActive;
-
   TenantUser({
     required this.userId,
     required this.tenantId,
@@ -1401,16 +1384,16 @@ class TenantUser {
     this.lastLoginAt,
     required this.isActive,
   });
+  final String userId;
+  final String tenantId;
+  final String email;
+  final String role;
+  final DateTime createdAt;
+  DateTime? lastLoginAt;
+  bool isActive;
 }
 
 class DatabasePartition {
-  final String tenantId;
-  final String partitionName;
-  final PartitionStrategy strategy;
-  final String connectionString;
-  bool isActive;
-  final DateTime createdAt;
-
   DatabasePartition({
     required this.tenantId,
     required this.partitionName,
@@ -1419,16 +1402,15 @@ class DatabasePartition {
     required this.isActive,
     required this.createdAt,
   });
+  final String tenantId;
+  final String partitionName;
+  final PartitionStrategy strategy;
+  final String connectionString;
+  bool isActive;
+  final DateTime createdAt;
 }
 
 class TenantMetrics {
-  final String tenantId;
-  int activeUsers;
-  int totalRequests;
-  int storageUsed;
-  int bandwidthUsed;
-  DateTime lastUpdated;
-
   TenantMetrics({
     required this.tenantId,
     required this.activeUsers,
@@ -1437,30 +1419,28 @@ class TenantMetrics {
     required this.bandwidthUsed,
     required this.lastUpdated,
   });
+  final String tenantId;
+  int activeUsers;
+  int totalRequests;
+  int storageUsed;
+  int bandwidthUsed;
+  DateTime lastUpdated;
 }
 
 class ResourceViolation {
-  final ResourceType type;
-  final int limit;
-  final int current;
-  final ViolationSeverity severity;
-
   ResourceViolation({
     required this.type,
     required this.limit,
     required this.current,
     required this.severity,
   });
+  final ResourceType type;
+  final int limit;
+  final int current;
+  final ViolationSeverity severity;
 }
 
 class TenantAnalytics {
-  final String tenantId;
-  final DateRange period;
-  final UserMetrics userMetrics;
-  final UsageMetrics usageMetrics;
-  final FinancialMetrics financialMetrics;
-  final PerformanceMetrics performanceMetrics;
-
   TenantAnalytics({
     required this.tenantId,
     required this.period,
@@ -1469,153 +1449,143 @@ class TenantAnalytics {
     required this.financialMetrics,
     required this.performanceMetrics,
   });
+  final String tenantId;
+  final DateRange period;
+  final UserMetrics userMetrics;
+  final UsageMetrics usageMetrics;
+  final FinancialMetrics financialMetrics;
+  final PerformanceMetrics performanceMetrics;
 }
 
 class DateRange {
-  final DateTime start;
-  final DateTime end;
-
   DateRange({
     required this.start,
     required this.end,
   });
+  final DateTime start;
+  final DateTime end;
 }
 
 class UserMetrics {
-  final int totalUsers;
-  final int activeUsers;
-  final int newUsers;
-  final double userGrowthRate;
-
   UserMetrics({
     required this.totalUsers,
     required this.activeUsers,
     required this.newUsers,
     required this.userGrowthRate,
   });
+  final int totalUsers;
+  final int activeUsers;
+  final int newUsers;
+  final double userGrowthRate;
 }
 
 class UsageMetrics {
-  final int totalRequests;
-  final int storageUsed;
-  final int bandwidthUsed;
-  final double averageResponseTime;
-
   UsageMetrics({
     required this.totalRequests,
     required this.storageUsed,
     required this.bandwidthUsed,
     required this.averageResponseTime,
   });
+  final int totalRequests;
+  final int storageUsed;
+  final int bandwidthUsed;
+  final double averageResponseTime;
 }
 
 class FinancialMetrics {
-  final double totalRevenue;
-  final double monthlyRecurringRevenue;
-  final double churnRate;
-  final double averageRevenuePerUser;
-
   FinancialMetrics({
     required this.totalRevenue,
     required this.monthlyRecurringRevenue,
     required this.churnRate,
     required this.averageRevenuePerUser,
   });
+  final double totalRevenue;
+  final double monthlyRecurringRevenue;
+  final double churnRate;
+  final double averageRevenuePerUser;
 }
 
 class PerformanceMetrics {
-  final double uptime;
-  final double errorRate;
-  final double averageLoadTime;
-  final double throughput;
-
   PerformanceMetrics({
     required this.uptime,
     required this.errorRate,
     required this.averageLoadTime,
     required this.throughput,
   });
+  final double uptime;
+  final double errorRate;
+  final double averageLoadTime;
+  final double throughput;
 }
 
 // Result Classes
 
 class TenantCreationResult {
-  final bool success;
-  final String tenantId;
-  final Tenant? tenant;
-  final String? error;
-
   TenantCreationResult({
     required this.success,
     required this.tenantId,
     this.tenant,
     this.error,
   });
-}
-
-class TenantSwitchResult {
   final bool success;
   final String tenantId;
   final Tenant? tenant;
   final String? error;
+}
 
+class TenantSwitchResult {
   TenantSwitchResult({
     required this.success,
     required this.tenantId,
     this.tenant,
     this.error,
   });
+  final bool success;
+  final String tenantId;
+  final Tenant? tenant;
+  final String? error;
 }
 
 class TenantConfigResult {
-  final bool success;
-  final String tenantId;
-  final TenantConfiguration? configuration;
-  final String? error;
-
   TenantConfigResult({
     required this.success,
     required this.tenantId,
     this.configuration,
     this.error,
   });
+  final bool success;
+  final String tenantId;
+  final TenantConfiguration? configuration;
+  final String? error;
 }
 
 class TenantCustomizationResult {
-  final bool success;
-  final String tenantId;
-  final TenantCustomization? customization;
-  final String? error;
-
   TenantCustomizationResult({
     required this.success,
     required this.tenantId,
     this.customization,
     this.error,
   });
+  final bool success;
+  final String tenantId;
+  final TenantCustomization? customization;
+  final String? error;
 }
 
 class ResourceQuotaResult {
-  final bool success;
-  final String tenantId;
-  final ResourceQuota? quota;
-  final String? error;
-
   ResourceQuotaResult({
     required this.success,
     required this.tenantId,
     this.quota,
     this.error,
   });
+  final bool success;
+  final String tenantId;
+  final ResourceQuota? quota;
+  final String? error;
 }
 
 class ResourceLimitCheckResult {
-  final bool success;
-  final String tenantId;
-  final bool hasViolations;
-  final List<ResourceViolation> violations;
-  final String? error;
-
   ResourceLimitCheckResult({
     required this.success,
     required this.tenantId,
@@ -1623,46 +1593,48 @@ class ResourceLimitCheckResult {
     this.violations = const [],
     this.error,
   });
+  final bool success;
+  final String tenantId;
+  final bool hasViolations;
+  final List<ResourceViolation> violations;
+  final String? error;
 }
 
 class SubscriptionResult {
-  final bool success;
-  final String tenantId;
-  final Subscription? subscription;
-  final String? error;
-
   SubscriptionResult({
     required this.success,
     required this.tenantId,
     this.subscription,
     this.error,
   });
+  final bool success;
+  final String tenantId;
+  final Subscription? subscription;
+  final String? error;
 }
 
 class TenantOperationResult {
-  final bool success;
-  final String tenantId;
-  final String? operation;
-  final String? error;
-
   TenantOperationResult({
     required this.success,
     required this.tenantId,
     this.operation,
     this.error,
   });
+  final bool success;
+  final String tenantId;
+  final String? operation;
+  final String? error;
 }
 
 class TenantAnalyticsResult {
-  final bool success;
-  final String tenantId;
-  final TenantAnalytics? analytics;
-  final String? error;
-
   TenantAnalyticsResult({
     required this.success,
     required this.tenantId,
     this.analytics,
     this.error,
   });
+  final bool success;
+  final String tenantId;
+  final TenantAnalytics? analytics;
+  final String? error;
 }

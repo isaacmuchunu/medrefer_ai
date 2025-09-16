@@ -90,10 +90,10 @@ class _ResearchAnalyticsState extends State<ResearchAnalytics>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppTheme.background,
+      backgroundColor: AppTheme.backgroundLight,
       appBar: AppBar(
         title: const Text('Research & Analytics'),
-        backgroundColor: AppTheme.primary,
+        backgroundColor: AppTheme.primaryLight,
         foregroundColor: Colors.white,
         elevation: 0,
         bottom: TabBar(
@@ -133,7 +133,7 @@ class _ResearchAnalyticsState extends State<ResearchAnalytics>
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _showCreateStudyDialog,
-        backgroundColor: AppTheme.primary,
+        backgroundColor: AppTheme.primaryLight,
         child: const Icon(Icons.add, color: Colors.white),
       ),
     );
@@ -189,8 +189,8 @@ class _ResearchAnalyticsState extends State<ResearchAnalytics>
         onSelected: (selected) {
           setState(() => _selectedFilter = value);
         },
-        selectedColor: AppTheme.primary.withOpacity(0.2),
-        checkmarkColor: AppTheme.primary,
+        selectedColor: AppTheme.primaryLight.withAlpha((255 * 0.2).round()),
+        checkmarkColor: AppTheme.primaryLight,
       ),
     );
   }
@@ -237,7 +237,7 @@ class _ResearchAnalyticsState extends State<ResearchAnalytics>
             'Total Studies',
             summary['total_studies'].toString(),
             Icons.science,
-            AppTheme.primary,
+            AppTheme.primaryLight,
           ),
         ),
         const SizedBox(width: 12),
@@ -788,7 +788,7 @@ class _ResearchAnalyticsState extends State<ResearchAnalytics>
                     LineChartBarData(
                       spots: _buildTrendSpots(trends['monthly_studies']),
                       isCurved: true,
-                      color: AppTheme.primary,
+                      color: AppTheme.primaryLight,
                       barWidth: 3,
                       dotData: FlDotData(show: false),
                     ),
@@ -874,7 +874,7 @@ class _ResearchAnalyticsState extends State<ResearchAnalytics>
           LinearProgressIndicator(
             value: percentage / 100,
             backgroundColor: Colors.grey[300],
-            valueColor: const AlwaysStoppedAnimation<Color>(AppTheme.primary),
+            valueColor: const AlwaysStoppedAnimation<Color>(AppTheme.primaryLight),
           ),
         ],
       ),

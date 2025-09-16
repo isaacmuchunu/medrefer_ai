@@ -48,25 +48,6 @@ enum TaskType {
 }
 
 class WorkflowTask {
-  final String id;
-  final String workflowId;
-  final String name;
-  final String description;
-  final TaskType type;
-  final WorkflowStatus status;
-  final WorkflowPriority priority;
-  final String? assignedTo;
-  final String? assignedRole;
-  final DateTime? dueDate;
-  final DateTime? startedAt;
-  final DateTime? completedAt;
-  final Map<String, dynamic> inputs;
-  final Map<String, dynamic> outputs;
-  final List<String> dependencies;
-  final List<String> conditions;
-  final Map<String, dynamic> metadata;
-  final String? notes;
-
   WorkflowTask({
     required this.id,
     required this.workflowId,
@@ -87,29 +68,6 @@ class WorkflowTask {
     this.metadata = const {},
     this.notes,
   });
-
-  Map<String, dynamic> toMap() {
-    return {
-      'id': id,
-      'workflowId': workflowId,
-      'name': name,
-      'description': description,
-      'type': type.name,
-      'status': status.name,
-      'priority': priority.name,
-      'assignedTo': assignedTo,
-      'assignedRole': assignedRole,
-      'dueDate': dueDate?.toIso8601String(),
-      'startedAt': startedAt?.toIso8601String(),
-      'completedAt': completedAt?.toIso8601String(),
-      'inputs': jsonEncode(inputs),
-      'outputs': jsonEncode(outputs),
-      'dependencies': jsonEncode(dependencies),
-      'conditions': jsonEncode(conditions),
-      'metadata': jsonEncode(metadata),
-      'notes': notes,
-    };
-  }
 
   factory WorkflowTask.fromMap(Map<String, dynamic> map) {
     return WorkflowTask(
@@ -147,55 +105,50 @@ class WorkflowTask {
     );
   }
 
-  WorkflowTask copyWith({
-    WorkflowStatus? status,
-    String? assignedTo,
-    DateTime? startedAt,
-    DateTime? completedAt,
-    Map<String, dynamic>? outputs,
-    String? notes,
-  }) {
-    return WorkflowTask(
-      id: id,
-      workflowId: workflowId,
-      name: name,
-      description: description,
-      type: type,
-      status: status ?? this.status,
-      priority: priority,
-      assignedTo: assignedTo ?? this.assignedTo,
-      assignedRole: assignedRole,
-      dueDate: dueDate,
-      startedAt: startedAt ?? this.startedAt,
-      completedAt: completedAt ?? this.completedAt,
-      inputs: inputs,
-      outputs: outputs ?? this.outputs,
-      dependencies: dependencies,
-      conditions: conditions,
-      metadata: metadata,
-      notes: notes ?? this.notes,
-    );
+  final String id;
+  final String workflowId;
+  final String name;
+  final String description;
+  final TaskType type;
+  final WorkflowStatus status;
+  final WorkflowPriority priority;
+  final String? assignedTo;
+  final String? assignedRole;
+  final DateTime? dueDate;
+  final DateTime? startedAt;
+  final DateTime? completedAt;
+  final Map<String, dynamic> inputs;
+  final Map<String, dynamic> outputs;
+  final List<String> dependencies;
+  final List<String> conditions;
+  final Map<String, dynamic> metadata;
+  final String? notes;
+
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'workflowId': workflowId,
+      'name': name,
+      'description': description,
+      'type': type.name,
+      'status': status.name,
+      'priority': priority.name,
+      'assignedTo': assignedTo,
+      'assignedRole': assignedRole,
+      'dueDate': dueDate?.toIso8601String(),
+      'startedAt': startedAt?.toIso8601String(),
+      'completedAt': completedAt?.toIso8601String(),
+      'inputs': jsonEncode(inputs),
+      'outputs': jsonEncode(outputs),
+      'dependencies': jsonEncode(dependencies),
+      'conditions': jsonEncode(conditions),
+      'metadata': jsonEncode(metadata),
+      'notes': notes,
+    };
   }
 }
 
 class ClinicalWorkflow {
-  final String id;
-  final String name;
-  final String description;
-  final WorkflowType type;
-  final WorkflowStatus status;
-  final WorkflowPriority priority;
-  final String patientId;
-  final String? initiatedBy;
-  final DateTime createdAt;
-  final DateTime? startedAt;
-  final DateTime? completedAt;
-  final DateTime? dueDate;
-  final List<WorkflowTask> tasks;
-  final Map<String, dynamic> context;
-  final Map<String, dynamic> metadata;
-  final String? notes;
-
   ClinicalWorkflow({
     required this.id,
     required this.name,
@@ -214,26 +167,6 @@ class ClinicalWorkflow {
     this.metadata = const {},
     this.notes,
   });
-
-  Map<String, dynamic> toMap() {
-    return {
-      'id': id,
-      'name': name,
-      'description': description,
-      'type': type.name,
-      'status': status.name,
-      'priority': priority.name,
-      'patientId': patientId,
-      'initiatedBy': initiatedBy,
-      'createdAt': createdAt.toIso8601String(),
-      'startedAt': startedAt?.toIso8601String(),
-      'completedAt': completedAt?.toIso8601String(),
-      'dueDate': dueDate?.toIso8601String(),
-      'context': jsonEncode(context),
-      'metadata': jsonEncode(metadata),
-      'notes': notes,
-    };
-  }
 
   factory ClinicalWorkflow.fromMap(Map<String, dynamic> map) {
     return ClinicalWorkflow(
@@ -264,6 +197,43 @@ class ClinicalWorkflow {
     );
   }
 
+  final String id;
+  final String name;
+  final String description;
+  final WorkflowType type;
+  final WorkflowStatus status;
+  final WorkflowPriority priority;
+  final String patientId;
+  final String? initiatedBy;
+  final DateTime createdAt;
+  final DateTime? startedAt;
+  final DateTime? completedAt;
+  final DateTime? dueDate;
+  final List<WorkflowTask> tasks;
+  final Map<String, dynamic> context;
+  final Map<String, dynamic> metadata;
+  final String? notes;
+
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'name': name,
+      'description': description,
+      'type': type.name,
+      'status': status.name,
+      'priority': priority.name,
+      'patientId': patientId,
+      'initiatedBy': initiatedBy,
+      'createdAt': createdAt.toIso8601String(),
+      'startedAt': startedAt?.toIso8601String(),
+      'completedAt': completedAt?.toIso8601String(),
+      'dueDate': dueDate?.toIso8601String(),
+      'context': jsonEncode(context),
+      'metadata': jsonEncode(metadata),
+      'notes': notes,
+    };
+  }
+
   double get completionPercentage {
     if (tasks.isEmpty) return 0.0;
     final completedTasks = tasks.where((t) => t.status == WorkflowStatus.completed).length;
@@ -278,7 +248,7 @@ class ClinicalWorkflow {
       for (final depId in task.dependencies) {
         final depTask = tasks.firstWhere(
           (t) => t.id == depId,
-          orElse: () => null as WorkflowTask,
+          orElse: () => throw Exception('Dependency task not found'),
         );
         if (depTask.status != WorkflowStatus.completed) {
           return false;
@@ -291,9 +261,9 @@ class ClinicalWorkflow {
 }
 
 class ClinicalWorkflowService {
+  ClinicalWorkflowService._();
   static ClinicalWorkflowService? _instance;
   static ClinicalWorkflowService get instance => _instance ??= ClinicalWorkflowService._();
-  ClinicalWorkflowService._();
 
   final DataService _dataService = DataService();
   final AIService _aiService = AIService();
@@ -342,7 +312,7 @@ class ClinicalWorkflowService {
       );
       
       if (result.isSuccess) {
-        for (final workflowMap in result.data!) {
+        for (final workflowMap in result.data as List<Map<String, dynamic>>) {
           final workflow = ClinicalWorkflow.fromMap(workflowMap);
           
           // Load tasks for this workflow
@@ -353,7 +323,7 @@ class ClinicalWorkflowService {
           );
           
           if (tasksResult.isSuccess) {
-            final tasks = tasksResult.data!
+            final tasks = (tasksResult.data as List<Map<String, dynamic>>)
                 .map((taskMap) => WorkflowTask.fromMap(taskMap))
                 .toList();
             
@@ -777,7 +747,7 @@ class ClinicalWorkflowService {
     for (final workflow in _activeWorkflows.values) {
       final task = workflow.tasks.firstWhere(
         (t) => t.id == taskId,
-        orElse: () => null as WorkflowTask,
+        orElse: () => throw Exception('Task not found in workflow'),
       );
       targetWorkflow = workflow;
       targetTask = task;
@@ -864,7 +834,7 @@ class ClinicalWorkflowService {
       for (final workflow in _activeWorkflows.values) {
         final task = workflow.tasks.firstWhere(
           (t) => t.id == taskId,
-          orElse: () => null as WorkflowTask,
+          orElse: () => throw Exception('Task not found in workflow'),
         );
         targetWorkflow = workflow;
         targetTask = task;

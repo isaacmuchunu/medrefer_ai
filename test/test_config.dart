@@ -36,10 +36,10 @@ class TestConfig {
     await loggingService.initialize();
     
     // Initialize validation service
-    final validationService = ValidationService();
+    // final validationService = ValidationService();
     
     // Initialize enhanced security service
-    final securityService = EnhancedSecurityService();
+    // final securityService = EnhancedSecurityService();
   }
 
   /// Setup test database

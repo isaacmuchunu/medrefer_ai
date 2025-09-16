@@ -191,9 +191,7 @@ class MedicalImageAnalysis {
 }
 
 class MedicalImageAnalysisService {
-  static MedicalImageAnalysisService? _instance;
-  static MedicalImageAnalysisService get instance => _instance ??= MedicalImageAnalysisService._();
-  MedicalImageAnalysisService._();
+  MedicalImageAnalysisService._internal();
 
   final DataService _dataService = DataService();
   final AIService _aiService = AIService();
@@ -208,6 +206,9 @@ class MedicalImageAnalysisService {
   Timer? _processingTimer;
 
   Stream<MedicalImageAnalysis> get analysisStream => _analysisController.stream;
+
+  static MedicalImageAnalysisService? _instance;
+  static MedicalImageAnalysisService get instance => _instance ??= MedicalImageAnalysisService._internal();
 
   Future<void> initialize() async {
     if (_isInitialized) return;
@@ -240,7 +241,7 @@ class MedicalImageAnalysisService {
       );
       
       if (result.isSuccess) {
-        for (final analysisMap in result.data!) {
+        for (final analysisMap in result.data) {
           final analysis = MedicalImageAnalysis.fromMap(analysisMap);
           _activeAnalyses[analysis.id] = analysis;
         }
@@ -355,7 +356,7 @@ class MedicalImageAnalysisService {
       _activeAnalyses[analysisId] = completedAnalysis;
 
       // Store in blockchain for immutable record
-      await _blockchainService.storeImageAnalysis(
+      await _blockchainService.storeMedicalImageAnalysis(
         analysis.patientId,
         completedAnalysis.toMap(),
       );
@@ -474,25 +475,25 @@ class MedicalImageAnalysisService {
     // Use AI service to analyze the image
     switch (imageType) {
       case ImageType.xray:
-        return await _aiService.analyzeXRay(imageData, patientId);
+        return await _aiService.analyzeMedicalImage(imageData, patientId);
       case ImageType.ct:
-        return await _aiService.analyzeCTScan(imageData, patientId);
+        return await _aiService.analyzeMedicalImage(imageData, patientId);
       case ImageType.mri:
-        return await _aiService.analyzeMRI(imageData, patientId);
+        return await _aiService.analyzeMedicalImage(imageData, patientId);
       case ImageType.ultrasound:
-        return await _aiService.analyzeUltrasound(imageData, patientId);
+        return await _aiService.analyzeMedicalImage(imageData, patientId);
       case ImageType.mammography:
-        return await _aiService.analyzeMammography(imageData, patientId);
+        return await _aiService.analyzeMedicalImage(imageData, patientId);
       case ImageType.dermatology:
-        return await _aiService.analyzeDermatology(imageData, patientId);
+        return await _aiService.analyzeMedicalImage(imageData, patientId);
       case ImageType.ophthalmology:
-        return await _aiService.analyzeOphthalmology(imageData, patientId);
+        return await _aiService.analyzeMedicalImage(imageData, patientId);
       case ImageType.pathology:
-        return await _aiService.analyzePathology(imageData, patientId);
+        return await _aiService.analyzeMedicalImage(imageData, patientId);
       case ImageType.endoscopy:
-        return await _aiService.analyzeEndoscopy(imageData, patientId);
+        return await _aiService.analyzeMedicalImage(imageData, patientId);
       case ImageType.ecg:
-        return await _aiService.analyzeECG(imageData, patientId);
+        return await _aiService.analyzeMedicalImage(imageData, patientId);
       default:
         return await _aiService.analyzeGenericMedicalImage(imageData, patientId);
     }
@@ -554,7 +555,7 @@ class MedicalImageAnalysisService {
     }
 
     // Use AI to generate a comprehensive diagnosis
-    return await _aiService.generateImageDiagnosis(findings, imageType);
+    return await _aiService.generateMedicalImageDiagnosis(findings, imageType);
   }
 
   Future<String> _generateSummary(
@@ -562,7 +563,7 @@ class MedicalImageAnalysisService {
     String diagnosis,
   ) async {
     // Generate a summary of the analysis
-    return await _aiService.generateImageSummary(findings, diagnosis);
+    return await _aiService.generateMedicalImageSummary(findings, diagnosis);
   }
 
   double _calculateOverallConfidence(List<MedicalImageFinding> findings) {
@@ -581,7 +582,7 @@ class MedicalImageAnalysisService {
         .toList();
 
     for (final finding in criticalFindings) {
-      await _notificationService.sendCriticalAlert(
+      await _notificationService.sendCriticalFindingAlert(
         title: 'Critical Medical Image Finding',
         message: 'Critical finding detected in ${analysis.imageType.name} for patient ${analysis.patientId}: ${finding.description}',
         patientId: analysis.patientId,
@@ -652,8 +653,8 @@ class MedicalImageAnalysisService {
       
       // Try to load from database
       final result = await _dataService.queryById('medical_image_analyses', analysisId);
-      if (result.isSuccess && result.data != null) {
-        final analysis = MedicalImageAnalysis.fromMap(result.data!);
+      if (result != null && result.isSuccess) {
+        final analysis = MedicalImageAnalysis.fromMap(result.data);
         return Result.success(analysis);
       }
       
@@ -676,13 +677,13 @@ class MedicalImageAnalysisService {
       );
       
       if (result.isSuccess) {
-        final analyses = result.data!
+        final analyses = result.data
             .map((map) => MedicalImageAnalysis.fromMap(map))
             .toList();
         return Result.success(analyses);
       }
       
-      return Result.error(result.errorMessage!);
+      return Result.error(result.errorMessage);
     } catch (e) {
       return Result.error('Failed to get patient analyses: ${e.toString()}');
     }
@@ -734,7 +735,7 @@ class MedicalImageAnalysisService {
       _activeAnalyses[analysisId] = reviewedAnalysis;
 
       // Store in blockchain
-      await _blockchainService.storeRadiologistReview(
+      await _blockchainService.storeMedicalRadiologistReview(
         analysis.patientId,
         analysisId,
         {
@@ -768,10 +769,10 @@ class MedicalImageAnalysisService {
       
       final result = await _dataService.query('medical_image_analyses');
       if (result.isError) {
-        return Result.error(result.errorMessage!);
+        return Result.error(result.errorMessage);
       }
       
-      final analyses = result.data!
+      final analyses = result.data
           .map((map) => MedicalImageAnalysis.fromMap(map))
           .toList();
       
@@ -892,7 +893,7 @@ class MedicalImageAnalysisService {
       );
       
       if (result.isSuccess) {
-        var analyses = result.data!
+        var analyses = result.data
             .map((map) => MedicalImageAnalysis.fromMap(map))
             .toList();
         
@@ -906,7 +907,7 @@ class MedicalImageAnalysisService {
         return Result.success(analyses);
       }
       
-      return Result.error(result.errorMessage!);
+      return Result.error(result.errorMessage);
     } catch (e) {
       return Result.error('Failed to search analyses: ${e.toString()}');
     }

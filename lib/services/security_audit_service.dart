@@ -6,8 +6,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 /// Comprehensive security audit service for HIPAA compliance and security monitoring
 class SecurityAuditService {
-  static final SecurityAuditService _instance = SecurityAuditService._internal();
-  factory SecurityAuditService() => _instance;
   SecurityAuditService._internal();
 
   // Audit configuration
@@ -24,10 +22,13 @@ class SecurityAuditService {
   // Security thresholds
   static const int _maxFailedLoginAttempts = 5;
   static const Duration _lockoutDuration = Duration(minutes: 30);
-  static const Duration _sessionTimeout = Duration(hours: 8);
+  // static const Duration _sessionTimeout = Duration(hours: 8);
   
   bool _isInitialized = false;
   Timer? _cleanupTimer;
+
+  static final SecurityAuditService _instance = SecurityAuditService._internal();
+  factory SecurityAuditService() => _instance;
 
   /// Initialize the security audit service
   Future<void> initialize() async {

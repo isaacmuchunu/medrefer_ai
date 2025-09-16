@@ -5,9 +5,10 @@ import 'package:flutter/services.dart';
 
 /// Service for managing notifications and alerts in the MedRefer AI app
 class NotificationService extends ChangeNotifier {
-  static final NotificationService _instance = NotificationService._internal();
+  _NotificationService();
+
+  static final NotificationService _instance = _NotificationService();
   factory NotificationService() => _instance;
-  NotificationService._internal();
 
   // Notification state
   List<AppNotification> _notifications = [];
@@ -190,6 +191,22 @@ class NotificationService extends ChangeNotifier {
     _unreadCount = _notifications.where((n) => !n.isRead).length;
   }
 
+  Future<void> sendTaskAssignment({required String assigneeId, required String taskName, required String workflowName, required String patientId, required String priority, DateTime? dueDate}) async {
+    // Implement sending task assignment notification
+  }
+
+  Future<void> sendWorkflowCompletion({required String workflowName, required String patientId, required DateTime completedAt}) async {
+    // Implement sending workflow completion notification
+  }
+
+  Future<void> sendWorkflowTimeout({required String workflowName, required String patientId, required DateTime dueDate}) async {
+    // Implement sending workflow timeout notification
+  }
+
+  Future<void> sendTaskTimeout({required String taskName, String? assignedTo, required DateTime dueDate}) async {
+    // Implement sending task timeout notification
+  }
+
   @override
   void dispose() {
     // Clean up any timers or listeners
@@ -211,15 +228,6 @@ enum NotificationType {
 
 /// App notification model
 class AppNotification {
-  final String id;
-  final String title;
-  final String message;
-  final NotificationType type;
-  final DateTime timestamp;
-  final bool isRead;
-  final String? actionRoute;
-  final Map<String, dynamic>? data;
-
   const AppNotification({
     required this.id,
     required this.title,
@@ -230,6 +238,14 @@ class AppNotification {
     this.actionRoute,
     this.data,
   });
+  final String id;
+  final String title;
+  final String message;
+  final NotificationType type;
+  final DateTime timestamp;
+  final bool isRead;
+  final String? actionRoute;
+  final Map<String, dynamic>? data;
 
   AppNotification copyWith({
     String? id,

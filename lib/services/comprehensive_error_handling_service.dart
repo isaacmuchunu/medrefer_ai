@@ -18,9 +18,10 @@ import 'dart:math';
 /// - Compliance and audit support
 /// - Developer debugging tools
 class ComprehensiveErrorHandlingService extends ChangeNotifier {
+  ComprehensiveErrorHandlingService._internal();
+
   static final ComprehensiveErrorHandlingService _instance = ComprehensiveErrorHandlingService._internal();
   factory ComprehensiveErrorHandlingService() => _instance;
-  ComprehensiveErrorHandlingService._internal();
 
   Database? _errorDb;
   bool _isInitialized = false;
@@ -1025,13 +1026,6 @@ enum ErrorStatus { new_, acknowledged, investigating, resolved, recovered, unres
 enum RecoveryActionType { retry, fallback, reconnect, rollback, restart, notify }
 
 class ErrorDefinition {
-  final ErrorType errorType;
-  final String errorCode;
-  final String description;
-  final ErrorSeverity severity;
-  final bool isRecoverable;
-  final String userMessage;
-
   ErrorDefinition({
     required this.errorType,
     required this.errorCode,
@@ -1040,23 +1034,16 @@ class ErrorDefinition {
     required this.isRecoverable,
     required this.userMessage,
   });
+
+  final ErrorType errorType;
+  final String errorCode;
+  final String description;
+  final ErrorSeverity severity;
+  final bool isRecoverable;
+  final String userMessage;
 }
 
 class ErrorInstance {
-  final String errorId;
-  final ErrorType errorType;
-  final String errorCode;
-  final String message;
-  final String? stackTrace;
-  final String? context;
-  final Map<String, dynamic> metadata;
-  final ErrorSeverity severity;
-  final DateTime timestamp;
-  ErrorStatus status;
-  int recoveryAttempts;
-  String? recoveryStrategy;
-  DateTime? resolvedAt;
-
   ErrorInstance({
     required this.errorId,
     required this.errorType,
@@ -1072,18 +1059,23 @@ class ErrorInstance {
     this.recoveryStrategy,
     this.resolvedAt,
   });
+
+  final String errorId;
+  final ErrorType errorType;
+  final String errorCode;
+  final String message;
+  final String? stackTrace;
+  final String? context;
+  final Map<String, dynamic> metadata;
+  final ErrorSeverity severity;
+  final DateTime timestamp;
+  ErrorStatus status;
+  int recoveryAttempts;
+  String? recoveryStrategy;
+  DateTime? resolvedAt;
 }
 
 class ErrorLog {
-  final String logId;
-  final String? errorId;
-  final String logLevel;
-  final String message;
-  final DateTime timestamp;
-  final String source;
-  final String userId;
-  final String sessionId;
-
   ErrorLog({
     required this.logId,
     this.errorId,
@@ -1094,19 +1086,18 @@ class ErrorLog {
     required this.userId,
     required this.sessionId,
   });
+
+  final String logId;
+  final String? errorId;
+  final String logLevel;
+  final String message;
+  final DateTime timestamp;
+  final String source;
+  final String userId;
+  final String sessionId;
 }
 
 class RecoveryStrategy {
-  final String strategyId;
-  final String name;
-  final String description;
-  final List<ErrorType> applicableErrorTypes;
-  final List<RecoveryAction> actions;
-  final int maxRetries;
-  final Duration retryDelay;
-  final bool isActive;
-  final DateTime createdAt;
-
   RecoveryStrategy({
     required this.strategyId,
     required this.name,
@@ -1118,16 +1109,26 @@ class RecoveryStrategy {
     required this.isActive,
     required this.createdAt,
   });
+
+  final String strategyId;
+  final String name;
+  final String description;
+  final List<ErrorType> applicableErrorTypes;
+  final List<RecoveryAction> actions;
+  final int maxRetries;
+  final Duration retryDelay;
+  final bool isActive;
+  final DateTime createdAt;
 }
 
 class RecoveryAction {
-  final RecoveryActionType actionType;
-  final Map<String, dynamic> parameters;
-
   RecoveryAction({
     required this.actionType,
     required this.parameters,
   });
+
+  final RecoveryActionType actionType;
+  final Map<String, dynamic> parameters;
 
   Map<String, dynamic> toJson() => {
     'actionType': actionType.toString().split('.').last,
@@ -1136,13 +1137,6 @@ class RecoveryAction {
 }
 
 class AutoRecoveryRule {
-  final String ruleId;
-  final ErrorType errorType;
-  final String condition;
-  final String strategyId;
-  final bool isActive;
-  final int priority;
-
   AutoRecoveryRule({
     required this.ruleId,
     required this.errorType,
@@ -1151,17 +1145,16 @@ class AutoRecoveryRule {
     required this.isActive,
     required this.priority,
   });
+
+  final String ruleId;
+  final ErrorType errorType;
+  final String condition;
+  final String strategyId;
+  final bool isActive;
+  final int priority;
 }
 
 class ErrorMetrics {
-  final ErrorType errorType;
-  int totalCount;
-  int resolvedCount;
-  int unresolvedCount;
-  double resolutionRate;
-  Duration averageResolutionTime;
-  DateTime? lastOccurrence;
-
   ErrorMetrics({
     required this.errorType,
     required this.totalCount,
@@ -1171,29 +1164,31 @@ class ErrorMetrics {
     required this.averageResolutionTime,
     this.lastOccurrence,
   });
+
+  final ErrorType errorType;
+  int totalCount;
+  int resolvedCount;
+  int unresolvedCount;
+  double resolutionRate;
+  Duration averageResolutionTime;
+  DateTime? lastOccurrence;
 }
 
 class ErrorTrend {
-  final ErrorType errorType;
-  final DateTime timestamp;
-  final int count;
-  final ErrorSeverity severity;
-
   ErrorTrend({
     required this.errorType,
     required this.timestamp,
     required this.count,
     required this.severity,
   });
+
+  final ErrorType errorType;
+  final DateTime timestamp;
+  final int count;
+  final ErrorSeverity severity;
 }
 
 class UserFriendlyMessage {
-  final String errorCode;
-  final String title;
-  final String message;
-  final String actionText;
-  final String iconData;
-
   UserFriendlyMessage({
     required this.errorCode,
     required this.title,
@@ -1201,15 +1196,15 @@ class UserFriendlyMessage {
     required this.actionText,
     required this.iconData,
   });
+
+  final String errorCode;
+  final String title;
+  final String message;
+  final String actionText;
+  final String iconData;
 }
 
 class ErrorResolution {
-  final String errorId;
-  final String resolutionMethod;
-  final String description;
-  final DateTime resolvedAt;
-  final String resolvedBy;
-
   ErrorResolution({
     required this.errorId,
     required this.resolutionMethod,
@@ -1217,19 +1212,15 @@ class ErrorResolution {
     required this.resolvedAt,
     required this.resolvedBy,
   });
+
+  final String errorId;
+  final String resolutionMethod;
+  final String description;
+  final DateTime resolvedAt;
+  final String resolvedBy;
 }
 
 class ErrorAnalytics {
-  final int totalErrors;
-  final Map<ErrorType, int> errorsByType;
-  final Map<ErrorSeverity, int> errorsBySeverity;
-  final Map<ErrorStatus, int> errorsByStatus;
-  final List<ErrorCodeFrequency> topErrorCodes;
-  final Map<String, int> errorTrends;
-  final double recoveryRate;
-  final Duration meanTimeToRecovery;
-  final DateRange period;
-
   ErrorAnalytics({
     required this.totalErrors,
     required this.errorsByType,
@@ -1241,47 +1232,50 @@ class ErrorAnalytics {
     required this.meanTimeToRecovery,
     required this.period,
   });
+
+  final int totalErrors;
+  final Map<ErrorType, int> errorsByType;
+  final Map<ErrorSeverity, int> errorsBySeverity;
+  final Map<ErrorStatus, int> errorsByStatus;
+  final List<ErrorCodeFrequency> topErrorCodes;
+  final Map<String, int> errorTrends;
+  final double recoveryRate;
+  final Duration meanTimeToRecovery;
+  final DateRange period;
 }
 
 class ErrorCodeFrequency {
-  final String errorCode;
-  final int frequency;
-
   ErrorCodeFrequency({
     required this.errorCode,
     required this.frequency,
   });
+
+  final String errorCode;
+  final int frequency;
 }
 
 class DateRange {
+  DateRange({required this.start, required this.end});
+
   final DateTime start;
   final DateTime end;
-
-  DateRange({required this.start, required this.end});
 }
 
 class ErrorClassification {
-  final ErrorType errorType;
-  final String errorCode;
-  final double confidence;
-
   ErrorClassification({
     required this.errorType,
     required this.errorCode,
     required this.confidence,
   });
+
+  final ErrorType errorType;
+  final String errorCode;
+  final double confidence;
 }
 
 // Result Classes
 
 class ErrorHandlingResult {
-  final bool success;
-  final String? errorId;
-  final String? userMessage;
-  final bool canRecover;
-  final String? recoveryAction;
-  final String? error;
-
   ErrorHandlingResult({
     required this.success,
     this.errorId,
@@ -1290,64 +1284,71 @@ class ErrorHandlingResult {
     this.recoveryAction,
     this.error,
   });
+
+  final bool success;
+  final String? errorId;
+  final String? userMessage;
+  final bool canRecover;
+  final String? recoveryAction;
+  final String? error;
 }
 
 class RecoveryResult {
-  final bool success;
-  final String? strategy;
-  final String? action;
-  final String message;
-
   RecoveryResult({
     required this.success,
     this.strategy,
     this.action,
     required this.message,
   });
+
+  final bool success;
+  final String? strategy;
+  final String? action;
+  final String message;
 }
 
 class RecoveryExecutionResult {
-  final bool success;
-  final String? action;
-  final String? error;
-
   RecoveryExecutionResult({
     required this.success,
     this.action,
     this.error,
   });
+
+  final bool success;
+  final String? action;
+  final String? error;
 }
 
 class ActionExecutionResult {
-  final bool success;
-  final String? error;
-
   ActionExecutionResult({
     required this.success,
     this.error,
   });
+
+  final bool success;
+  final String? error;
 }
 
 class RecoveryStrategyResult {
-  final bool success;
-  final String? strategyId;
-  final String? error;
-
   RecoveryStrategyResult({
     required this.success,
     this.strategyId,
     this.error,
   });
+
+  final bool success;
+  final String? strategyId;
+  final String? error;
 }
 
 class ErrorAnalyticsResult {
-  final bool success;
-  final ErrorAnalytics? analytics;
-  final String? error;
-
   ErrorAnalyticsResult({
     required this.success,
     this.analytics,
     this.error,
   });
+
+  final bool success;
+  final ErrorAnalytics? analytics;
+  final String? error;
 }

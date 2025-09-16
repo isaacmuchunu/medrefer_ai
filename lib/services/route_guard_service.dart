@@ -5,12 +5,13 @@ import '../database/models/user.dart';
 
 /// Route Guard Service for protecting routes based on user permissions
 class RouteGuardService {
-  static final RouteGuardService _instance = RouteGuardService._internal();
-  factory RouteGuardService() => _instance;
   RouteGuardService._internal();
 
   final RBACService _rbacService = RBACService();
   final AuthService _authService = AuthService();
+
+  static final RouteGuardService _instance = RouteGuardService._internal();
+  factory RouteGuardService() => _instance;
 
   /// Check if user can access a route
   bool canAccessRoute(String routeName) {

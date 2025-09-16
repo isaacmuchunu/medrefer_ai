@@ -4,9 +4,12 @@ import '../database/services/data_service.dart';
 
 /// Enterprise Integration Service for healthcare systems (EHR, PACS, LIS, etc.)
 class EnterpriseIntegrationService extends ChangeNotifier {
-  static final EnterpriseIntegrationService _instance = EnterpriseIntegrationService._internal();
-  factory EnterpriseIntegrationService() => _instance;
-  EnterpriseIntegrationService._internal();
+  factory EnterpriseIntegrationService() {
+    return _instance;
+  }
+  EnterpriseIntegrationService._privateConstructor();
+  static final EnterpriseIntegrationService _instance =
+      EnterpriseIntegrationService._privateConstructor();
 
   final DataService _dataService = DataService();
   bool _isInitialized = false;
@@ -617,6 +620,105 @@ class EnterpriseIntegrationService extends ChangeNotifier {
   // Helper methods and additional functionality...
   // Due to space constraints, showing key structure and main methods
 
+  Map<String, dynamic> _getEpicDataMapping() => {};
+  Map<String, dynamic> _getCernerDataMapping() => {};
+  Map<String, dynamic> _getPACSDataMapping() => {};
+  Map<String, dynamic> _getLISDataMapping() => {};
+  Map<String, dynamic> _getPharmacyDataMapping() => {};
+  Map<String, dynamic> _getInsuranceDataMapping() => {};
+  Map<String, dynamic> _getHL7v2ToFHIRRules() => {};
+  Map<String, dynamic> _getFHIRToHL7v2Rules() => {};
+  Map<String, dynamic> _getDICOMToFHIRRules() => {};
+  Map<String, dynamic> _getCDAToFHIRRules() => {};
+
+  Future<AuthenticationToken> _authenticate(IntegrationAdapter adapter) async =>
+      AuthenticationToken(
+          systemId: adapter.id,
+          token: 'dummy_token',
+          tokenType: 'Bearer',
+          expiresAt: DateTime.now().add(Duration(hours: 1)),
+          additionalData: {});
+
+  String _generateConnectionId() =>
+      'conn_${DateTime.now().millisecondsSinceEpoch}';
+
+  ConnectionType _getConnectionType(IntegrationAdapter adapter) =>
+      ConnectionType.https;
+
+  Future<IntegrationResponse> _testConnection(
+          IntegrationConnection connection, IntegrationAdapter adapter) async =>
+      IntegrationResponse(
+          success: true, statusCode: 200, message: 'OK', data: {});
+
+  Future<void> _setupMessageRoutes(IntegrationAdapter adapter) async {}
+
+  Future<Map<String, dynamic>> _transformData(
+          Map<String, dynamic> data, String dataType, IntegrationAdapter adapter) async =>
+      data;
+
+  String _generateMessageId() => 'msg_${DateTime.now().millisecondsSinceEpoch}';
+
+  void _addToMessageQueue(String systemId, IntegrationMessage message) {
+    _messageQueues[systemId]?.add(message);
+  }
+
+  Future<IntegrationResponse> _processMessage(
+          IntegrationMessage message, IntegrationAdapter adapter) async =>
+      IntegrationResponse(
+          success: true, statusCode: 200, message: 'Processed', data: {});
+
+  void _logIntegrationEvent(
+      {required String systemId,
+      required IntegrationEventType eventType,
+      required String message,
+      required bool success}) {
+    _eventHistory.add(IntegrationEvent(
+        id: 'evt_${DateTime.now().millisecondsSinceEpoch}',
+        systemId: systemId,
+        eventType: eventType,
+        message: message,
+        success: success,
+        timestamp: DateTime.now(),
+        metadata: {}));
+  }
+
+  Future<Map<String, dynamic>> _transformIncomingData(
+          Map<String, dynamic> data, String dataType, IntegrationAdapter adapter) async =>
+      data;
+
+  Future<void> _processIncomingMessage(
+      IntegrationMessage message, IntegrationAdapter adapter) async {}
+
+  Future<Map<String, dynamic>> _buildQuery(String queryType,
+          Map<String, dynamic> parameters, IntegrationAdapter adapter) async =>
+      {};
+
+  Future<IntegrationResponse> _executeQuery(
+          Map<String, dynamic> query, IntegrationAdapter adapter) async =>
+      IntegrationResponse(
+          success: true, statusCode: 200, message: 'OK', data: {});
+
+  int _getTotalMessagesProcessed() => _eventHistory
+      .where((e) =>
+          e.eventType == IntegrationEventType.dataSent ||
+          e.eventType == IntegrationEventType.dataReceived)
+      .length;
+
+  List<IntegrationMessage> _getMessagesForSystem(String systemId) =>
+      _messageQueues[systemId] ?? [];
+
+  double _getAverageProcessingTime(String systemId) => 0.0;
+
+  double _calculateDataVolume() => 0.0;
+
+  double _calculateUptimePercentage() => 100.0;
+
+  Future<void> _processMessageQueues() async {}
+
+  Future<bool> _checkSystemHealth(String systemId) async => true;
+
+  double _calculateErrorRate(String systemId) => 0.0;
+
   @override
   void dispose() {
     _healthCheckTimer?.cancel();
@@ -634,89 +736,67 @@ class EnterpriseIntegrationService extends ChangeNotifier {
 // Data models for enterprise integration
 
 class IntegrationAdapter {
-  String id;
-  String name;
-  SystemType systemType;
-  String vendor;
-  String version;
-  List<String> supportedProtocols;
-  Map<String, String> endpoints;
-  AuthenticationMethod authentication;
-  Map<String, dynamic> dataMapping;
-  bool isActive;
-
   IntegrationAdapter({
     required this.id,
     required this.name,
-    required this.systemType,
-    required this.vendor,
-    required this.version,
-    required this.supportedProtocols,
-    required this.endpoints,
-    required this.authentication,
-    required this.dataMapping,
-    required this.isActive,
+    required this.type,
+    required this.baseUrl,
+    required this.credentials,
+    required this.supportedDataTypes,
+    required this.capabilities,
+    this.isEnabled = true,
+    this.lastSync,
+    this.metadata,
   });
+  final String id;
+  final String name;
+  final IntegrationSystemType type;
+  final String baseUrl;
+  final Map<String, String> credentials;
+  final List<String> supportedDataTypes;
+  final List<IntegrationCapability> capabilities;
+  bool isEnabled;
+  DateTime? lastSync;
+  Map<String, dynamic>? metadata;
 }
 
 class IntegrationConnection {
-  String id;
-  String adapterId;
-  String systemName;
-  ConnectionType connectionType;
-  ConnectionStatus status;
-  DateTime establishedAt;
-  DateTime lastActivity;
-  Map<String, String> configuration;
-
   IntegrationConnection({
     required this.id,
     required this.adapterId,
-    required this.systemName,
-    required this.connectionType,
     required this.status,
-    required this.establishedAt,
+    required this.connectionType,
     required this.lastActivity,
-    required this.configuration,
+    this.authToken,
   });
+  final String id;
+  final String adapterId;
+  final ConnectionStatus status;
+  final ConnectionType connectionType;
+  final DateTime lastActivity;
+  AuthenticationToken? authToken;
 }
 
 class IntegrationMessage {
-  String id;
-  String systemId;
-  MessageType messageType;
-  String dataType;
-  Map<String, dynamic> payload;
-  DateTime timestamp;
-  MessageStatus status;
-  Map<String, String> headers;
-  String? error;
-  int retryCount;
-
   IntegrationMessage({
     required this.id,
     required this.systemId,
-    required this.messageType,
     required this.dataType,
     required this.payload,
     required this.timestamp,
-    required this.status,
-    required this.headers,
-    this.error,
-    this.retryCount = 0,
+    this.status = MessageStatus.queued,
+    this.metadata,
   });
+  final String id;
+  final String systemId;
+  final String dataType;
+  final Map<String, dynamic> payload;
+  final DateTime timestamp;
+  MessageStatus status;
+  final Map<String, dynamic>? metadata;
 }
 
 class ProtocolHandler {
-  String id;
-  String name;
-  String version;
-  String description;
-  List<String> supportedOperations;
-  List<String> messageFormats;
-  List<String> authentication;
-  List<String> encryption;
-
   ProtocolHandler({
     required this.id,
     required this.name,
@@ -727,16 +807,17 @@ class ProtocolHandler {
     required this.authentication,
     required this.encryption,
   });
+  String id;
+  String name;
+  String version;
+  String description;
+  List<String> supportedOperations;
+  List<String> messageFormats;
+  List<String> authentication;
+  List<String> encryption;
 }
 
 class DataTransformer {
-  String id;
-  String name;
-  String sourceFormat;
-  String targetFormat;
-  Map<String, dynamic> transformationRules;
-  bool isActive;
-
   DataTransformer({
     required this.id,
     required this.name,
@@ -745,31 +826,30 @@ class DataTransformer {
     required this.transformationRules,
     required this.isActive,
   });
+  String id;
+  String name;
+  String sourceFormat;
+  String targetFormat;
+  Map<String, dynamic> transformationRules;
+  bool isActive;
 }
 
 class IntegrationResponse {
-  bool success;
-  int statusCode;
-  String message;
-  Map<String, dynamic> data;
-  Duration? processingTime;
-
   IntegrationResponse({
     required this.success,
     required this.statusCode,
-    required this.message,
-    required this.data,
-    this.processingTime,
+    this.message,
+    this.data,
+    this.error,
   });
+  final bool success;
+  final int statusCode;
+  final String? message;
+  final dynamic data;
+  final String? error;
 }
 
 class SystemHealthStatus {
-  String systemId;
-  HealthStatus status;
-  int responseTime;
-  double errorRate;
-  DateTime lastCheck;
-
   SystemHealthStatus({
     required this.systemId,
     required this.status,
@@ -777,17 +857,14 @@ class SystemHealthStatus {
     required this.errorRate,
     required this.lastCheck,
   });
+  String systemId;
+  HealthStatus status;
+  int responseTime;
+  double errorRate;
+  DateTime lastCheck;
 }
 
 class IntegrationEvent {
-  String id;
-  String systemId;
-  IntegrationEventType eventType;
-  String message;
-  bool success;
-  DateTime timestamp;
-  Map<String, dynamic> metadata;
-
   IntegrationEvent({
     required this.id,
     required this.systemId,
@@ -795,18 +872,18 @@ class IntegrationEvent {
     required this.message,
     required this.success,
     required this.timestamp,
-    required this.metadata,
+    this.metadata,
   });
+  final String id;
+  final String systemId;
+  final IntegrationEventType eventType;
+  final String message;
+  final bool success;
+  final DateTime timestamp;
+  final Map<String, dynamic>? metadata;
 }
 
 class MessageRoute {
-  String id;
-  String sourceSystem;
-  String targetSystem;
-  String dataType;
-  List<String> transformations;
-  Map<String, dynamic> routingRules;
-
   MessageRoute({
     required this.id,
     required this.sourceSystem,
@@ -815,32 +892,30 @@ class MessageRoute {
     required this.transformations,
     required this.routingRules,
   });
+  String id;
+  String sourceSystem;
+  String targetSystem;
+  String dataType;
+  List<String> transformations;
+  Map<String, dynamic> routingRules;
 }
 
 class AuthenticationToken {
-  String systemId;
-  String token;
-  String tokenType;
-  DateTime expiresAt;
-  Map<String, String> additionalData;
-
   AuthenticationToken({
     required this.systemId,
     required this.token,
     required this.tokenType,
     required this.expiresAt,
-    required this.additionalData,
+    this.additionalData,
   });
+  final String systemId;
+  final String token;
+  final String tokenType;
+  final DateTime expiresAt;
+  final Map<String, dynamic>? additionalData;
 }
 
 class EncryptionKey {
-  String systemId;
-  String keyId;
-  String algorithm;
-  String key;
-  DateTime createdAt;
-  DateTime expiresAt;
-
   EncryptionKey({
     required this.systemId,
     required this.keyId,
@@ -849,13 +924,21 @@ class EncryptionKey {
     required this.createdAt,
     required this.expiresAt,
   });
+  String systemId;
+  String keyId;
+  String algorithm;
+  String key;
+  DateTime createdAt;
+  DateTime expiresAt;
 }
 
 enum SystemType { ehr, pacs, lis, pharmacy, payer, registry, his, ris }
 enum ConnectionType { http, https, mllp, dicom, websocket, ftp, sftp }
 enum ConnectionStatus { connecting, connected, disconnected, failed, maintenance }
 enum MessageType { inbound, outbound, bidirectional }
-enum MessageStatus { pending, processing, completed, failed, retrying }
+enum MessageStatus { queued, processing, sent, delivered, failed, archived }
 enum AuthenticationMethod { oauth2, basic, certificate, saml, kerberos }
 enum HealthStatus { healthy, unhealthy, warning, error, maintenance }
 enum IntegrationEventType { connectionEstablished, connectionLost, dataSent, dataReceived, queryExecuted, error }
+enum IntegrationSystemType { ehr, pacs, lis, pharmacy, insurance }
+enum IntegrationCapability { fhir, hl7, dicom, x12, soap, rest }

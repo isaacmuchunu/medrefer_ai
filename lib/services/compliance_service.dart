@@ -3,9 +3,10 @@ import '../database/dao/compliance_audit_dao.dart';
 import '../database/models/compliance_audit.dart';
 
 class ComplianceService {
+  ComplianceService._internal();
+
   static final ComplianceService _instance = ComplianceService._internal();
   factory ComplianceService() => _instance;
-  ComplianceService._internal();
 
   final ComplianceAuditDao _dao = ComplianceAuditDao();
   final StreamController<List<ComplianceAudit>> _auditsController = 
@@ -20,7 +21,7 @@ class ComplianceService {
       await _refreshAudits();
       return createdAudit;
     } catch (e) {
-      throw Exception('Failed to create compliance audit: $e');
+      throw ComplianceServiceException('Failed to create compliance audit: $e');
     }
   }
 
@@ -29,7 +30,7 @@ class ComplianceService {
     try {
       return await _dao.getAll();
     } catch (e) {
-      throw Exception('Failed to get compliance audits: $e');
+      throw ComplianceServiceException('Failed to get compliance audits: $e');
     }
   }
 
@@ -38,7 +39,7 @@ class ComplianceService {
     try {
       return await _dao.getByType(auditType);
     } catch (e) {
-      throw Exception('Failed to get audits by type: $e');
+      throw ComplianceServiceException('Failed to get audits by type: $e');
     }
   }
 
@@ -47,7 +48,7 @@ class ComplianceService {
     try {
       return await _dao.getByStatus(status);
     } catch (e) {
-      throw Exception('Failed to get audits by status: $e');
+      throw ComplianceServiceException('Failed to get audits by status: $e');
     }
   }
 
@@ -56,7 +57,7 @@ class ComplianceService {
     try {
       return await _dao.getBySeverity(severity);
     } catch (e) {
-      throw Exception('Failed to get audits by severity: $e');
+      throw ComplianceServiceException('Failed to get audits by severity: $e');
     }
   }
 
@@ -65,7 +66,7 @@ class ComplianceService {
     try {
       return await _dao.getByCategory(category);
     } catch (e) {
-      throw Exception('Failed to get audits by category: $e');
+      throw ComplianceServiceException('Failed to get audits by category: $e');
     }
   }
 
@@ -74,7 +75,7 @@ class ComplianceService {
     try {
       return await _dao.getByAuditor(auditorId);
     } catch (e) {
-      throw Exception('Failed to get audits by auditor: $e');
+      throw ComplianceServiceException('Failed to get audits by auditor: $e');
     }
   }
 
@@ -83,7 +84,7 @@ class ComplianceService {
     try {
       return await _dao.getByDepartment(departmentId);
     } catch (e) {
-      throw Exception('Failed to get audits by department: $e');
+      throw ComplianceServiceException('Failed to get audits by department: $e');
     }
   }
 
@@ -92,7 +93,7 @@ class ComplianceService {
     try {
       return await _dao.getOverdueAudits();
     } catch (e) {
-      throw Exception('Failed to get overdue audits: $e');
+      throw ComplianceServiceException('Failed to get overdue audits: $e');
     }
   }
 
@@ -101,7 +102,7 @@ class ComplianceService {
     try {
       return await _dao.getScheduledAudits();
     } catch (e) {
-      throw Exception('Failed to get scheduled audits: $e');
+      throw ComplianceServiceException('Failed to get scheduled audits: $e');
     }
   }
 
@@ -110,7 +111,7 @@ class ComplianceService {
     try {
       return await _dao.getAuditsRequiringRemediation();
     } catch (e) {
-      throw Exception('Failed to get audits requiring remediation: $e');
+      throw ComplianceServiceException('Failed to get audits requiring remediation: $e');
     }
   }
 
@@ -119,7 +120,7 @@ class ComplianceService {
     try {
       return await _dao.getNonCompliantAudits();
     } catch (e) {
-      throw Exception('Failed to get non-compliant audits: $e');
+      throw ComplianceServiceException('Failed to get non-compliant audits: $e');
     }
   }
 
@@ -130,7 +131,7 @@ class ComplianceService {
       await _refreshAudits();
       return result > 0;
     } catch (e) {
-      throw Exception('Failed to update audit status: $e');
+      throw ComplianceServiceException('Failed to update audit status: $e');
     }
   }
 
@@ -141,7 +142,7 @@ class ComplianceService {
       await _refreshAudits();
       return result > 0;
     } catch (e) {
-      throw Exception('Failed to update compliance score: $e');
+      throw ComplianceServiceException('Failed to update compliance score: $e');
     }
   }
 
@@ -153,20 +154,23 @@ class ComplianceService {
       final nonCompliantAudits = await getNonCompliantAudits();
       final scheduledAudits = await getScheduledAudits();
       
+      final totalAudits = summary['total_audits'] as int? ?? 0;
+      final completedAudits = summary['completed_audits'] as int? ?? 0;
+
       return {
         'summary': summary,
         'overdue_audits': overdueAudits,
         'non_compliant_audits': nonCompliantAudits,
         'scheduled_audits': scheduledAudits,
-        'total_audits': summary['total_audits'],
-        'completed_audits': summary['completed_audits'],
+        'total_audits': totalAudits,
+        'completed_audits': completedAudits,
         'non_compliant_count': summary['non_compliant_audits'],
         'overdue_count': summary['overdue_audits'],
-        'compliance_rate': summary['total_audits'] > 0 ? 
-          (summary['completed_audits'] / summary['total_audits']) * 100 : 0,
+        'compliance_rate': totalAudits > 0 ? 
+          (completedAudits / totalAudits) * 100 : 0,
       };
     } catch (e) {
-      throw Exception('Failed to get compliance dashboard: $e');
+      throw ComplianceServiceException('Failed to get compliance dashboard: $e');
     }
   }
 
@@ -221,7 +225,7 @@ class ComplianceService {
           complianceScores.values.reduce((a, b) => a + b) / complianceScores.values.length : 0,
       };
     } catch (e) {
-      throw Exception('Failed to get compliance trends: $e');
+      throw ComplianceServiceException('Failed to get compliance trends: $e');
     }
   }
 
@@ -276,7 +280,7 @@ class ComplianceService {
       
       return alerts;
     } catch (e) {
-      throw Exception('Failed to get compliance alerts: $e');
+      throw ComplianceServiceException('Failed to get compliance alerts: $e');
     }
   }
 
@@ -292,13 +296,15 @@ class ComplianceService {
       final criticalAudits = allAudits.where((a) => a.severity == 'critical').length;
       
       final averageComplianceScore = allAudits.isNotEmpty ? 
-        allAudits.map((a) => a.compliancePercentage).reduce((a, b) => a + b) / allAudits.length : 0;
+        allAudits.map((a) => a.compliancePercentage).reduce((a, b) => a + b) / allAudits.length : 0.0;
       
       // Risk calculation
       double riskScore = 0;
-      if (nonCompliantAudits > 0) riskScore += (nonCompliantAudits / totalAudits) * 40;
-      if (overdueAudits > 0) riskScore += (overdueAudits / totalAudits) * 30;
-      if (criticalAudits > 0) riskScore += (criticalAudits / totalAudits) * 20;
+      if (totalAudits > 0) {
+        if (nonCompliantAudits > 0) riskScore += (nonCompliantAudits / totalAudits) * 40;
+        if (overdueAudits > 0) riskScore += (overdueAudits / totalAudits) * 30;
+        if (criticalAudits > 0) riskScore += (criticalAudits / totalAudits) * 20;
+      }
       if (averageComplianceScore < 80) riskScore += (80 - averageComplianceScore) / 80 * 10;
       
       var riskLevel = 'low';
@@ -319,7 +325,7 @@ class ComplianceService {
         'recommendations': _getRiskRecommendations(riskLevel, nonCompliantAudits, overdueAudits, criticalAudits),
       };
     } catch (e) {
-      throw Exception('Failed to get compliance risk assessment: $e');
+      throw ComplianceServiceException('Failed to get compliance risk assessment: $e');
     }
   }
 
@@ -355,7 +361,7 @@ class ComplianceService {
       final audits = await _dao.getAll();
       _auditsController.add(audits);
     } catch (e) {
-      _auditsController.addError(e);
+      _auditsController.addError(ComplianceServiceException('Failed to refresh audits: $e'));
     }
   }
 
@@ -363,4 +369,13 @@ class ComplianceService {
   void dispose() {
     _auditsController.close();
   }
+}
+
+class ComplianceServiceException implements Exception {
+  final String message;
+
+  ComplianceServiceException(this.message);
+
+  @override
+  String toString() => 'ComplianceServiceException: $message';
 }

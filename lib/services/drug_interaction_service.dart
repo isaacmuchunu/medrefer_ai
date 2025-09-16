@@ -25,19 +25,6 @@ enum InteractionType {
 }
 
 class DrugInteraction {
-  final String id;
-  final String drugA;
-  final String drugB;
-  final InteractionSeverity severity;
-  final InteractionType type;
-  final String description;
-  final String mechanism;
-  final List<String> symptoms;
-  final List<String> recommendations;
-  final double confidenceScore;
-  final DateTime detectedAt;
-  final Map<String, dynamic> metadata;
-
   DrugInteraction({
     required this.id,
     required this.drugA,
@@ -52,23 +39,6 @@ class DrugInteraction {
     required this.detectedAt,
     this.metadata = const {},
   });
-
-  Map<String, dynamic> toMap() {
-    return {
-      'id': id,
-      'drugA': drugA,
-      'drugB': drugB,
-      'severity': severity.name,
-      'type': type.name,
-      'description': description,
-      'mechanism': mechanism,
-      'symptoms': symptoms,
-      'recommendations': recommendations,
-      'confidenceScore': confidenceScore,
-      'detectedAt': detectedAt.toIso8601String(),
-      'metadata': metadata,
-    };
-  }
 
   factory DrugInteraction.fromMap(Map<String, dynamic> map) {
     return DrugInteraction(
@@ -92,18 +62,39 @@ class DrugInteraction {
       metadata: Map<String, dynamic>.from(map['metadata'] ?? {}),
     );
   }
+
+  final String id;
+  final String drugA;
+  final String drugB;
+  final InteractionSeverity severity;
+  final InteractionType type;
+  final String description;
+  final String mechanism;
+  final List<String> symptoms;
+  final List<String> recommendations;
+  final double confidenceScore;
+  final DateTime detectedAt;
+  final Map<String, dynamic> metadata;
+
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'drugA': drugA,
+      'drugB': drugB,
+      'severity': severity.name,
+      'type': type.name,
+      'description': description,
+      'mechanism': mechanism,
+      'symptoms': symptoms,
+      'recommendations': recommendations,
+      'confidenceScore': confidenceScore,
+      'detectedAt': detectedAt.toIso8601String(),
+      'metadata': metadata,
+    };
+  }
 }
 
 class DrugInteractionAlert {
-  final String id;
-  final String patientId;
-  final DrugInteraction interaction;
-  final bool isActive;
-  final bool acknowledged;
-  final String? acknowledgedBy;
-  final DateTime? acknowledgedAt;
-  final String? notes;
-
   DrugInteractionAlert({
     required this.id,
     required this.patientId,
@@ -114,6 +105,30 @@ class DrugInteractionAlert {
     this.acknowledgedAt,
     this.notes,
   });
+
+  factory DrugInteractionAlert.fromMap(Map<String, dynamic> map) {
+    return DrugInteractionAlert(
+      id: map['id'],
+      patientId: map['patientId'],
+      interaction: DrugInteraction.fromMap(map['interaction']),
+      isActive: map['isActive'] ?? true,
+      acknowledged: map['acknowledged'] ?? false,
+      acknowledgedBy: map['acknowledgedBy'],
+      acknowledgedAt: map['acknowledgedAt'] != null
+          ? DateTime.parse(map['acknowledgedAt'])
+          : null,
+      notes: map['notes'],
+    );
+  }
+
+  final String id;
+  final String patientId;
+  final DrugInteraction interaction;
+  final bool isActive;
+  final bool acknowledged;
+  final String? acknowledgedBy;
+  final DateTime? acknowledgedAt;
+  final String? notes;
 
   Map<String, dynamic> toMap() {
     return {
@@ -127,27 +142,15 @@ class DrugInteractionAlert {
       'notes': notes,
     };
   }
-
-  factory DrugInteractionAlert.fromMap(Map<String, dynamic> map) {
-    return DrugInteractionAlert(
-      id: map['id'],
-      patientId: map['patientId'],
-      interaction: DrugInteraction.fromMap(map['interaction']),
-      isActive: map['isActive'] ?? true,
-      acknowledged: map['acknowledged'] ?? false,
-      acknowledgedBy: map['acknowledgedBy'],
-      acknowledgedAt: map['acknowledgedAt'] != null 
-          ? DateTime.parse(map['acknowledgedAt'])
-          : null,
-      notes: map['notes'],
-    );
-  }
 }
 
 class DrugInteractionService {
-  static DrugInteractionService? _instance;
-  static DrugInteractionService get instance => _instance ??= DrugInteractionService._();
-  DrugInteractionService._();
+  DrugInteractionService._internal();
+
+  static final DrugInteractionService _instance =
+      DrugInteractionService._internal();
+
+  static DrugInteractionService get instance => _instance;
 
   final DataService _dataService = DataService();
   final AIService _aiService = AIService();
@@ -747,10 +750,12 @@ class DrugInteractionService {
           (a) => a.id == alertId,
           orElse: () => null as DrugInteractionAlert,
         );
-        targetAlert = alert;
-        patientId = entry.key;
-        break;
-            }
+        if (alert != null) {
+          targetAlert = alert;
+          patientId = entry.key;
+          break;
+        }
+      }
 
       if (targetAlert == null) {
         return Result.error('Alert not found');
@@ -761,7 +766,7 @@ class DrugInteractionService {
         id: targetAlert.id,
         patientId: targetAlert.patientId,
         interaction: targetAlert.interaction,
-        isActive: targetAlert.isActive,
+        isActive: false, // Mark as inactive
         acknowledged: true,
         acknowledgedBy: acknowledgedBy,
         acknowledgedAt: DateTime.now(),
@@ -772,12 +777,14 @@ class DrugInteractionService {
       await _dataService.update(
         'drug_interaction_alerts',
         updatedAlert.toMap(),
-        targetAlert.id,
+        where: 'id = ?',
+        whereArgs: [alertId],
       );
 
       // Update in memory
-      final index = _activeAlerts[patientId]!.indexWhere((a) => a.id == alertId);
-      _activeAlerts[patientId]![index] = updatedAlert;
+      _activeAlerts[patientId]!.removeWhere((a) => a.id == alertId);
+      _activeAlerts[patientId]!.add(updatedAlert);
+
 
       // Store in blockchain
       await _blockchainService.storeInteractionAlert(patientId!, updatedAlert.toMap());
@@ -803,15 +810,24 @@ class DrugInteractionService {
       if (!_isInitialized) await initialize();
 
       // Find and remove the alert
-      for (final entry in _activeAlerts.entries) {
-        entry.value.removeWhere((alert) => alert.id == alertId);
+      String? patientId;
+      _activeAlerts.forEach((key, value) {
+        if (value.any((alert) => alert.id == alertId)) {
+          patientId = key;
+        }
+      });
+
+      if (patientId != null) {
+        _activeAlerts[patientId]!.removeWhere((alert) => alert.id == alertId);
       }
+
 
       // Update in database
       await _dataService.update(
         'drug_interaction_alerts',
         {'isActive': false},
-        alertId,
+        where: 'id = ?',
+        whereArgs: [alertId],
       );
 
       return Result.success(null);

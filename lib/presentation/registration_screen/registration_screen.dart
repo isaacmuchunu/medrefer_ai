@@ -32,8 +32,8 @@ class _RegistrationScreenState extends State<RegistrationScreen> with TickerProv
   // State variables
   int _currentStep = 0;
   bool _isLoading = false;
-  final bool _obscurePassword = true;
-  final bool _obscureConfirmPassword = true;
+  bool _obscurePassword = true;
+  bool _obscureConfirmPassword = true;
   bool _acceptTerms = false;
   bool _acceptPrivacy = false;
   String _selectedRole = 'Doctor';
@@ -440,7 +440,94 @@ class _RegistrationScreenState extends State<RegistrationScreen> with TickerProv
   }
 
   Widget _buildSecurityStep(ThemeData theme) {
-    return Center(child: Text('Security step - to be implemented'));
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(24),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Security',
+            style: theme.textTheme.headlineMedium?.copyWith(
+              fontWeight: FontWeight.bold,
+              color: theme.colorScheme.primary,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Create a secure password for your account',
+            style: theme.textTheme.bodyLarge?.copyWith(
+              color: theme.colorScheme.onSurface.withOpacity(0.7),
+            ),
+          ),
+          const SizedBox(height: 32),
+          TextFormField(
+            controller: _passwordController,
+            obscureText: _obscurePassword,
+            decoration: InputDecoration(
+              labelText: 'Password *',
+              hintText: 'Enter your password',
+              prefixIcon: Icon(Icons.lock_outline),
+              suffixIcon: IconButton(
+                icon: Icon(
+                  _obscurePassword ? Icons.visibility_off : Icons.visibility,
+                ),
+                onPressed: () {
+                  setState(() {
+                    _obscurePassword = !_obscurePassword;
+                  });
+                },
+              ),
+              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+            ),
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return 'Please enter a password';
+              }
+              if (value.length < 8) {
+                return 'Password must be at least 8 characters';
+              }
+              return null;
+            },
+          ),
+          const SizedBox(height: 16),
+          TextFormField(
+            controller: _confirmPasswordController,
+            obscureText: _obscureConfirmPassword,
+            decoration: InputDecoration(
+              labelText: 'Confirm Password *',
+              hintText: 'Confirm your password',
+              prefixIcon: Icon(Icons.lock_outline),
+              suffixIcon: IconButton(
+                icon: Icon(
+                  _obscureConfirmPassword
+                      ? Icons.visibility_off
+                      : Icons.visibility,
+                ),
+                onPressed: () {
+                  setState(() {
+                    _obscureConfirmPassword = !_obscureConfirmPassword;
+                  });
+                },
+              ),
+              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+            ),
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return 'Please confirm your password';
+              }
+              if (value != _passwordController.text) {
+                return 'Passwords do not match';
+              }
+              return null;
+            },
+          ),
+          const SizedBox(height: 24),
+          _buildPasswordRequirements(theme),
+          const SizedBox(height: 24),
+          _buildTermsAndPrivacy(theme),
+        ],
+      ),
+    );
   }
 
   Widget _buildVerificationStep(ThemeData theme) {
@@ -533,7 +620,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> with TickerProv
               _acceptTerms = value ?? false;
             });
           },
-          title: Text('I accept the Terms of Service'),
+          title: const Text('I accept the Terms of Service'),
           controlAffinity: ListTileControlAffinity.leading,
         ),
         CheckboxListTile(
@@ -543,7 +630,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> with TickerProv
               _acceptPrivacy = value ?? false;
             });
           },
-          title: Text('I accept the Privacy Policy'),
+          title: const Text('I accept the Privacy Policy'),
           controlAffinity: ListTileControlAffinity.leading,
         ),
       ],
@@ -602,11 +689,12 @@ class _RegistrationScreenState extends State<RegistrationScreen> with TickerProv
       );
 
       if (success) {
+        if (!mounted) return;
         Navigator.pushReplacementNamed(context, AppRoutes.loginScreen);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Registration successful! Please check your email to verify your account.'),
-            backgroundColor: theme.colorScheme.primary,
+            content: const Text('Registration successful! Please check your email to verify your account.'),
+            backgroundColor: Theme.of(context).colorScheme.primary,
           ),
         );
       } else {

@@ -10,9 +10,9 @@ import '../database/models/appointment.dart';
 
 /// Advanced Telemedicine Service with AR/VR capabilities and multi-party conferencing
 class AdvancedTelemedicineService extends ChangeNotifier {
-  static final AdvancedTelemedicineService _instance = AdvancedTelemedicineService._internal();
+  static final AdvancedTelemedicineService _instance = _AdvancedTelemedicineService();
   factory AdvancedTelemedicineService() => _instance;
-  AdvancedTelemedicineService._internal();
+  _AdvancedTelemedicineService();
 
   final DataService _dataService = DataService();
   bool _isInitialized = false;

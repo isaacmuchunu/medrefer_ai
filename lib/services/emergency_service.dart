@@ -1,11 +1,12 @@
 import 'dart:async';
+import '../core/exceptions/emergency_service_exception.dart';
 import '../database/dao/emergency_protocol_dao.dart';
 import '../database/models/emergency_protocol.dart';
 
 class EmergencyService {
+  EmergencyService._internal();
   static final EmergencyService _instance = EmergencyService._internal();
   factory EmergencyService() => _instance;
-  EmergencyService._internal();
 
   final EmergencyProtocolDao _dao = EmergencyProtocolDao();
   final StreamController<List<EmergencyProtocol>> _protocolsController = 
@@ -20,7 +21,7 @@ class EmergencyService {
       await _refreshProtocols();
       return createdProtocol;
     } catch (e) {
-      throw Exception('Failed to create emergency protocol: $e');
+      throw EmergencyServiceException('Failed to create emergency protocol: $e');
     }
   }
 
@@ -29,7 +30,7 @@ class EmergencyService {
     try {
       return await _dao.getAll();
     } catch (e) {
-      throw Exception('Failed to get emergency protocols: $e');
+      throw EmergencyServiceException('Failed to get emergency protocols: $e');
     }
   }
 
@@ -38,7 +39,7 @@ class EmergencyService {
     try {
       return await _dao.getByEmergencyType(emergencyType);
     } catch (e) {
-      throw Exception('Failed to get protocols by type: $e');
+      throw EmergencyServiceException('Failed to get protocols by type: $e');
     }
   }
 
@@ -47,7 +48,7 @@ class EmergencyService {
     try {
       return await _dao.getBySeverity(severity);
     } catch (e) {
-      throw Exception('Failed to get protocols by severity: $e');
+      throw EmergencyServiceException('Failed to get protocols by severity: $e');
     }
   }
 
@@ -56,7 +57,7 @@ class EmergencyService {
     try {
       return await _dao.getByCategory(category);
     } catch (e) {
-      throw Exception('Failed to get protocols by category: $e');
+      throw EmergencyServiceException('Failed to get protocols by category: $e');
     }
   }
 
@@ -65,7 +66,7 @@ class EmergencyService {
     try {
       return await _dao.getActiveProtocols();
     } catch (e) {
-      throw Exception('Failed to get active protocols: $e');
+      throw EmergencyServiceException('Failed to get active protocols: $e');
     }
   }
 
@@ -74,7 +75,7 @@ class EmergencyService {
     try {
       return await _dao.getCriticalProtocols();
     } catch (e) {
-      throw Exception('Failed to get critical protocols: $e');
+      throw EmergencyServiceException('Failed to get critical protocols: $e');
     }
   }
 
@@ -83,7 +84,7 @@ class EmergencyService {
     try {
       return await _dao.getByDepartment(departmentId);
     } catch (e) {
-      throw Exception('Failed to get protocols by department: $e');
+      throw EmergencyServiceException('Failed to get protocols by department: $e');
     }
   }
 
@@ -92,7 +93,7 @@ class EmergencyService {
     try {
       return await _dao.getProtocolsNeedingReview();
     } catch (e) {
-      throw Exception('Failed to get protocols needing review: $e');
+      throw EmergencyServiceException('Failed to get protocols needing review: $e');
     }
   }
 
@@ -101,7 +102,7 @@ class EmergencyService {
     try {
       return await _dao.getApprovedProtocols();
     } catch (e) {
-      throw Exception('Failed to get approved protocols: $e');
+      throw EmergencyServiceException('Failed to get approved protocols: $e');
     }
   }
 
@@ -110,7 +111,7 @@ class EmergencyService {
     try {
       return await _dao.getPublicProtocols();
     } catch (e) {
-      throw Exception('Failed to get public protocols: $e');
+      throw EmergencyServiceException('Failed to get public protocols: $e');
     }
   }
 
@@ -121,7 +122,7 @@ class EmergencyService {
       await _refreshProtocols();
       return result > 0;
     } catch (e) {
-      throw Exception('Failed to update protocol status: $e');
+      throw EmergencyServiceException('Failed to update protocol status: $e');
     }
   }
 
@@ -132,7 +133,7 @@ class EmergencyService {
       await _refreshProtocols();
       return result > 0;
     } catch (e) {
-      throw Exception('Failed to approve protocol: $e');
+      throw EmergencyServiceException('Failed to approve protocol: $e');
     }
   }
 
@@ -143,7 +144,7 @@ class EmergencyService {
       await _refreshProtocols();
       return result > 0;
     } catch (e) {
-      throw Exception('Failed to update review date: $e');
+      throw EmergencyServiceException('Failed to update review date: $e');
     }
   }
 
@@ -152,7 +153,7 @@ class EmergencyService {
     try {
       return await _dao.searchProtocols(query);
     } catch (e) {
-      throw Exception('Failed to search protocols: $e');
+      throw EmergencyServiceException('Failed to search protocols: $e');
     }
   }
 
@@ -163,21 +164,24 @@ class EmergencyService {
       final criticalProtocols = await getCriticalProtocols();
       final protocolsNeedingReview = await getProtocolsNeedingReview();
       final activeProtocols = await getActiveProtocols();
-      
+      final totalProtocols = summary['total_protocols'] ?? 0;
+      final activeProtocolCount = summary['active_protocols'] ?? 0;
+
       return {
         'summary': summary,
         'critical_protocols': criticalProtocols,
         'protocols_needing_review': protocolsNeedingReview,
         'active_protocols': activeProtocols,
-        'total_protocols': summary['total_protocols'],
-        'active_count': summary['active_protocols'],
+        'total_protocols': totalProtocols,
+        'active_count': activeProtocolCount,
         'critical_count': summary['critical_protocols'],
         'needs_review_count': summary['needs_review'],
-        'approval_rate': summary['total_protocols'] > 0 ? 
-          (summary['active_protocols'] / summary['total_protocols']) * 100 : 0,
+        'approval_rate': totalProtocols > 0
+            ? (activeProtocolCount / totalProtocols) * 100
+            : 0.0,
       };
     } catch (e) {
-      throw Exception('Failed to get emergency dashboard: $e');
+      throw EmergencyServiceException('Failed to get emergency dashboard: $e');
     }
   }
 
@@ -215,7 +219,7 @@ class EmergencyService {
       
       return alerts;
     } catch (e) {
-      throw Exception('Failed to get emergency alerts: $e');
+      throw EmergencyServiceException('Failed to get emergency alerts: $e');
     }
   }
 
@@ -237,7 +241,7 @@ class EmergencyService {
         'contacts': _getEmergencyContacts(protocols),
       };
     } catch (e) {
-      throw Exception('Failed to get emergency response plan: $e');
+      throw EmergencyServiceException('Failed to get emergency response plan: $e');
     }
   }
 
