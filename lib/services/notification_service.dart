@@ -5,10 +5,10 @@ import 'package:flutter/services.dart';
 
 /// Service for managing notifications and alerts in the MedRefer AI app
 class NotificationService extends ChangeNotifier {
+  factory NotificationService() => _instance;
   _NotificationService();
 
   static final NotificationService _instance = _NotificationService();
-  factory NotificationService() => _instance;
 
   // Notification state
   List<AppNotification> _notifications = [];
@@ -75,9 +75,9 @@ class NotificationService extends ChangeNotifier {
     
     // Trigger haptic feedback for important notifications
     if (type == NotificationType.urgent || type == NotificationType.error) {
-      HapticFeedback.heavyImpact();
+      await HapticFeedback.heavyImpact();
     } else {
-      HapticFeedback.lightImpact();
+      await HapticFeedback.lightImpact();
     }
     
     notifyListeners();
@@ -228,7 +228,28 @@ enum NotificationType {
 
 /// App notification model
 class AppNotification {
-  const AppNotification({
+  factory AppNotification({
+    required String id,
+    required String title,
+    required String message,
+    required NotificationType type,
+    required DateTime timestamp,
+    bool isRead = false,
+    String? actionRoute,
+    Map<String, dynamic>? data,
+  }) {
+    return AppNotification._internal(
+      id: id,
+      title: title,
+      message: message,
+      type: type,
+      timestamp: timestamp,
+      isRead: isRead,
+      actionRoute: actionRoute,
+      data: data,
+    );
+  }
+  const AppNotification._internal({
     required this.id,
     required this.title,
     required this.message,

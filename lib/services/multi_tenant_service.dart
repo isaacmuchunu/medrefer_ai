@@ -1717,7 +1717,16 @@ class TenantAnalytics {
 }
 
 class DateRange {
-  DateRange({
+  factory DateRange({
+    required DateTime start,
+    required DateTime end,
+  }) {
+    return DateRange._internal(
+      start: start,
+      end: end,
+    );
+  }
+  DateRange._internal({
     required this.start,
     required this.end,
   });
@@ -1726,21 +1735,192 @@ class DateRange {
 }
 
 class UserMetrics {
-  UserMetrics({
-    required this.totalUsers,
-    required this.activeUsers,
-    required this.newUsers,
-    required this.userGrowthRate,
-  });
-  final int totalUsers;
-  final int activeUsers;
-  final int newUsers;
-  final double userGrowthRate;
-}
-
+  factory UserMetrics({
+    required int totalUsers,
+    required int activeUsers,
+    required int newUsers,
+    required double userGrowthRate,
+  }) {
+    return UserMetrics._internal(
+      totalUsers: totalUsers,
+      activeUsers: activeUsers,
+      newUsers: newUsers,
+      userGrowthRate: userGrowthRate,
+    );
 class UsageMetrics {
-  UsageMetrics({
-    required this.totalRequests,
+  factory UsageMetrics({
+    required int totalRequests,
+    required int storageUsed,
+    required int bandwidthUsed,
+    required double averageResponseTime,
+  }) {
+    return UsageMetrics._internal(
+      totalRequests: totalRequests,
+      storageUsed: storageUsed,
+      bandwidthUsed: bandwidthUsed,
+      averageResponseTime: averageResponseTime,
+    );
+class FinancialMetrics {
+  factory FinancialMetrics({
+    required double totalRevenue,
+    required double monthlyRecurringRevenue,
+    required double churnRate,
+    required double averageRevenuePerUser,
+  }) {
+    return FinancialMetrics._internal(
+      totalRevenue: totalRevenue,
+      monthlyRecurringRevenue: monthlyRecurringRevenue,
+      churnRate: churnRate,
+      averageRevenuePerUser: averageRevenuePerUser,
+    );
+class PerformanceMetrics {
+  factory PerformanceMetrics({
+    required double uptime,
+    required double errorRate,
+    required double averageLoadTime,
+    required double throughput,
+  }) {
+    return PerformanceMetrics._internal(
+      uptime: uptime,
+      errorRate: errorRate,
+      averageLoadTime: averageLoadTime,
+      throughput: throughput,
+    );
+  }
+  PerformanceMetrics._internal({
+class TenantCreationResult {
+  factory TenantCreationResult({
+    required bool success,
+    required String tenantId,
+    Tenant? tenant,
+    String? error,
+  }) {
+    return TenantCreationResult._internal(
+      success: success,
+      tenantId: tenantId,
+      tenant: tenant,
+      error: error,
+    );
+class TenantSwitchResult {
+  factory TenantSwitchResult({
+    required bool success,
+    required String tenantId,
+    Tenant? tenant,
+    String? error,
+  }) {
+    return TenantSwitchResult._internal(
+      success: success,
+      tenantId: tenantId,
+      tenant: tenant,
+      error: error,
+    );
+class TenantConfigResult {
+  factory TenantConfigResult({
+    required bool success,
+    required String tenantId,
+    TenantConfiguration? configuration,
+    String? error,
+  }) {
+    return TenantConfigResult._internal(
+      success: success,
+      tenantId: tenantId,
+      configuration: configuration,
+      error: error,
+    );
+class TenantCustomizationResult {
+  factory TenantCustomizationResult({
+    required bool success,
+    required String tenantId,
+    TenantCustomization? customization,
+    String? error,
+  }) {
+    return TenantCustomizationResult._internal(
+      success: success,
+      tenantId: tenantId,
+      customization: customization,
+      error: error,
+    );
+class ResourceQuotaResult {
+  factory ResourceQuotaResult({
+    required bool success,
+    required String tenantId,
+    ResourceQuota? quota,
+    String? error,
+  }) {
+    return ResourceQuotaResult._internal(
+      success: success,
+      tenantId: tenantId,
+      quota: quota,
+      error: error,
+    );
+class ResourceLimitCheckResult {
+  factory ResourceLimitCheckResult({
+    required bool success,
+    required String tenantId,
+    bool hasViolations = false,
+    List<ResourceViolation> violations = const [],
+    String? error,
+  }) {
+    return ResourceLimitCheckResult._internal(
+      success: success,
+      tenantId: tenantId,
+      hasViolations: hasViolations,
+      violations: violations,
+      error: error,
+    );
+class SubscriptionResult {
+  factory SubscriptionResult({
+    required bool success,
+    required String tenantId,
+    Subscription? subscription,
+    String? error,
+  }) {
+    return SubscriptionResult._internal(
+      success: success,
+      tenantId: tenantId,
+      subscription: subscription,
+      error: error,
+    );
+class TenantOperationResult {
+  factory TenantOperationResult({
+    required bool success,
+    required String tenantId,
+    String? operation,
+    String? error,
+  }) {
+    return TenantOperationResult._internal(
+      success: success,
+      tenantId: tenantId,
+      operation: operation,
+      error: error,
+    );
+class TenantAnalyticsResult {
+  factory TenantAnalyticsResult({
+    required bool success,
+    required String tenantId,
+    TenantAnalytics? analytics,
+    String? error,
+  }) {
+    return TenantAnalyticsResult._internal(
+      success: success,
+      tenantId: tenantId,
+      analytics: analytics,
+      error: error,
+    );
+  }
+  TenantAnalyticsResult._internal({
+    required this.success,
+    required this.tenantId,
+    this.analytics,
+    this.error,
+  });
+  final bool success;
+  final String tenantId;
+  final TenantAnalytics? analytics;
+  final String? error;
+} final List<ResourceViolation> violations;
+  final String? error;
+}   required this.totalRequests,
     required this.storageUsed,
     required this.bandwidthUsed,
     required this.averageResponseTime,

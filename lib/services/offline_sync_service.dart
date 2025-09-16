@@ -10,10 +10,10 @@ import '../database/database.dart';
 /// Advanced Offline Sync Queue Service
 /// Manages offline operations, conflict resolution, and intelligent retry logic
 class OfflineSyncService extends ChangeNotifier {
+  factory OfflineSyncService() => _instance;
   _OfflineSyncService();
 
   static final OfflineSyncService _instance = _OfflineSyncService();
-  factory OfflineSyncService() => _instance;
 
   // Configuration
   static const int _maxRetries = 5;
@@ -950,9 +950,9 @@ class OfflineSyncService extends ChangeNotifier {
     );
     
     return SyncStatistics(
-      pendingCount: pending.first['count'] as int,
-      completedCount: completed.first['count'] as int,
-      failedCount: failed.first['count'] as int,
+      pendingCount: (pending.first['count'] as int?) ?? 0,
+      completedCount: (completed.first['count'] as int?) ?? 0,
+      failedCount: (failed.first['count'] as int?) ?? 0,
       conflictsResolved: _conflictsResolved,
       lastSyncTime: _lastSyncTime,
       averageSyncTime: _calculateAverageSyncTime(),
