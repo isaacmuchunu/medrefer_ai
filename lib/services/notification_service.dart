@@ -312,5 +312,6 @@ class AppNotification {
       case NotificationType.appointment:
         return Colors.purple;
     }
+    return Colors.grey;
   }
 }

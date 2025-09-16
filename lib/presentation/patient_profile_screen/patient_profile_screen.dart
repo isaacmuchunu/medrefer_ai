@@ -1,4 +1,16 @@
-import '../../core/app_export.dart';
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import '../../database/models/condition.dart';
+import '../../database/models/document.dart';
+import '../../database/models/emergency_contact.dart';
+import '../../database/models/medical_history.dart';
+import '../../database/models/medication.dart';
+import '../../database/models/patient.dart';
+import '../../database/models/referral.dart';
+import '../../database/models/vital_statistics.dart';
+import '../../database/services/data_service.dart';
+import '../../routes/app_routes.dart';
 
 class PatientProfileScreen extends StatefulWidget {
   final String patientId;
