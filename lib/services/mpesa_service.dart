@@ -7,10 +7,10 @@ import '../config/mpesa_config.dart';
 
 /// M-Pesa payment service for handling mobile money transactions
 class MpesaService extends ChangeNotifier {
+  factory MpesaService() => _instance;
   _MpesaService();
 
   static final MpesaService _instance = _MpesaService();
-  factory MpesaService() => _instance;
 
   // M-Pesa API Configuration using MpesaConfig
   static String get _baseUrl => MpesaConfig.baseUrl;
@@ -174,7 +174,7 @@ class MpesaService extends ChangeNotifier {
         notifyListeners();
 
         // Start polling for transaction status
-        unawaited(_pollTransactionStatus(transactionId));
+        _pollTransactionStatus(transactionId);
 
         return MpesaPaymentResult(
           success: true,
@@ -365,7 +365,32 @@ class MpesaService extends ChangeNotifier {
 
 /// M-Pesa transaction model
 class MpesaTransaction {
-  MpesaTransaction({
+  factory MpesaTransaction({
+    required String id,
+    required String checkoutRequestId,
+    required String merchantRequestId,
+    required String phoneNumber,
+    required double amount,
+    required String accountReference,
+    required String transactionDesc,
+    required MpesaTransactionStatus status,
+    required DateTime timestamp,
+    String? mpesaReceiptNumber,
+  }) {
+    return MpesaTransaction._internal(
+      id: id,
+      checkoutRequestId: checkoutRequestId,
+      merchantRequestId: merchantRequestId,
+      phoneNumber: phoneNumber,
+      amount: amount,
+      accountReference: accountReference,
+      transactionDesc: transactionDesc,
+      status: status,
+      timestamp: timestamp,
+      mpesaReceiptNumber: mpesaReceiptNumber,
+    );
+  }
+  MpesaTransaction._internal({
     required this.id,
     required this.checkoutRequestId,
     required this.merchantRequestId,
@@ -409,7 +434,22 @@ class MpesaTransaction {
 
 /// M-Pesa payment result
 class MpesaPaymentResult {
-  MpesaPaymentResult({
+  factory MpesaPaymentResult({
+    required bool success,
+    String? transactionId,
+    String? checkoutRequestId,
+    required String message,
+    String? errorCode,
+  }) {
+    return MpesaPaymentResult._internal(
+      success: success,
+      transactionId: transactionId,
+      checkoutRequestId: checkoutRequestId,
+      message: message,
+      errorCode: errorCode,
+    );
+  }
+  MpesaPaymentResult._internal({
     required this.success,
     this.transactionId,
     this.checkoutRequestId,

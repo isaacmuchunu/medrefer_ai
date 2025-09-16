@@ -18,10 +18,10 @@ import '../core/app_export.dart';
 /// - Database partitioning strategies
 /// - Tenant monitoring and analytics
 class MultiTenantService extends ChangeNotifier {
+  factory MultiTenantService() => _instance;
   _MultiTenantService();
 
   static final MultiTenantService _instance = _MultiTenantService();
-  factory MultiTenantService() => _instance;
 
   Database? _tenantDb;
   bool _isInitialized = false;
@@ -934,7 +934,7 @@ class MultiTenantService extends ChangeNotifier {
       tenantId: tenantId,
       partitionName: 'tenant_${tenantId}_data',
       strategy: PartitionStrategy.schema,
-      connectionString: 'sqlite://tenant_${tenantId}.db',
+      connectionString: 'sqlite://tenant_$tenantId.db',
       isActive: true,
       createdAt: DateTime.now(),
     );
@@ -1199,7 +1199,30 @@ enum ResourceType { users, storage, bandwidth, connections, requests }
 enum ViolationSeverity { low, medium, high, critical }
 
 class Tenant {
-  Tenant({
+  factory Tenant({
+    required String tenantId,
+    required String name,
+    required String adminEmail,
+    required TenantPlan plan,
+    required TenantStatus status,
+    required DateTime createdAt,
+    DateTime? lastActiveAt,
+    String? suspensionReason,
+    required Map<String, dynamic> settings,
+  }) {
+    return Tenant._internal(
+      tenantId: tenantId,
+      name: name,
+      adminEmail: adminEmail,
+      plan: plan,
+      status: status,
+      createdAt: createdAt,
+      lastActiveAt: lastActiveAt,
+      suspensionReason: suspensionReason,
+      settings: settings,
+    );
+  }
+  Tenant._internal({
     required this.tenantId,
     required this.name,
     required this.adminEmail,
@@ -1222,7 +1245,24 @@ class Tenant {
 }
 
 class TenantConfiguration {
-  TenantConfiguration({
+  factory TenantConfiguration({
+    required String tenantId,
+    required Map<String, dynamic> databaseSettings,
+    required Map<String, dynamic> securitySettings,
+    required Map<String, bool> featureFlags,
+    required Map<String, dynamic> integrationSettings,
+    required Map<String, dynamic> customSettings,
+  }) {
+    return TenantConfiguration._internal(
+      tenantId: tenantId,
+      databaseSettings: databaseSettings,
+      securitySettings: securitySettings,
+      featureFlags: featureFlags,
+      integrationSettings: integrationSettings,
+      customSettings: customSettings,
+    );
+  }
+  TenantConfiguration._internal({
     required this.tenantId,
     required this.databaseSettings,
     required this.securitySettings,
@@ -1239,7 +1279,20 @@ class TenantConfiguration {
 }
 
 class TenantCustomization {
-  TenantCustomization({
+  factory TenantCustomization({
+    required String tenantId,
+    required TenantBranding branding,
+    required TenantLocalization localization,
+    required Map<String, dynamic> uiCustomizations,
+  }) {
+    return TenantCustomization._internal(
+      tenantId: tenantId,
+      branding: branding,
+      localization: localization,
+      uiCustomizations: uiCustomizations,
+    );
+  }
+  TenantCustomization._internal({
     required this.tenantId,
     required this.branding,
     required this.localization,
@@ -1252,7 +1305,22 @@ class TenantCustomization {
 }
 
 class TenantBranding {
-  TenantBranding({
+  factory TenantBranding({
+    required String primaryColor,
+    required String secondaryColor,
+    String? logo,
+    String? favicon,
+    String? customCss,
+  }) {
+    return TenantBranding._internal(
+      primaryColor: primaryColor,
+      secondaryColor: secondaryColor,
+      logo: logo,
+      favicon: favicon,
+      customCss: customCss,
+    );
+  }
+  TenantBranding._internal({
     required this.primaryColor,
     required this.secondaryColor,
     this.logo,
@@ -1267,7 +1335,18 @@ class TenantBranding {
 }
 
 class TenantLocalization {
-  TenantLocalization({
+  factory TenantLocalization({
+    required String defaultLanguage,
+    required List<String> supportedLanguages,
+    required Map<String, Map<String, String>> customTranslations,
+  }) {
+    return TenantLocalization._internal(
+      defaultLanguage: defaultLanguage,
+      supportedLanguages: supportedLanguages,
+      customTranslations: customTranslations,
+    );
+  }
+  TenantLocalization._internal({
     required this.defaultLanguage,
     required this.supportedLanguages,
     required this.customTranslations,
@@ -1278,7 +1357,28 @@ class TenantLocalization {
 }
 
 class ResourceQuota {
-  ResourceQuota({
+  factory ResourceQuota({
+    required String tenantId,
+    required int maxUsers,
+    required int maxStorage,
+    required int maxBandwidth,
+    required int maxConnections,
+    required int maxRequests,
+    required DateTime createdAt,
+    required DateTime updatedAt,
+  }) {
+    return ResourceQuota._internal(
+      tenantId: tenantId,
+      maxUsers: maxUsers,
+      maxStorage: maxStorage,
+      maxBandwidth: maxBandwidth,
+      maxConnections: maxConnections,
+      maxRequests: maxRequests,
+      createdAt: createdAt,
+      updatedAt: updatedAt,
+    );
+  }
+  ResourceQuota._internal({
     required this.tenantId,
     required this.maxUsers,
     required this.maxStorage,
@@ -1299,24 +1399,183 @@ class ResourceQuota {
 }
 
 class ResourceUsage {
-  ResourceUsage({
+  factory ResourceUsage({
+    required String tenantId,
+    required double cpuUsage,
+    required int memoryUsage,
+    required int storageUsage,
+    required int bandwidthUsage,
+    required int activeConnections,
+    int activeUsers = 0,
+    required DateTime lastUpdated,
+  }) {
+    return ResourceUsage._internal(
+      tenantId: tenantId,
+      cpuUsage: cpuUsage,
+      memoryUsage: memoryUsage,
+      storageUsage: storageUsage,
+      bandwidthUsage: bandwidthUsage,
+      activeConnections: activeConnections,
+      activeUsers: activeUsers,
+      lastUpdated: lastUpdated,
+    );
+class Subscription {
+  factory Subscription({
+    required String tenantId,
+    required String subscriptionId,
+    required TenantPlan plan,
+    required SubscriptionStatus status,
+    required DateTime startDate,
+    required DateTime endDate,
+    required bool autoRenew,
+    required List<String> features,
+  }) {
+    return Subscription._internal(
+      tenantId: tenantId,
+      subscriptionId: subscriptionId,
+      plan: plan,
+      status: status,
+      startDate: startDate,
+      endDate: endDate,
+      autoRenew: autoRenew,
+      features: features,
+    );
+class BillingAccount {
+  factory BillingAccount({
+    required String tenantId,
+    required String accountId,
+    required TenantPlan plan,
+    required BillingCycle billingCycle,
+    required DateTime nextBillingDate,
+    String? paymentMethod,
+    Map<String, dynamic>? billingAddress,
+  }) {
+    return BillingAccount._internal(
+      tenantId: tenantId,
+      accountId: accountId,
+      plan: plan,
+      billingCycle: billingCycle,
+      nextBillingDate: nextBillingDate,
+      paymentMethod: paymentMethod,
+      billingAddress: billingAddress,
+    );
+class TenantSecurity {
+  factory TenantSecurity({
+    required String tenantId,
+    required String encryptionKey,
+    required Map<String, dynamic> accessPolicies,
+    required Map<String, dynamic> auditSettings,
+    Map<String, dynamic>? ssoSettings,
+  }) {
+    return TenantSecurity._internal(
+      tenantId: tenantId,
+      encryptionKey: encryptionKey,
+      accessPolicies: accessPolicies,
+      auditSettings: auditSettings,
+      ssoSettings: ssoSettings,
+    );
+class TenantUser {
+  factory TenantUser({
+    required String userId,
+    required String tenantId,
+    required String email,
+    required String role,
+    required DateTime createdAt,
+    DateTime? lastLoginAt,
+    required bool isActive,
+  }) {
+    return TenantUser._internal(
+      userId: userId,
+      tenantId: tenantId,
+      email: email,
+      role: role,
+      createdAt: createdAt,
+      lastLoginAt: lastLoginAt,
+      isActive: isActive,
+    );
+class DatabasePartition {
+  factory DatabasePartition({
+    required String tenantId,
+    required String partitionName,
+    required PartitionStrategy strategy,
+    required String connectionString,
+    required bool isActive,
+    required DateTime createdAt,
+  }) {
+    return DatabasePartition._internal(
+      tenantId: tenantId,
+      partitionName: partitionName,
+      strategy: strategy,
+      connectionString: connectionString,
+      isActive: isActive,
+      createdAt: createdAt,
+    );
+class TenantMetrics {
+  factory TenantMetrics({
+    required String tenantId,
+    required int activeUsers,
+    required int totalRequests,
+    required int storageUsed,
+    required int bandwidthUsed,
+    required DateTime lastUpdated,
+  }) {
+    return TenantMetrics._internal(
+      tenantId: tenantId,
+      activeUsers: activeUsers,
+      totalRequests: totalRequests,
+      storageUsed: storageUsed,
+      bandwidthUsed: bandwidthUsed,
+      lastUpdated: lastUpdated,
+    );
+class ResourceViolation {
+  factory ResourceViolation({
+    required ResourceType type,
+    required int limit,
+    required int current,
+    required ViolationSeverity severity,
+  }) {
+    return ResourceViolation._internal(
+      type: type,
+      limit: limit,
+      current: current,
+      severity: severity,
+    );
+class TenantAnalytics {
+  factory TenantAnalytics({
+    required String tenantId,
+    required DateRange period,
+    required UserMetrics userMetrics,
+    required UsageMetrics usageMetrics,
+    required FinancialMetrics financialMetrics,
+    required PerformanceMetrics performanceMetrics,
+  }) {
+    return TenantAnalytics._internal(
+      tenantId: tenantId,
+      period: period,
+      userMetrics: userMetrics,
+      usageMetrics: usageMetrics,
+      financialMetrics: financialMetrics,
+      performanceMetrics: performanceMetrics,
+    );
+  }
+  TenantAnalytics._internal({
     required this.tenantId,
-    required this.cpuUsage,
-    required this.memoryUsage,
-    required this.storageUsage,
-    required this.bandwidthUsage,
-    required this.activeConnections,
-    this.activeUsers = 0,
-    required this.lastUpdated,
+    required this.period,
+    required this.userMetrics,
+    required this.usageMetrics,
+    required this.financialMetrics,
+    required this.performanceMetrics,
   });
   final String tenantId;
-  double cpuUsage;
-  int memoryUsage;
-  int storageUsage;
-  int bandwidthUsage;
-  int activeConnections;
-  int activeUsers;
-  DateTime lastUpdated;
+  final DateRange period;
+  final UserMetrics userMetrics;
+  final UsageMetrics usageMetrics;
+  final FinancialMetrics financialMetrics;
+  final PerformanceMetrics performanceMetrics;
+} DateTime? lastLoginAt;
+  bool isActive;
+} bool autoRenew;
+  List<String> features;
 }
 
 class Subscription {
