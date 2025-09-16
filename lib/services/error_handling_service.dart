@@ -359,7 +359,6 @@ class ErrorHandlingService {
         return Icons.business;
       case ErrorType.framework:
       case ErrorType.platform:
-      default:
         return Icons.error;
     }
   }
@@ -429,6 +428,13 @@ class AppError {
     required this.context,
     required this.userAction,
   });
+  final ErrorType type;
+  final String message;
+  final String stackTrace;
+  final DateTime timestamp;
+  final ErrorSeverity severity;
+  final String context;
+  final String userAction;
 
   factory AppError.fromJson(Map<String, dynamic> json) {
     return AppError(
@@ -441,14 +447,6 @@ class AppError {
       userAction: json['userAction'],
     );
   }
-
-  final ErrorType type;
-  final String message;
-  final String stackTrace;
-  final DateTime timestamp;
-  final ErrorSeverity severity;
-  final String context;
-  final String userAction;
 
   Map<String, dynamic> toJson() {
     return {

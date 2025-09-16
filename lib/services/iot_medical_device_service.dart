@@ -6,11 +6,10 @@ import '../database/services/data_service.dart';
 
 /// IoT Medical Device Integration Service for real-time patient monitoring
 class IoTMedicalDeviceService extends ChangeNotifier {
-  static final IoTMedicalDeviceService _instance = _IoTMedicalDeviceService();
   factory IoTMedicalDeviceService() => _instance;
   _IoTMedicalDeviceService();
+  static final IoTMedicalDeviceService _instance = _IoTMedicalDeviceService();
 
-  final DataService _dataService = DataService();
   bool _isInitialized = false;
   
   // Device management
@@ -26,11 +25,9 @@ class IoTMedicalDeviceService extends ChangeNotifier {
   
   // Device protocols and configurations
   final Map<DeviceType, DeviceProtocol> _deviceProtocols = {};
-  final Map<String, DeviceCalibration> _deviceCalibrations = {};
   
   // Data analytics and ML
   final Map<String, PatientVitalTrends> _vitalTrends = {};
-  final Map<String, List<AnomalyDetection>> _anomalies = {};
   
   // Configuration
   static const Duration _readingInterval = Duration(seconds: 30);
@@ -735,7 +732,7 @@ class DeviceReading {
   DeviceReading({
     required this.id,
     required this.deviceId,
-    required this.patientId,
+    this.patientId,
     required this.timestamp,
     required this.parameters,
     required this.qualityScore,
@@ -748,23 +745,13 @@ class DeviceReading {
   Map<String, dynamic> parameters;
   double qualityScore;
   bool isValidated;
-
-  DeviceReading({
-    required this.id,
-    required this.deviceId,
-    required this.patientId,
-    required this.timestamp,
-    required this.parameters,
-    required this.qualityScore,
-    required this.isValidated,
-  });
 }
 
 class DeviceAlert {
   DeviceAlert({
     required this.id,
     required this.deviceId,
-    required this.patientId,
+    this.patientId,
     required this.parameter,
     required this.value,
     required this.severity,
@@ -785,20 +772,6 @@ class DeviceAlert {
   bool isAcknowledged;
   DateTime? acknowledgedAt;
   String? acknowledgedBy;
-
-  DeviceAlert({
-    required this.id,
-    required this.deviceId,
-    required this.patientId,
-    required this.parameter,
-    required this.value,
-    required this.severity,
-    required this.message,
-    required this.timestamp,
-    required this.isAcknowledged,
-    this.acknowledgedAt,
-    this.acknowledgedBy,
-  });
 }
 
 class PatientVitalTrends {
@@ -810,12 +783,6 @@ class PatientVitalTrends {
   String patientId;
   Map<String, VitalTrend> trends;
   DateTime lastUpdated;
-
-  PatientVitalTrends({
-    required this.patientId,
-    required this.trends,
-    required this.lastUpdated,
-  });
 
   Map<String, dynamic> toJson() {
     return {
@@ -864,14 +831,6 @@ class DeviceCalibration {
   String calibratedBy;
   Map<String, dynamic> calibrationData;
   DateTime nextCalibrationDue;
-
-  DeviceCalibration({
-    required this.deviceId,
-    required this.calibratedAt,
-    required this.calibratedBy,
-    required this.calibrationData,
-    required this.nextCalibrationDue,
-  });
 }
 
 class AnomalyDetection {
@@ -893,17 +852,6 @@ class AnomalyDetection {
   double anomalyScore;
   DateTime detectedAt;
   String description;
-
-  AnomalyDetection({
-    required this.id,
-    required this.patientId,
-    required this.parameter,
-    required this.value,
-    required this.expectedValue,
-    required this.anomalyScore,
-    required this.detectedAt,
-    required this.description,
-  });
 }
 
 enum DeviceType {

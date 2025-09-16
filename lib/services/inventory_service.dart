@@ -3,9 +3,10 @@ import '../database/dao/inventory_item_dao.dart';
 import '../database/models/inventory_item.dart';
 
 class InventoryService {
-  InventoryService._();
-  static final InventoryService _instance = InventoryService._();
   factory InventoryService() => _instance;
+  InventoryService._();
+
+  static final InventoryService _instance = InventoryService._();
 
   final InventoryItemDao _dao = InventoryItemDao();
   final StreamController<List<InventoryItem>> _inventoryController = 
@@ -16,9 +17,9 @@ class InventoryService {
   // Create a new inventory item
   Future<InventoryItem> createItem(InventoryItem item) async {
     try {
-      final createdItem = await _dao.insert(item);
+      await _dao.insert(item);
       await _refreshInventory();
-      return createdItem;
+      return item;
     } catch (e) {
       throw Exception('Failed to create inventory item: $e');
     }
@@ -27,7 +28,7 @@ class InventoryService {
   // Get all items
   Future<List<InventoryItem>> getAllItems() async {
     try {
-      return await _dao.getAll();
+      return await _dao.findAll();
     } catch (e) {
       throw Exception('Failed to get inventory items: $e');
     }
@@ -414,7 +415,7 @@ class InventoryService {
   // Refresh inventory stream
   Future<void> _refreshInventory() async {
     try {
-      final items = await _dao.getAll();
+      final items = await _dao.findAll();
       _inventoryController.add(items);
     } catch (e) {
       _inventoryController.addError(e);
