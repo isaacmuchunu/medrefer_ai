@@ -1,12 +1,16 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+
 import 'package:flutter/foundation.dart';
 import 'package:path_provider/path_provider.dart';
 
 /// Comprehensive logging service for the MedRefer AI app
 class LoggingService {
+  factory LoggingService() => _instance;
   LoggingService._internal();
+
+  static final LoggingService _instance = LoggingService._internal();
 
   // Configuration
   static const int _maxLogFileSize = 5 * 1024 * 1024; // 5MB
@@ -24,26 +28,25 @@ class LoggingService {
   List<LogEntry> get recentLogs => List.unmodifiable(_inMemoryLogs);
   bool get isInitialized => _isInitialized;
 
-  static final LoggingService _instance = LoggingService._internal();
-  factory LoggingService() => _instance;
-
   /// Initialize the logging service
   Future<void> initialize() async {
     if (_isInitialized) return;
     
     try {
       // Get log directory
-      final appDir = await getApplicationDocumentsDirectory();
-      _logDirectory = '${appDir.path}/logs';
-      
-      // Create log directory if it doesn't exist
-      final logDir = Directory(_logDirectory!);
-      if (!await logDir.exists()) {
-        await logDir.create(recursive: true);
+      if (!kIsWeb) {
+        final appDir = await getApplicationDocumentsDirectory();
+        _logDirectory = '${appDir.path}/logs';
+        
+        // Create log directory if it doesn't exist
+        final logDir = Directory(_logDirectory!);
+        if (!await logDir.exists()) {
+          await logDir.create(recursive: true);
+        }
+        
+        // Clean up old log files
+        await _cleanupOldLogs();
       }
-      
-      // Clean up old log files
-      await _cleanupOldLogs();
       
       _isInitialized = true;
       
@@ -133,8 +136,8 @@ class LoggingService {
     _log(LogLevel.debug, 'Database: $operation on $table', context: context ?? 'Database', metadata: dbMetadata);
   }
 
-  /// Internal logging method
-  void _log(LogLevel level, String message, {
+  /// Log a message with a specific level
+  void log(LogLevel level, String message, {
     String? context,
     Map<String, dynamic>? metadata,
     Object? error,
@@ -169,9 +172,12 @@ class LoggingService {
       _printToConsole(logEntry);
     }
 
-    // Write to file for important logs
-    if (level.index >= LogLevel.warning.index) {
-      _writeToFile(logEntry);
+    // Write to file (asynchronously)
+    _writeToFile(entry);
+    
+    // Also print to console in debug mode
+    if (kDebugMode) {
+      _printToConsole(entry);
     }
   }
 
@@ -192,103 +198,106 @@ class LoggingService {
     }
   }
 
-  /// Write log entry to file
+  /// Write a log entry to the current log file
   Future<void> _writeToFile(LogEntry entry) async {
+    if (kIsWeb || _logDirectory == null) return;
+
+    final logFile = File('$_logDirectory/medrefer.log');
+    
     try {
-      if (_logDirectory == null) return;
+      await logFile.writeAsString('${entry.toFileFormat()}\n', mode: FileMode.append, flush: true);
       
-      final logFile = File('$_logDirectory/app_${DateTime.now().toIso8601String().split('T')[0]}.log');
-      final logLine = '${entry.toJson()}\n';
-      
-      await logFile.writeAsString(logLine, mode: FileMode.append);
-      
-      // Check file size and rotate if necessary
+      // Check if log rotation is needed
       final fileSize = await logFile.length();
       if (fileSize > _maxLogFileSize) {
-        await _rotateLogFile(logFile);
+        await _rotateLogs();
       }
     } catch (e) {
-      debugPrint('Failed to write log to file: $e');
+      if (kDebugMode) {
+        debugPrint('LoggingService: Failed to write to log file: $e');
+      }
     }
   }
 
-  /// Rotate log file when it gets too large
-  Future<void> _rotateLogFile(File logFile) async {
-    try {
-      final timestamp = DateTime.now().millisecondsSinceEpoch;
-      final rotatedFile = File('${logFile.path}.$timestamp');
-      await logFile.rename(rotatedFile.path);
-    } catch (e) {
-      debugPrint('Failed to rotate log file: $e');
+  /// Rotate log files
+  Future<void> _rotateLogs() async {
+    if (kIsWeb || _logDirectory == null) return;
+
+    final logDirectory = Directory(_logDirectory!);
+    // 1. Delete the oldest log file if we've reached the max
+    final oldLog = File('$logDirectory/medrefer.log.$_maxLogFiles');
+    if (await oldLog.exists()) {
+      await oldLog.delete();
     }
+    
+    // 2. Shift remaining log files
+    for (int i = _maxLogFiles - 1; i > 0; i--) {
+      final currentLog = File('$logDirectory/medrefer.log.$i');
+      if (await currentLog.exists()) {
+        await currentLog.rename('$logDirectory/medrefer.log.${i + 1}');
+      }
+    }
+    
+    // 3. Rename the current log file
+    final currentLog = File('$logDirectory/medrefer.log');
+    if (await currentLog.exists()) {
+      await currentLog.rename('$logDirectory/medrefer.log.1');
+    }
+    
+    // 4. Create a new empty log file
+    await currentLog.create();
   }
 
-  /// Clean up old log files
+  /// Clean up old log files on startup
   Future<void> _cleanupOldLogs() async {
-    try {
-      if (_logDirectory == null) return;
-      
-      final logDir = Directory(_logDirectory!);
-      final logFiles = await logDir.list()
-          .where((entity) => entity is File && entity.path.endsWith('.log'))
-          .cast<File>()
-          .toList();
-      
-      // Sort by modification time (newest first)
-      logFiles.sort((a, b) => b.lastModifiedSync().compareTo(a.lastModifiedSync()));
-      
-      // Remove old files if we have too many
-      if (logFiles.length > _maxLogFiles) {
-        for (var i = _maxLogFiles; i < logFiles.length; i++) {
-          await logFiles[i].delete();
-        }
+    if (kIsWeb || _logDirectory == null) return;
+
+    final logDirectory = Directory(_logDirectory!);
+    final files = await logDirectory.list().toList();
+    
+    final logFiles = files
+        .whereType<File>()
+        .where((file) => file.path.contains('medrefer.log'))
+        .toList();
+        
+    logFiles.sort((a, b) {
+      return b.lastModifiedSync().compareTo(a.lastModifiedSync());
+    });
+    
+    if (logFiles.length > _maxLogFiles) {
+      for (int i = _maxLogFiles; i < logFiles.length; i++) {
+        await logFiles[i].delete();
       }
-    } catch (e) {
-      debugPrint('Failed to cleanup old logs: $e');
     }
   }
 
-  /// Get logs for a specific time range
-  Future<List<LogEntry>> getLogs({
-    DateTime? startTime,
-    DateTime? endTime,
-    LogLevel? minLevel,
-    String? context,
-  }) async {
-    var filteredLogs = List<LogEntry>.from(_inMemoryLogs);
+  /// Export logs to a single file
+  Future<File?> exportLogs() async {
+    if (kIsWeb || _logDirectory == null) return null;
+
+    final exportFile = File('$_logDirectory/exported_logs_${DateTime.now().toIso8601String()}.txt');
+    final allLogs = StringBuffer();
     
-    if (startTime != null) {
-      filteredLogs = filteredLogs.where((log) => log.timestamp.isAfter(startTime)).toList();
+    // Combine all existing log files
+    final logDirectory = Directory(_logDirectory!);
+    final logFiles = (await logDirectory.list().toList())
+        .whereType<File>()
+        .where((file) => file.path.contains('medrefer.log'))
+        .toList();
+        
+    logFiles.sort((a, b) => a.path.compareTo(b.path));
+    
+    for (final file in logFiles) {
+      allLogs.writeln('--- START OF ${file.path} ---');
+      allLogs.writeln(await file.readAsString());
+      allLogs.writeln('--- END OF ${file.path} ---\n');
     }
     
-    if (endTime != null) {
-      filteredLogs = filteredLogs.where((log) => log.timestamp.isBefore(endTime)).toList();
-    }
-    
-    if (minLevel != null) {
-      filteredLogs = filteredLogs.where((log) => log.level.index >= minLevel.index).toList();
-    }
-    
-    if (context != null) {
-      filteredLogs = filteredLogs.where((log) => log.context == context).toList();
-    }
-    
-    return filteredLogs;
+    await exportFile.writeAsString(allLogs.toString());
+    return exportFile;
   }
 
-  /// Clear in-memory logs
-  void clearInMemoryLogs() {
-    _inMemoryLogs.clear();
-  }
-
-  /// Export logs to JSON
-  Future<String> exportLogs({DateTime? startTime, DateTime? endTime}) async {
-    final logs = await getLogs(startTime: startTime, endTime: endTime);
-    final logData = logs.map((log) => log.toJson()).toList();
-    return jsonEncode(logData);
-  }
-
-  /// Dispose resources
+  /// Dispose of the service resources
   void dispose() {
     _logStreamController.close();
   }
@@ -345,5 +354,24 @@ class LogEntry {
       error: json['error'],
       stackTrace: json['stackTrace'],
     );
+  }
+
+  /// Convert log entry to a format suitable for file writing
+  String toFileFormat() {
+    final buffer = StringBuffer();
+    buffer.write('[');
+    buffer.write('"timestamp": "${timestamp.toIso8601String()}", ');
+    buffer.write('"level": "${level.name}", ');
+    buffer.write('"context": "$context", ');
+    buffer.write('"message": "$message", ');
+    buffer.write('"metadata": ${jsonEncode(metadata)}');
+    if (error != null) {
+      buffer.write(', "error": "$error"');
+    }
+    if (stackTrace != null) {
+      buffer.write(', "stackTrace": "$stackTrace"');
+    }
+    buffer.write(']');
+    return buffer.toString();
   }
 }

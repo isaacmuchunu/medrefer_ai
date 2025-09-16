@@ -3,16 +3,16 @@ import '../database/dao/medical_education_dao.dart';
 import '../database/models/medical_education.dart';
 
 class MedicalEducationService {
+  factory MedicalEducationService() => _instance;
   MedicalEducationService._internal();
+
+  static final MedicalEducationService _instance = MedicalEducationService._internal();
 
   final MedicalEducationDao _dao = MedicalEducationDao();
   final StreamController<List<MedicalEducation>> _educationController = 
       StreamController<List<MedicalEducation>>.broadcast();
 
   Stream<List<MedicalEducation>> get educationStream => _educationController.stream;
-
-  static final MedicalEducationService _instance = MedicalEducationService._internal();
-  factory MedicalEducationService() => _instance;
 
   // Create a new medical education
   Future<MedicalEducation> createEducation(MedicalEducation education) async {
@@ -28,7 +28,7 @@ class MedicalEducationService {
   // Get all education
   Future<List<MedicalEducation>> getAllEducation() async {
     try {
-      return await _dao.getAllEducation();
+      return await _dao.findAll();
     } catch (e) {
       throw Exception('Failed to get medical education: $e');
     }
@@ -195,7 +195,7 @@ class MedicalEducationService {
       final endDate = DateTime.now();
       final startDate = endDate.subtract(Duration(days: days));
       
-      final allEducation = await _dao.getAllEducation();
+      final allEducation = await _dao.findAll();
       final recentEducation = allEducation.where((e) => 
         e.startDate.isAfter(startDate) && e.startDate.isBefore(endDate)
       ).toList();
@@ -238,7 +238,7 @@ class MedicalEducationService {
         'total_recent_education': recentEducation.length,
         'average_enrollment_progress': enrollmentProgress.values.isNotEmpty ? 
           enrollmentProgress.values.reduce((a, b) => a + b) / enrollmentProgress.values.length : 0,
-        'total_cme_credits': cmeCredits.values.reduce((a, b) => a + b),
+        'total_cme_credits': cmeCredits.values.isNotEmpty ? cmeCredits.values.reduce((a, b) => a + b) : 0,
       };
     } catch (e) {
       throw Exception('Failed to get education trends: $e');
