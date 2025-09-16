@@ -6,7 +6,8 @@ import '../../theme/app_theme.dart';
 class ClinicalDecisionSupport extends StatefulWidget {
   const ClinicalDecisionSupport({super.key});
 
-  @overrisuper. StatSupport> createState() => _ClinicalDecisionSupportState();
+  @override
+  State&lt;ClinicalDecisionSupport&gt; createState() =&gt; _ClinicalDecisionSupportState();
 }
 
 class _ClinicalDecisionSupportState extends State<ClinicalDecisionSupport>

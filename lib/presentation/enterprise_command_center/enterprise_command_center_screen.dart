@@ -26,8 +26,8 @@ class _EnterpriseCommandCenterScreenState extends State<EnterpriseCommandCenterS
   Map<String, dynamic> _analyticsData = {};
   Map<String, dynamic> _blockchainData = {};
   Map<String, dynamic> _iotData = {};
-  Map<String, dynamic> _telemedicineData super.
-  M> _workflowData = {};
+  Map<String, dynamic> _telemedicineData = {};
+  Map<String, dynamic> _workflowData = {};
   Map<String, dynamic> _integrationData = {};
 
   @override
