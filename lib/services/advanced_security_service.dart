@@ -197,7 +197,7 @@ class AdvancedSecurityService extends ChangeNotifier {
   Future<void> _initializeEncryption() async {
     try {
       // Generate or retrieve master key
-      String? storedKey = await _secureStorage.read(key: 'master_encryption_key');
+      final storedKey = await _secureStorage.read(key: 'master_encryption_key');
       
       if (storedKey == null) {
         // Generate new master key
@@ -230,7 +230,7 @@ class AdvancedSecurityService extends ChangeNotifier {
     
     for (final dataType in dataTypes) {
       final keyName = '${dataType}_encryption_key';
-      String? storedKey = await _secureStorage.read(key: keyName);
+      final storedKey = await _secureStorage.read(key: keyName);
       
       if (storedKey == null) {
         // Generate new key
@@ -391,7 +391,7 @@ class AdvancedSecurityService extends ChangeNotifier {
 
   /// Validate password strength
   PasswordStrength validatePasswordStrength(String password) {
-    int score = 0;
+    var score = 0;
     final checks = <String>[];
     
     // Length check
@@ -911,7 +911,7 @@ class AdvancedSecurityService extends ChangeNotifier {
     final numBlocks = (keyLength / blockSize).ceil();
     final key = <int>[];
     
-    for (int blockNum = 1; blockNum <= numBlocks; blockNum++) {
+    for (var blockNum = 1; blockNum <= numBlocks; blockNum++) {
       final block = _pbkdf2Block(hmac, salt, iterations, blockNum);
       key.addAll(block);
     }
@@ -928,11 +928,11 @@ class AdvancedSecurityService extends ChangeNotifier {
     ];
     
     var u = hmac.convert([...salt, ...blockNumBytes]).bytes;
-    var result = List<int>.from(u);
+    final result = List<int>.from(u);
     
-    for (int i = 1; i < iterations; i++) {
+    for (var i = 1; i < iterations; i++) {
       u = hmac.convert(u).bytes;
-      for (int j = 0; j < result.length; j++) {
+      for (var j = 0; j < result.length; j++) {
         result[j] ^= u[j];
       }
     }

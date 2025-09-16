@@ -14,7 +14,7 @@ class Payment extends BaseModel {
   final String? invoiceNumber;
 
   Payment({
-    String? id,
+    super.id,
     this.patientId,
     this.referralId,
     this.appointmentId,
@@ -26,9 +26,9 @@ class Payment extends BaseModel {
     this.paymentDate,
     this.description,
     this.invoiceNumber,
-    DateTime? createdAt,
-    DateTime? updatedAt,
-  }) : super(id: id, createdAt: createdAt, updatedAt: updatedAt);
+    super.createdAt,
+    super.updatedAt,
+  });
 
   factory Payment.fromMap(Map<String, dynamic> map) {
     return Payment(

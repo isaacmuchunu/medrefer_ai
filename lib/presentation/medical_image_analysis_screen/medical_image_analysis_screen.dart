@@ -10,9 +10,9 @@ class MedicalImageAnalysisScreen extends StatefulWidget {
   final String? patientId;
   
   const MedicalImageAnalysisScreen({
-    Key? key,
+    super.key,
     this.patientId,
-  }) : super(key: key);
+  });
 
   @override
   State<MedicalImageAnalysisScreen> createState() => _MedicalImageAnalysisScreenState();
@@ -498,7 +498,7 @@ class _MedicalImageAnalysisScreenState extends State<MedicalImageAnalysisScreen>
             borderRadius: BorderRadius.circular(8),
           ),
           child: InkWell(
-            onTap: () => _showImageSourceDialog(),
+            onTap: _showImageSourceDialog,
             child: const Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -924,7 +924,7 @@ class _MedicalImageAnalysisScreenState extends State<MedicalImageAnalysisScreen>
 
   Future<void> _pickImage(ImageSource source) async {
     try {
-      final XFile? pickedFile = await _imagePicker.pickImage(
+      final pickedFile = await _imagePicker.pickImage(
         source: source,
         imageQuality: 100,
       );

@@ -4,7 +4,7 @@ import '../../database/models/emergency_protocol.dart';
 import '../../theme/app_theme.dart';
 
 class EmergencyResponseSystem extends StatefulWidget {
-  const EmergencyResponseSystem({Key? key}) : super(key: key);
+  const EmergencyResponseSystem({super.key});
 
   @override
   State<EmergencyResponseSystem> createState() => _EmergencyResponseSystemState();
@@ -56,7 +56,7 @@ class _EmergencyResponseSystemState extends State<EmergencyResponseSystem>
   }
 
   List<EmergencyProtocol> get _filteredProtocols {
-    List<EmergencyProtocol> filtered = _protocols;
+    var filtered = _protocols;
 
     if (_searchQuery.isNotEmpty) {
       filtered = filtered.where((protocol) =>
@@ -311,7 +311,7 @@ class _EmergencyResponseSystemState extends State<EmergencyResponseSystem>
                 ),
               )
             else
-              ...protocols.take(5).map((protocol) => _buildProtocolItem(protocol)),
+              ...protocols.take(5).map(_buildProtocolItem),
           ],
         ),
       ),
@@ -338,7 +338,7 @@ class _EmergencyResponseSystemState extends State<EmergencyResponseSystem>
                 ),
               )
             else
-              ...protocols.take(5).map((protocol) => _buildProtocolItem(protocol)),
+              ...protocols.take(5).map(_buildProtocolItem),
           ],
         ),
       ),

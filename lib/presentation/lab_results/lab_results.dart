@@ -1,10 +1,8 @@
 import 'package:file_picker/file_picker.dart';
-import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import '../../core/app_export.dart';
 
 class LabResults extends StatefulWidget {
-  const LabResults({Key? key}) : super(key: key);
+  const LabResults({super.key});
 
   @override
   State<LabResults> createState() => _LabResultsState();
@@ -24,7 +22,7 @@ class _LabResultsState extends State<LabResults> {
     setState(() => _isLoading = true);
     final dataService = Provider.of<DataService>(context, listen: false);
     // Assume LabResultDAO exists
-    _labResults = await dataService.labResultDAO?.getLabResultsForPatient('patientId') ?? []; // Replace with actual ID
+    _labResults = await dataService.labResultDAO.getLabResultsForPatient('patientId') ?? []; // Replace with actual ID
     setState(() => _isLoading = false);
   }
 

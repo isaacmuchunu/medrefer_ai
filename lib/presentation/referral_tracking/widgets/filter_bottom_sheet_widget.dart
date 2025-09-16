@@ -336,7 +336,7 @@ class _FilterBottomSheetWidgetState extends State<FilterBottomSheetWidget> {
   }
 
   Widget _buildStatusCheckboxes() {
-    final List<String> statuses = [
+    final statuses = <String>[
       'Pending',
       'Approved',
       'Completed',
@@ -371,7 +371,7 @@ class _FilterBottomSheetWidgetState extends State<FilterBottomSheetWidget> {
   }
 
   Future<void> _selectDateRange() async {
-    final DateTimeRange? picked = await showDateRangePicker(
+    final picked = await showDateRangePicker(
       context: context,
       firstDate: DateTime.now().subtract(const Duration(days: 365)),
       lastDate: DateTime.now().add(const Duration(days: 365)),

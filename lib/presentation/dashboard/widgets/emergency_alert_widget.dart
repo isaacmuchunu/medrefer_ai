@@ -8,11 +8,11 @@ class EmergencyAlertWidget extends StatefulWidget {
   final Function(Map<String, dynamic>)? onAlertTap;
 
   const EmergencyAlertWidget({
-    Key? key,
+    super.key,
     required this.alerts,
     this.onDismiss,
     this.onAlertTap,
-  }) : super(key: key);
+  });
 
   @override
   _EmergencyAlertWidgetState createState() => _EmergencyAlertWidgetState();

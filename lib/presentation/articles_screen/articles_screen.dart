@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../../core/app_export.dart';
 
 class ArticlesScreen extends StatelessWidget {
-  const ArticlesScreen({Key? key}) : super(key: key);
+  const ArticlesScreen({super.key});
 
   @override
   Widget build(BuildContext context) {

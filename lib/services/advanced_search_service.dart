@@ -17,7 +17,7 @@ class AdvancedSearchService extends ChangeNotifier {
 
   // Search statistics
   int _totalSearches = 0;
-  int _totalResults = 0;
+  final int _totalResults = 0;
   double _averageResponseTime = 0.0;
   final Map<String, int> _popularQueries = {};
 

@@ -4,9 +4,9 @@ class SpecialistProfileScreen extends StatefulWidget {
   final String specialistId;
   
   const SpecialistProfileScreen({
-    Key? key,
+    super.key,
     required this.specialistId,
-  }) : super(key: key);
+  });
 
   @override
   _SpecialistProfileScreenState createState() => _SpecialistProfileScreenState();

@@ -162,6 +162,7 @@ sealed class Result<T> {
 
 /// Success result containing data
 final class Success<T> extends Result<T> {
+  @override
   final T data;
 
   const Success(this.data);
@@ -173,7 +174,9 @@ final class Success<T> extends Result<T> {
 /// Error result containing error information
 final class Error<T> extends Result<T> {
   final String message;
+  @override
   final Object? error;
+  @override
   final StackTrace? stackTrace;
 
   const Error(this.message, [this.error, this.stackTrace]);

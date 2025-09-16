@@ -13,7 +13,7 @@ class CustomImageWidget extends StatelessWidget {
   final Color? color;
 
   const CustomImageWidget({
-    Key? key,
+    super.key,
     this.imageUrl,
     this.imagePath,
     this.width,
@@ -23,14 +23,14 @@ class CustomImageWidget extends StatelessWidget {
     this.errorWidget,
     this.borderRadius,
     this.color,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
     Widget imageWidget;
 
     // Default placeholder
-    Widget defaultPlaceholder = Container(
+    final Widget defaultPlaceholder = Container(
       width: width,
       height: height,
       decoration: BoxDecoration(
@@ -47,7 +47,7 @@ class CustomImageWidget extends StatelessWidget {
     );
 
     // Default error widget
-    Widget defaultErrorWidget = Container(
+    final Widget defaultErrorWidget = Container(
       width: width,
       height: height,
       decoration: BoxDecoration(

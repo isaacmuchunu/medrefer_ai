@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../../core/app_export.dart';
 
 class VerifyCodeScreen extends StatelessWidget {
-  const VerifyCodeScreen({Key? key}) : super(key: key);
+  const VerifyCodeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {

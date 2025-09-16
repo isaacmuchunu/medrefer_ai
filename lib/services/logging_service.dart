@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 /// Comprehensive logging service for the MedRefer AI app
 class LoggingService {
@@ -239,7 +238,7 @@ class LoggingService {
       
       // Remove old files if we have too many
       if (logFiles.length > _maxLogFiles) {
-        for (int i = _maxLogFiles; i < logFiles.length; i++) {
+        for (var i = _maxLogFiles; i < logFiles.length; i++) {
           await logFiles[i].delete();
         }
       }
@@ -255,7 +254,7 @@ class LoggingService {
     LogLevel? minLevel,
     String? context,
   }) async {
-    List<LogEntry> filteredLogs = List.from(_inMemoryLogs);
+    var filteredLogs = List<LogEntry>.from(_inMemoryLogs);
     
     if (startTime != null) {
       filteredLogs = filteredLogs.where((log) => log.timestamp.isAfter(startTime)).toList();

@@ -1,12 +1,9 @@
-import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import '../../core/app_export.dart';
-import '../../services/auth_service.dart';
 import '../../database/dao/appointment_dao.dart';
 
 class AppointmentHistory extends StatefulWidget {
-  const AppointmentHistory({Key? key}) : super(key: key);
+  const AppointmentHistory({super.key});
 
   @override
   State<AppointmentHistory> createState() => _AppointmentHistoryState();
@@ -232,6 +229,6 @@ class _AppointmentHistoryState extends State<AppointmentHistory> {
 
 extension StringExtension on String {
     String capitalize() {
-      return "${this[0].toUpperCase()}${this.substring(1)}";
+      return "${this[0].toUpperCase()}${substring(1)}";
     }
 }

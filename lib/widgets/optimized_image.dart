@@ -16,7 +16,7 @@ class OptimizedImage extends StatefulWidget {
   final Duration fadeInDuration;
 
   const OptimizedImage({
-    Key? key,
+    super.key,
     this.imageUrl,
     this.assetPath,
     this.width,
@@ -28,8 +28,7 @@ class OptimizedImage extends StatefulWidget {
     this.enableMemoryCache = true,
     this.enableDiskCache = true,
     this.fadeInDuration = const Duration(milliseconds: 300),
-  }) : assert(imageUrl != null || assetPath != null, 'Either imageUrl or assetPath must be provided'),
-       super(key: key);
+  }) : assert(imageUrl != null || assetPath != null, 'Either imageUrl or assetPath must be provided');
 
   @override
   _OptimizedImageState createState() => _OptimizedImageState();
@@ -179,13 +178,13 @@ class OptimizedAvatar extends StatelessWidget {
   final TextStyle? textStyle;
 
   const OptimizedAvatar({
-    Key? key,
+    super.key,
     this.imageUrl,
     this.name,
     this.radius = 20,
     this.backgroundColor,
     this.textStyle,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -245,14 +244,14 @@ class OptimizedListTile extends StatelessWidget {
   final EdgeInsets? contentPadding;
 
   const OptimizedListTile({
-    Key? key,
+    super.key,
     this.imageUrl,
     this.title,
     this.subtitle,
     this.trailing,
     this.onTap,
     this.contentPadding,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -283,14 +282,14 @@ class CachedNetworkImage extends StatefulWidget {
   final Widget? errorWidget;
 
   const CachedNetworkImage({
-    Key? key,
+    super.key,
     required this.imageUrl,
     this.width,
     this.height,
     this.fit = BoxFit.cover,
     this.placeholder,
     this.errorWidget,
-  }) : super(key: key);
+  });
 
   @override
   _CachedNetworkImageState createState() => _CachedNetworkImageState();

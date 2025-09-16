@@ -8,19 +8,10 @@ import '../../services/iot_medical_device_service.dart';
 import '../../services/advanced_telemedicine_service.dart';
 import '../../services/ai_workflow_automation_service.dart';
 import '../../services/enterprise_integration_service.dart';
-import '../../services/enterprise_erp_service.dart';
-import '../../services/business_intelligence_service.dart';
-import '../../services/multi_tenant_service.dart';
-import '../../services/workflow_management_service.dart';
-import '../../services/api_gateway_service.dart';
-import '../../services/digital_asset_management_service.dart';
-import '../../services/advanced_reporting_service.dart';
-import '../../services/robotic_process_automation_service.dart';
-import '../../services/comprehensive_error_handling_service.dart';
 
 /// Enterprise Command Center - Comprehensive dashboard for all advanced features
 class EnterpriseCommandCenterScreen extends StatefulWidget {
-  const EnterpriseCommandCenterScreen({Key? key}) : super(key: key);
+  const EnterpriseCommandCenterScreen({super.key});
 
   @override
   State<EnterpriseCommandCenterScreen> createState() => _EnterpriseCommandCenterScreenState();
@@ -35,8 +26,8 @@ class _EnterpriseCommandCenterScreenState extends State<EnterpriseCommandCenterS
   Map<String, dynamic> _analyticsData = {};
   Map<String, dynamic> _blockchainData = {};
   Map<String, dynamic> _iotData = {};
-  Map<String, dynamic> _telemedicineData = {};
-  Map<String, dynamic> _workflowData = {};
+  Map<String, dynamic> _telemedicineData super.
+  M> _workflowData = {};
   Map<String, dynamic> _integrationData = {};
 
   @override
@@ -608,7 +599,7 @@ class _EnterpriseCommandCenterScreenState extends State<EnterpriseCommandCenterS
                 ),
               ],
             ),
-          )).toList(),
+          )),
         ],
       ),
     );
@@ -716,7 +707,7 @@ class _EnterpriseCommandCenterScreenState extends State<EnterpriseCommandCenterS
             ),
           ),
           SizedBox(height: 16.v),
-          ...List.generate(3, (index) => _buildTransactionItem(index)),
+          ...List.generate(3, _buildTransactionItem),
         ],
       ),
     );
@@ -1091,7 +1082,7 @@ class _EnterpriseCommandCenterScreenState extends State<EnterpriseCommandCenterS
             ),
           ),
           SizedBox(height: 16.v),
-          ...List.generate(4, (index) => _buildAgentItem(index)),
+          ...List.generate(4, _buildAgentItem),
         ],
       ),
     );
@@ -1190,7 +1181,7 @@ class _EnterpriseCommandCenterScreenState extends State<EnterpriseCommandCenterS
             ),
           ),
           SizedBox(height: 16.v),
-          ...List.generate(4, (index) => _buildSystemHealthItem(index)),
+          ...List.generate(4, _buildSystemHealthItem),
         ],
       ),
     );

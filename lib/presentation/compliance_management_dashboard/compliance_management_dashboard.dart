@@ -4,7 +4,7 @@ import 'package:medrefer_ai/services/compliance_management_service.dart';
 import 'package:medrefer_ai/database/models/compliance_models.dart';
 
 class ComplianceManagementDashboard extends StatefulWidget {
-  const ComplianceManagementDashboard({Key? key}) : super(key: key);
+  const ComplianceManagementDashboard({super.key});
 
   @override
   State<ComplianceManagementDashboard> createState() => _ComplianceManagementDashboardState();
@@ -426,9 +426,8 @@ class _ComplianceManagementDashboardState extends State<ComplianceManagementDash
                 ),
               )
             else
-              ...recentActivities.take(10).map((activity) => 
-                _buildActivityItem(activity)
-              ).toList(),
+              ...recentActivities.take(10).map(_buildActivityItem
+              ),
           ],
         ),
       ),

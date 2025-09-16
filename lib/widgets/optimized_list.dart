@@ -18,7 +18,7 @@ class OptimizedListView<T> extends StatefulWidget {
   final double cacheExtent;
 
   const OptimizedListView({
-    Key? key,
+    super.key,
     required this.items,
     required this.itemBuilder,
     this.separator,
@@ -33,7 +33,7 @@ class OptimizedListView<T> extends StatefulWidget {
     this.onLoadMore,
     this.hasMore = false,
     this.cacheExtent = 250.0,
-  }) : super(key: key);
+  });
 
   @override
   _OptimizedListViewState<T> createState() => _OptimizedListViewState<T>();
@@ -136,7 +136,7 @@ class _OptimizedListViewState<T> extends State<OptimizedListView<T>> {
   }
 
   int _getItemCount() {
-    int count = widget.items.length;
+    var count = widget.items.length;
     if (widget.hasMore && widget.onLoadMore != null) {
       count += 1; // Add loading indicator
     }
@@ -214,7 +214,7 @@ class OptimizedGridView<T> extends StatefulWidget {
   final double cacheExtent;
 
   const OptimizedGridView({
-    Key? key,
+    super.key,
     required this.items,
     required this.itemBuilder,
     required this.gridDelegate,
@@ -229,7 +229,7 @@ class OptimizedGridView<T> extends StatefulWidget {
     this.onLoadMore,
     this.hasMore = false,
     this.cacheExtent = 250.0,
-  }) : super(key: key);
+  });
 
   @override
   _OptimizedGridViewState<T> createState() => _OptimizedGridViewState<T>();
@@ -293,7 +293,7 @@ class _OptimizedGridViewState<T> extends State<OptimizedGridView<T>> {
       return widget.emptyWidget ?? _buildDefaultEmptyWidget();
     }
 
-    Widget gridView = GridView.builder(
+    final Widget gridView = GridView.builder(
       controller: _scrollController,
       padding: widget.padding,
       shrinkWrap: widget.shrinkWrap,
@@ -317,7 +317,7 @@ class _OptimizedGridViewState<T> extends State<OptimizedGridView<T>> {
   }
 
   int _getItemCount() {
-    int count = widget.items.length;
+    var count = widget.items.length;
     if (widget.hasMore && widget.onLoadMore != null) {
       count += 1;
     }

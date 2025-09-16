@@ -1,6 +1,7 @@
 import 'base_model.dart';
 
 class ClinicalDecision extends BaseModel {
+  @override
   final String id;
   final String patientId;
   final String specialistId;
@@ -15,6 +16,7 @@ class ClinicalDecision extends BaseModel {
   final List<String> contraindications;
   final String status; // 'pending', 'approved', 'rejected', 'implemented'
   final String priority; // 'low', 'medium', 'high', 'urgent'
+  @override
   final DateTime createdAt;
   final DateTime? reviewedAt;
   final String? reviewedBy;

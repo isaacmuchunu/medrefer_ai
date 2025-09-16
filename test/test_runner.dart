@@ -5,9 +5,7 @@ import 'package:medrefer_ai/test/services/auth_service_test.dart' as auth_test;
 
 void main() {
   group('MedRefer AI Test Suite', () {
-    group('Core Tests', () {
-      result_test.main();
-    });
+    group('Core Tests', result_test.main);
 
     group('Service Tests', () {
       validation_test.main();

@@ -4,7 +4,7 @@ import 'package:medrefer_ai/services/enterprise_analytics_service.dart';
 import 'package:fl_chart/fl_chart.dart';
 
 class EnterpriseAnalyticsDashboard extends StatefulWidget {
-  const EnterpriseAnalyticsDashboard({Key? key}) : super(key: key);
+  const EnterpriseAnalyticsDashboard({super.key});
 
   @override
   State<EnterpriseAnalyticsDashboard> createState() => _EnterpriseAnalyticsDashboardState();

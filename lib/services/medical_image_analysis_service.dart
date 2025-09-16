@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:flutter/foundation.dart';
@@ -506,7 +505,7 @@ class MedicalImageAnalysisService {
     final findings = <MedicalImageFinding>[];
     final detections = analysisResult['detections'] as List? ?? [];
     
-    for (int i = 0; i < detections.length; i++) {
+    for (var i = 0; i < detections.length; i++) {
       final detection = detections[i] as Map<String, dynamic>;
       
       final finding = MedicalImageFinding(
@@ -856,8 +855,8 @@ class MedicalImageAnalysisService {
     try {
       if (!_isInitialized) await initialize();
       
-      var whereClause = <String>[];
-      var whereArgs = <dynamic>[];
+      final whereClause = <String>[];
+      final whereArgs = <dynamic>[];
       
       if (patientId != null) {
         whereClause.add('patientId = ?');

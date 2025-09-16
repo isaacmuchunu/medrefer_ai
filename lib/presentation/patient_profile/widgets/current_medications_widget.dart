@@ -5,9 +5,9 @@ class CurrentMedicationsWidget extends StatelessWidget {
   final List<Map<String, dynamic>> medications;
 
   const CurrentMedicationsWidget({
-    Key? key,
+    super.key,
     required this.medications,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

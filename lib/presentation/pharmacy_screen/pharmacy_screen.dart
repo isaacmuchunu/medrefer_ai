@@ -1,14 +1,10 @@
-import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import '../../core/app_export.dart';
-import '../../database/models/pharmacy_drug.dart';
-import '../../services/pharmacy_service.dart';
 import 'widgets/drug_card_widget.dart';
 import 'widgets/category_chip_widget.dart';
 import 'widgets/search_bar_widget.dart';
 
 class PharmacyScreen extends StatefulWidget {
-  const PharmacyScreen({Key? key}) : super(key: key);
+  const PharmacyScreen({super.key});
 
   @override
   State<PharmacyScreen> createState() => _PharmacyScreenState();

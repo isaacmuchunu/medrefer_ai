@@ -1,6 +1,5 @@
 import 'package:flutter/foundation.dart';
 import 'dart:async';
-import '../../database/models/models.dart';
 import '../../database/services/data_service.dart';
 
 /// Service for handling search functionality across the application

@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'package:flutter/foundation.dart';
 import 'package:email_validator/email_validator.dart';
 import '../core/result.dart';
 import 'logging_service.dart';

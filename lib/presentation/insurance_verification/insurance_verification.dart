@@ -2,7 +2,7 @@ import 'package:mobile_scanner/mobile_scanner.dart';
 import '../../core/app_export.dart';
 
 class InsuranceVerification extends StatefulWidget {
-  const InsuranceVerification({Key? key}) : super(key: key);
+  const InsuranceVerification({super.key});
 
   @override
   State<InsuranceVerification> createState() => _InsuranceVerificationState();
@@ -23,7 +23,7 @@ class _InsuranceVerificationState extends State<InsuranceVerification> {
     setState(() => _isLoading = true);
     final dataService = Provider.of<DataService>(context, listen: false);
     // Assume InsuranceDAO exists
-    _insuranceDocs = await dataService.insuranceDAO?.getInsuranceForPatient('patientId') ?? []; // Replace with actual ID
+    _insuranceDocs = await dataService.insuranceDAO.getInsuranceForPatient('patientId') ?? []; // Replace with actual ID
     setState(() => _isLoading = false);
   }
 
@@ -32,7 +32,7 @@ class _InsuranceVerificationState extends State<InsuranceVerification> {
   }
 
   void _onDetect(BarcodeCapture capture) {
-    final List<Barcode> barcodes = capture.barcodes;
+    final barcodes = capture.barcodes;
     if (barcodes.isNotEmpty) {
       final barcode = barcodes.first;
       if (barcode.rawValue != null) {

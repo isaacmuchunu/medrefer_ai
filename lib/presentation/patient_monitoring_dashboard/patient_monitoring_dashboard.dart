@@ -16,9 +16,9 @@ class PatientMonitoringDashboard extends StatefulWidget {
   final String patientId;
   
   const PatientMonitoringDashboard({
-    Key? key,
+    super.key,
     required this.patientId,
-  }) : super(key: key);
+  });
 
   @override
   State<PatientMonitoringDashboard> createState() => _PatientMonitoringDashboardState();
@@ -131,9 +131,7 @@ class _PatientMonitoringDashboardState extends State<PatientMonitoringDashboard>
   void _subscribeToDeviceUpdates() {
     _deviceSubscription = _deviceService
         .getDeviceDataStream(widget.patientId)
-        .listen((deviceData) {
-      _handleDeviceData(deviceData);
-    });
+        .listen(_handleDeviceData);
   }
 
   void _handleVitalUpdate(Map<String, dynamic> data) {
@@ -267,14 +265,14 @@ class _PatientMonitoringDashboardState extends State<PatientMonitoringDashboard>
                       Icons.warning,
                       color: Colors.red[700],
                     ),
-                    onPressed: () => _showAlertsDialog(),
+                    onPressed: _showAlertsDialog,
                   ),
                 );
               },
             ),
           IconButton(
             icon: const Icon(Icons.settings),
-            onPressed: () => _showSettingsDialog(),
+            onPressed: _showSettingsDialog,
           ),
         ],
       ),
@@ -301,7 +299,7 @@ class _PatientMonitoringDashboardState extends State<PatientMonitoringDashboard>
               ),
             ),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => _showManualVitalEntry(),
+        onPressed: _showManualVitalEntry,
         icon: const Icon(Icons.add),
         label: const Text('Add Vital'),
       ),

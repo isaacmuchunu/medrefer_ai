@@ -98,7 +98,7 @@ class NotificationService extends ChangeNotifier {
 
   /// Mark all notifications as read
   void markAllAsRead() {
-    for (int i = 0; i < _notifications.length; i++) {
+    for (var i = 0; i < _notifications.length; i++) {
       if (!_notifications[i].isRead) {
         _notifications[i] = _notifications[i].copyWith(isRead: true);
       }

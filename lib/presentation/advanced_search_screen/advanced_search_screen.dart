@@ -4,7 +4,7 @@ import 'package:medrefer_ai/services/advanced_search_service.dart';
 import 'package:medrefer_ai/database/models/search_models.dart';
 
 class AdvancedSearchScreen extends StatefulWidget {
-  const AdvancedSearchScreen({Key? key}) : super(key: key);
+  const AdvancedSearchScreen({super.key});
 
   @override
   State<AdvancedSearchScreen> createState() => _AdvancedSearchScreenState();
@@ -217,7 +217,7 @@ class _AdvancedSearchScreenState extends State<AdvancedSearchScreen>
             Wrap(
               spacing: 8.w,
               runSpacing: 8.h,
-              children: _facets.map((facet) => _buildFacetChip(facet)).toList(),
+              children: _facets.map(_buildFacetChip).toList(),
             ),
           ],
         ],

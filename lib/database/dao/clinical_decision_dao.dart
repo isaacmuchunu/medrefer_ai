@@ -1,4 +1,3 @@
-import 'package:sqflite/sqflite.dart';
 import '../models/clinical_decision.dart';
 import 'dao.dart';
 
@@ -48,7 +47,7 @@ class ClinicalDecisionDao extends BaseDao<ClinicalDecision> {
       whereArgs: [patientId],
       orderBy: 'created_at DESC',
     );
-    return maps.map((map) => fromMap(map)).toList();
+    return maps.map(fromMap).toList();
   }
 
   // Get decisions by specialist
@@ -60,7 +59,7 @@ class ClinicalDecisionDao extends BaseDao<ClinicalDecision> {
       whereArgs: [specialistId],
       orderBy: 'created_at DESC',
     );
-    return maps.map((map) => fromMap(map)).toList();
+    return maps.map(fromMap).toList();
   }
 
   // Get decisions by status
@@ -72,7 +71,7 @@ class ClinicalDecisionDao extends BaseDao<ClinicalDecision> {
       whereArgs: [status],
       orderBy: 'created_at DESC',
     );
-    return maps.map((map) => fromMap(map)).toList();
+    return maps.map(fromMap).toList();
   }
 
   // Get decisions by priority
@@ -84,7 +83,7 @@ class ClinicalDecisionDao extends BaseDao<ClinicalDecision> {
       whereArgs: [priority],
       orderBy: 'created_at DESC',
     );
-    return maps.map((map) => fromMap(map)).toList();
+    return maps.map(fromMap).toList();
   }
 
   // Get pending decisions
@@ -96,7 +95,7 @@ class ClinicalDecisionDao extends BaseDao<ClinicalDecision> {
       whereArgs: ['pending'],
       orderBy: 'priority DESC, created_at ASC',
     );
-    return maps.map((map) => fromMap(map)).toList();
+    return maps.map(fromMap).toList();
   }
 
   // Get decisions by decision type
@@ -108,7 +107,7 @@ class ClinicalDecisionDao extends BaseDao<ClinicalDecision> {
       whereArgs: [decisionType],
       orderBy: 'created_at DESC',
     );
-    return maps.map((map) => fromMap(map)).toList();
+    return maps.map(fromMap).toList();
   }
 
   // Update decision status
@@ -140,7 +139,7 @@ class ClinicalDecisionDao extends BaseDao<ClinicalDecision> {
       whereArgs: [now],
       orderBy: 'expires_at ASC',
     );
-    return maps.map((map) => fromMap(map)).toList();
+    return maps.map(fromMap).toList();
   }
 
   // Search decisions
@@ -152,6 +151,6 @@ class ClinicalDecisionDao extends BaseDao<ClinicalDecision> {
       whereArgs: ['%$query%', '%$query%', '%$query%'],
       orderBy: 'created_at DESC',
     );
-    return maps.map((map) => fromMap(map)).toList();
+    return maps.map(fromMap).toList();
   }
 }

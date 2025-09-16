@@ -1,6 +1,7 @@
 import 'base_model.dart';
 
 class MedicalEducation extends BaseModel {
+  @override
   final String id;
   final String title;
   final String description;
@@ -28,7 +29,9 @@ class MedicalEducation extends BaseModel {
   final String? meetingLink;
   final List<String> tags;
   final Map<String, dynamic> metadata;
+  @override
   final DateTime createdAt;
+  @override
   final DateTime updatedAt;
   final bool isActive;
   final bool isPublic;

@@ -11,10 +11,10 @@ class ClinicalWorkflowScreen extends StatefulWidget {
   final String? userId;
   
   const ClinicalWorkflowScreen({
-    Key? key,
+    super.key,
     this.patientId,
     this.userId,
-  }) : super(key: key);
+  });
 
   @override
   State<ClinicalWorkflowScreen> createState() => _ClinicalWorkflowScreenState();
@@ -168,7 +168,7 @@ class _ClinicalWorkflowScreenState extends State<ClinicalWorkflowScreen>
               ],
             ),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => _showCreateWorkflowDialog(),
+        onPressed: _showCreateWorkflowDialog,
         icon: const Icon(Icons.add),
         label: const Text('New Workflow'),
       ),
@@ -755,7 +755,7 @@ class _ClinicalWorkflowScreenState extends State<ClinicalWorkflowScreen>
 
   void _showCreateWorkflowDialog() {
     WorkflowType? selectedType;
-    WorkflowPriority selectedPriority = WorkflowPriority.normal;
+    var selectedPriority = WorkflowPriority.normal;
     final patientIdController = TextEditingController(text: widget.patientId);
     DateTime? dueDate;
     
@@ -773,7 +773,7 @@ class _ClinicalWorkflowScreenState extends State<ClinicalWorkflowScreen>
                     labelText: 'Workflow Type',
                     border: OutlineInputBorder(),
                   ),
-                  value: selectedType,
+                  initialValue: selectedType,
                   items: WorkflowType.values.map((type) {
                     return DropdownMenuItem(
                       value: type,
@@ -798,7 +798,7 @@ class _ClinicalWorkflowScreenState extends State<ClinicalWorkflowScreen>
                     labelText: 'Priority',
                     border: OutlineInputBorder(),
                   ),
-                  value: selectedPriority,
+                  initialValue: selectedPriority,
                   items: WorkflowPriority.values.map((priority) {
                     return DropdownMenuItem(
                       value: priority,

@@ -1,6 +1,5 @@
 import 'package:flutter/foundation.dart';
 import '../database/models/models.dart';
-import 'package:sqflite/sqflite.dart';
 import '../database/database_helper.dart';
 import '../database/dao/rbac_dao.dart';
 
@@ -243,12 +242,12 @@ class RBACService extends ChangeNotifier {
 
   /// Check if current user has any of the specified permissions
   bool hasAnyPermission(List<Permission> permissions) {
-    return permissions.any((permission) => hasPermission(permission));
+    return permissions.any(hasPermission);
   }
 
   /// Check if current user has all of the specified permissions
   bool hasAllPermissions(List<Permission> permissions) {
-    return permissions.every((permission) => hasPermission(permission));
+    return permissions.every(hasPermission);
   }
 
   /// Check if current user has a specific role

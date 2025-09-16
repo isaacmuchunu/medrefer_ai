@@ -656,8 +656,8 @@ class AppTheme {
 
   /// Helper method to build text theme optimized for medical data
   static TextTheme _buildTextTheme({required bool isLight}) {
-    final Color textPrimary = isLight ? textPrimaryLight : textPrimaryDark;
-    final Color textSecondary =
+    final textPrimary = isLight ? textPrimaryLight : textPrimaryDark;
+    final textSecondary =
         isLight ? textSecondaryLight : textSecondaryDark;
 
     return TextTheme(

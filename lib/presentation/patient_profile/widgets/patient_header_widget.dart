@@ -9,15 +9,15 @@ class PatientHeaderWidget extends StatelessWidget {
   final LocalAuthentication _localAuth = LocalAuthentication();
 
   PatientHeaderWidget({
-    Key? key,
+    super.key,
     required this.patientData,
     required this.isPrivacyEnabled,
     required this.onPrivacyToggle,
-  }) : super(key: key);
+  });
 
   Future<void> _authenticateAndTogglePrivacy(BuildContext context) async {
     try {
-      final bool didAuthenticate = await _localAuth.authenticate(
+      final didAuthenticate = await _localAuth.authenticate(
         localizedReason: 'Please authenticate to show patient details',
         options: const AuthenticationOptions(biometricOnly: true),
       );
@@ -78,21 +78,10 @@ class PatientHeaderWidget extends StatelessWidget {
                 ),
                 child: ClipOval(
                   child: CustomImageWidget(
-                    imageUrl: (patientData["photoUrl"] as String?) ?? "",
+                    imageUrl: (patientData["photo"] as String?) ?? "",
                     width: 20.w,
                     height: 20.w,
                     fit: BoxFit.cover,
-                    fallback: (context) => CircleAvatar(
-                      backgroundColor: AppTheme.lightTheme.primaryColor.withOpacity(0.1),
-                      child: Text(
-                        (patientData["name"] as String?)?.substring(0, 1) ?? 'P',
-                        style: TextStyle(
-                          color: AppTheme.lightTheme.primaryColor,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 12.sp,
-                        ),
-                      ),
-                    ),
                   ),
                 ),
               ),

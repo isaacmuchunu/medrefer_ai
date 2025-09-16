@@ -7,7 +7,7 @@ import './widgets/search_bar_widget.dart';
 import './widgets/specialist_card_widget.dart';
 
 class SpecialistDirectory extends StatefulWidget {
-  const SpecialistDirectory({Key? key}) : super(key: key);
+  const SpecialistDirectory({super.key});
 
   @override
   State<SpecialistDirectory> createState() => _SpecialistDirectoryState();
@@ -247,7 +247,7 @@ class _SpecialistDirectoryState extends State<SpecialistDirectory>
           final specialistLanguages =
               specialist['languages'] as List<String>? ?? [];
           if (!selectedLanguages
-              .any((lang) => specialistLanguages.contains(lang))) {
+              .any(specialistLanguages.contains)) {
             return false;
           }
         }
@@ -259,7 +259,7 @@ class _SpecialistDirectoryState extends State<SpecialistDirectory>
           final specialistInsurance =
               specialist['insurance'] as List<String>? ?? [];
           if (!selectedInsurance
-              .any((ins) => specialistInsurance.contains(ins))) {
+              .any(specialistInsurance.contains)) {
             return false;
           }
         }

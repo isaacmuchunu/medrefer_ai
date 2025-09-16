@@ -500,7 +500,7 @@ class AIService extends ChangeNotifier {
     final maxProbability = predictions.map((c) => c.probability).reduce(max);
     final avgProbability = predictions.map((c) => c.probability).reduce((a, b) => a + b) / predictions.length;
     
-    return (maxProbability * 0.7 + avgProbability * 0.3);
+    return maxProbability * 0.7 + avgProbability * 0.3;
   }
 
   void _storeForLearning(DiagnosticPrediction prediction, Map<String, dynamic> features) {
@@ -533,19 +533,20 @@ class AIService extends ChangeNotifier {
     VitalStatistics? vitals,
     List<Condition> conditions,
   ) {
-    double risk = 0.0;
+    var risk = 0.0;
     final age = _calculateAge(patient.dateOfBirth);
     
     // Age factor
-    if (age > 65) risk += 0.3;
-    else if (age > 50) risk += 0.2;
+    if (age > 65) {
+      risk += 0.3;
+    } else if (age > 50) risk += 0.2;
     else if (age > 40) risk += 0.1;
     
     // Vital signs
     if (vitals != null) {
-      final systolic = double.tryParse(vitals.bloodPressureSystolic ?? '0') ?? 0;
-      final diastolic = double.tryParse(vitals.bloodPressureDiastolic ?? '0') ?? 0;
-      final heartRate = double.tryParse(vitals.heartRate ?? '0') ?? 0;
+      final systolic = vitals.bloodPressureSystolic ?? 0;
+      final diastolic = vitals.bloodPressureDiastolic ?? 0;
+      final heartRate = vitals.heartRate ?? 0;
       
       if (systolic > 140) risk += 0.2;
       if (diastolic > 90) risk += 0.15;
@@ -565,7 +566,7 @@ class AIService extends ChangeNotifier {
     VitalStatistics? vitals,
     List<Condition> conditions,
   ) {
-    double risk = 0.0;
+    var risk = 0.0;
     final age = _calculateAge(patient.dateOfBirth);
     
     // Age factor
@@ -574,8 +575,9 @@ class AIService extends ChangeNotifier {
     // BMI factor (if available)
     if (vitals != null && vitals.weight != null && vitals.height != null) {
       final bmi = vitals.weight! / pow(vitals.height! / 100, 2);
-      if (bmi > 30) risk += 0.3;
-      else if (bmi > 25) risk += 0.15;
+      if (bmi > 30) {
+        risk += 0.3;
+      } else if (bmi > 25) risk += 0.15;
     }
     
     // Family history and existing conditions
@@ -590,7 +592,7 @@ class AIService extends ChangeNotifier {
     List<MedicalHistory>? history,
     List<Condition> conditions,
   ) {
-    double risk = 0.0;
+    var risk = 0.0;
     
     // Previous admissions
     if (history != null) {
@@ -610,7 +612,7 @@ class AIService extends ChangeNotifier {
   }
 
   double _assessMedicationInteractions(List<Medication> medications) {
-    double risk = 0.0;
+    var risk = 0.0;
     
     // Check for known interactions (simplified)
     final medicationNames = medications.map((m) => m.name.toLowerCase()).toList();
@@ -621,8 +623,9 @@ class AIService extends ChangeNotifier {
     }
     
     // Polypharmacy risk
-    if (medications.length > 10) risk += 0.3;
-    else if (medications.length > 5) risk += 0.15;
+    if (medications.length > 10) {
+      risk += 0.3;
+    } else if (medications.length > 5) risk += 0.15;
     
     return min(risk, 1.0);
   }
@@ -632,12 +635,13 @@ class AIService extends ChangeNotifier {
     List<Medication> medications,
     List<Condition> conditions,
   ) {
-    double risk = 0.0;
+    var risk = 0.0;
     final age = _calculateAge(patient.dateOfBirth);
     
     // Age factor
-    if (age > 75) risk += 0.3;
-    else if (age > 65) risk += 0.2;
+    if (age > 75) {
+      risk += 0.3;
+    } else if (age > 65) risk += 0.2;
     
     // Medications that increase fall risk
     final riskMedications = ['benzodiazepine', 'antipsychotic', 'sedative', 'hypnotic'];
@@ -659,8 +663,8 @@ class AIService extends ChangeNotifier {
     
     // Weighted average with emphasis on highest risks
     risks.sort((a, b) => b.compareTo(a));
-    double combinedRisk = 0.0;
-    double weight = 0.5;
+    var combinedRisk = 0.0;
+    var weight = 0.5;
     
     for (final risk in risks) {
       combinedRisk += risk * weight;
@@ -724,7 +728,7 @@ class AIService extends ChangeNotifier {
     List<String>? preferences,
     required bool considerInsurance,
   }) {
-    double score = 0.0;
+    var score = 0.0;
     final reasons = <String>[];
     
     // Specialty match
@@ -735,7 +739,7 @@ class AIService extends ChangeNotifier {
     }
     
     // Experience and rating
-    if (specialist.rating != null && specialist.rating! > 4.5) {
+    if (specialist.rating! > 4.5) {
       score += 0.2;
       reasons.add('Highly rated specialist');
     }
@@ -764,7 +768,7 @@ class AIService extends ChangeNotifier {
     // Patient preferences
     if (preferences != null) {
       for (final pref in preferences) {
-        if (specialist.languages?.contains(pref) ?? false) {
+        if (specialist.languages.contains(pref) ?? false) {
           score += 0.05;
           reasons.add('Language preference matched');
         }
@@ -806,7 +810,7 @@ class AIService extends ChangeNotifier {
 
   double _calculateSuccessRate(Specialist specialist, DiagnosticPrediction diagnosis) {
     // Base success rate
-    double rate = specialist.successRate ?? 0.85;
+    var rate = specialist.successRate ?? 0.85;
     
     // Adjust based on specialty match
     final requiredSpecialties = _getRequiredSpecialties(diagnosis);
@@ -819,7 +823,7 @@ class AIService extends ChangeNotifier {
 
   int _calculateAge(DateTime birthDate) {
     final now = DateTime.now();
-    int age = now.year - birthDate.year;
+    var age = now.year - birthDate.year;
     if (now.month < birthDate.month || 
         (now.month == birthDate.month && now.day < birthDate.day)) {
       age--;
@@ -839,11 +843,11 @@ class AIService extends ChangeNotifier {
   Map<String, bool> _checkVitalAbnormalities(VitalStatistics? vitals) {
     if (vitals == null) return {};
     
-    final systolic = double.tryParse(vitals.bloodPressureSystolic ?? '0') ?? 0;
-    final diastolic = double.tryParse(vitals.bloodPressureDiastolic ?? '0') ?? 0;
-    final heartRate = double.tryParse(vitals.heartRate ?? '0') ?? 0;
-    final temperature = double.tryParse(vitals.temperature ?? '0') ?? 0;
-    final oxygenSat = double.tryParse(vitals.oxygenSaturation ?? '0') ?? 0;
+    final systolic = vitals.bloodPressureSystolic ?? 0;
+    final diastolic = vitals.bloodPressureDiastolic ?? 0;
+    final heartRate = vitals.heartRate ?? 0;
+    final temperature = vitals.temperature ?? 0;
+    final oxygenSat = vitals.oxygenSaturation ?? 0;
     
     return {
       'highBP': systolic > 140 || diastolic > 90,
@@ -859,7 +863,7 @@ class AIService extends ChangeNotifier {
     final severeSymptoms = ['severe', 'acute', 'intense', 'unbearable', 'extreme'];
     final moderateSymptoms = ['moderate', 'persistent', 'recurring', 'frequent'];
     
-    double severity = 0.3; // Base severity
+    var severity = 0.3; // Base severity
     
     for (final symptom in symptoms) {
       if (severeSymptoms.any((s) => symptom.toLowerCase().contains(s))) {
@@ -926,7 +930,7 @@ class AIService extends ChangeNotifier {
     await Future.delayed(Duration(milliseconds: 100));
     
     // Base success rate
-    double success = 0.7;
+    var success = 0.7;
     
     // Adjust based on features
     final treatmentType = features['treatmentType'];
@@ -999,7 +1003,7 @@ class AIService extends ChangeNotifier {
 
   double _calculateConfidence(Map<String, dynamic> features) {
     // Base confidence
-    double confidence = 0.75;
+    var confidence = 0.75;
     
     // Adjust based on data completeness
     if (features['previousTreatments'] != null && features['previousTreatments'] > 0) {
@@ -1012,7 +1016,7 @@ class AIService extends ChangeNotifier {
   List<DataAnomaly> _detectVitalAnomalies(List<VitalStatistics> vitalHistory) {
     final anomalies = <DataAnomaly>[];
     
-    for (int i = 0; i < vitalHistory.length; i++) {
+    for (var i = 0; i < vitalHistory.length; i++) {
       final vital = vitalHistory[i];
       
       // Check for out-of-range values
@@ -1025,7 +1029,7 @@ class AIService extends ChangeNotifier {
           type: 'Vital Sign',
           description: 'Abnormal heart rate: ${heartRate} bpm',
           severity: AnomalySeverity.high,
-          timestamp: vital.recordedAt,
+          timestamp: vital.timestamp,
         ));
       }
       
@@ -1034,7 +1038,7 @@ class AIService extends ChangeNotifier {
           type: 'Vital Sign',
           description: 'Hypertensive crisis: ${systolic}/${diastolic}',
           severity: AnomalySeverity.critical,
-          timestamp: vital.recordedAt,
+          timestamp: vital.timestamp,
         ));
       }
       
@@ -1049,7 +1053,7 @@ class AIService extends ChangeNotifier {
             type: 'Trend',
             description: 'Sudden heart rate change: ${hrChange} bpm',
             severity: AnomalySeverity.medium,
-            timestamp: vital.recordedAt,
+            timestamp: vital.timestamp,
           ));
         }
       }
@@ -1103,8 +1107,8 @@ class AIService extends ChangeNotifier {
     
     // Detect deteriorating trends
     if (vitalHistory.length >= 3) {
-      bool deteriorating = true;
-      for (int i = 2; i < vitalHistory.length && i < 5; i++) {
+      var deteriorating = true;
+      for (var i = 2; i < vitalHistory.length && i < 5; i++) {
         final currentSystolic = double.tryParse(vitalHistory[i].bloodPressureSystolic ?? '0') ?? 0;
         final prevSystolic = double.tryParse(vitalHistory[i - 1].bloodPressureSystolic ?? '0') ?? 0;
         
@@ -1177,8 +1181,8 @@ class AIService extends ChangeNotifier {
     final positiveWords = ['improved', 'better', 'stable', 'good', 'excellent'];
     final negativeWords = ['worse', 'deteriorating', 'concerning', 'critical', 'severe'];
     
-    int positiveCount = 0;
-    int negativeCount = 0;
+    var positiveCount = 0;
+    var negativeCount = 0;
     
     for (final word in positiveWords) {
       if (text.toLowerCase().contains(word)) positiveCount++;
@@ -1232,7 +1236,7 @@ class AIService extends ChangeNotifier {
     final symptoms = entities.where((e) => e.type == 'Symptom').map((e) => e.value).toSet();
     final diagnoses = entities.where((e) => e.type == 'Diagnosis').map((e) => e.value).toSet();
     
-    String summary = '';
+    var summary = '';
     
     if (symptoms.isNotEmpty) {
       summary += 'Symptoms: ${symptoms.join(", ")}. ';

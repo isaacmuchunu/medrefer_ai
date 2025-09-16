@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mockito/mockito.dart';
 
-import '../../lib/presentation/error_offline_screen/error_offline_screen.dart';
+import 'package:medrefer_ai/presentation/error_offline_screen/error_offline_screen.dart';
 
 void main() {
   group('ErrorOfflineScreen Tests', () {
@@ -58,7 +57,7 @@ void main() {
     });
 
     testWidgets('should handle retry button tap', (WidgetTester tester) async {
-      bool retryCallbackCalled = false;
+      var retryCallbackCalled = false;
       
       await tester.pumpWidget(createTestWidget(
         onRetry: () {

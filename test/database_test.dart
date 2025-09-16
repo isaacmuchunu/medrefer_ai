@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
-import '../lib/database/database.dart';
+import 'package:medrefer_ai/database/database.dart';
 
 void main() {
   group('Database Tests', () {

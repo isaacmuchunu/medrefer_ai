@@ -2,7 +2,7 @@ import 'dart:async';
 import '../../core/app_export.dart';
 
 class SplashScreen extends StatefulWidget {
-  const SplashScreen({Key? key}) : super(key: key);
+  const SplashScreen({super.key});
 
   @override
   _SplashScreenState createState() => _SplashScreenState();
@@ -44,7 +44,7 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
     });
   }
 
-  _navigateToLogin() async {
+  Future<void> _navigateToLogin() async {
     // Wait for database initialization
     final dataService = Provider.of<DataService>(context, listen: false);
     if (!dataService.isInitialized) {

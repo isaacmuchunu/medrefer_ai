@@ -31,7 +31,7 @@ class EnhancedSecurityService {
   String generateSecureToken({int length = 32}) {
     const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
     final bytes = Uint8List(length);
-    for (int i = 0; i < length; i++) {
+    for (var i = 0; i < length; i++) {
       bytes[i] = _random.nextInt(256);
     }
     return base64Encode(bytes);
@@ -41,7 +41,7 @@ class EnhancedSecurityService {
   String generateSessionId() {
     final timestamp = DateTime.now().millisecondsSinceEpoch;
     final randomBytes = Uint8List(16);
-    for (int i = 0; i < 16; i++) {
+    for (var i = 0; i < 16; i++) {
       randomBytes[i] = _random.nextInt(256);
     }
     final hash = sha256.convert([...timestamp.toString().codeUnits, ...randomBytes]);
@@ -104,7 +104,7 @@ class EnhancedSecurityService {
   /// Generate a secure salt
   String _generateSalt() {
     final saltBytes = Uint8List(16);
-    for (int i = 0; i < 16; i++) {
+    for (var i = 0; i < 16; i++) {
       saltBytes[i] = _random.nextInt(256);
     }
     return base64Encode(saltBytes);
@@ -113,7 +113,7 @@ class EnhancedSecurityService {
   /// Get or create encryption key
   Future<String> _getOrCreateEncryptionKey() async {
     try {
-      String? key = await _storage.read(key: 'encryption_key');
+      var key = await _storage.read(key: 'encryption_key');
       if (key == null) {
         key = generateSecureToken(length: 32);
         await _storage.write(key: 'encryption_key', value: key);
@@ -190,7 +190,7 @@ class EnhancedSecurityService {
   /// Generate a secure PIN
   String generateSecurePin({int length = 6}) {
     final pin = StringBuffer();
-    for (int i = 0; i < length; i++) {
+    for (var i = 0; i < length; i++) {
       pin.write(_random.nextInt(10));
     }
     return pin.toString();
@@ -215,7 +215,7 @@ class EnhancedSecurityService {
 
   /// Check if PIN is sequential
   bool _isSequential(String pin) {
-    for (int i = 0; i < pin.length - 1; i++) {
+    for (var i = 0; i < pin.length - 1; i++) {
       final current = int.tryParse(pin[i]);
       final next = int.tryParse(pin[i + 1]);
       if (current != null && next != null) {
@@ -235,7 +235,7 @@ class EnhancedSecurityService {
   String generateRecoveryCode() {
     const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
     final code = StringBuffer();
-    for (int i = 0; i < 8; i++) {
+    for (var i = 0; i < 8; i++) {
       code.write(chars[_random.nextInt(chars.length)]);
     }
     return code.toString();
@@ -264,7 +264,7 @@ class EnhancedSecurityService {
   String generateApiKey({String? prefix}) {
     final timestamp = DateTime.now().millisecondsSinceEpoch;
     final randomBytes = Uint8List(16);
-    for (int i = 0; i < 16; i++) {
+    for (var i = 0; i < 16; i++) {
       randomBytes[i] = _random.nextInt(256);
     }
     final hash = sha256.convert([...timestamp.toString().codeUnits, ...randomBytes]);
@@ -320,7 +320,7 @@ class EnhancedSecurityService {
 
   /// Get password strength score (0-100)
   int getPasswordStrengthScore(String password) {
-    int score = 0;
+    var score = 0;
     
     // Length bonus
     if (password.length >= 8) score += 20;

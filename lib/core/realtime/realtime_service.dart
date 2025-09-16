@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'package:flutter/foundation.dart';
-import '../../database/models/models.dart';
 import '../../database/services/data_service.dart';
 
 /// Service for managing real-time updates across the application

@@ -1,6 +1,5 @@
 import 'package:flutter/foundation.dart';
 import 'package:sqflite/sqflite.dart';
-import 'package:crypto/crypto.dart';
 import 'dart:convert';
 import 'dart:async';
 import '../core/app_export.dart';

@@ -5,7 +5,7 @@ import '../../database/models/quality_metric.dart';
 import '../../theme/app_theme.dart';
 
 class QualityAssuranceDashboard extends StatefulWidget {
-  const QualityAssuranceDashboard({Key? key}) : super(key: key);
+  const QualityAssuranceDashboard({super.key});
 
   @override
   State<QualityAssuranceDashboard> createState() => _QualityAssuranceDashboardState();
@@ -17,7 +17,7 @@ class _QualityAssuranceDashboardState extends State<QualityAssuranceDashboard>
   final QualityAssuranceService _qualityService = QualityAssuranceService();
   List<QualityMetric> _metrics = [];
   bool _isLoading = true;
-  String _selectedPeriod = 'monthly';
+  final String _selectedPeriod = 'monthly';
 
   @override
   void initState() {
@@ -283,7 +283,7 @@ class _QualityAssuranceDashboardState extends State<QualityAssuranceDashboard>
                 ),
               )
             else
-              ...metrics.take(5).map((metric) => _buildMetricItem(metric)),
+              ...metrics.take(5).map(_buildMetricItem),
           ],
         ),
       ),
@@ -310,7 +310,7 @@ class _QualityAssuranceDashboardState extends State<QualityAssuranceDashboard>
                 ),
               )
             else
-              ...metrics.take(5).map((metric) => _buildMetricItem(metric)),
+              ...metrics.take(5).map(_buildMetricItem),
           ],
         ),
       ),

@@ -64,7 +64,7 @@ class UserDAO {
       _usersTable,
       orderBy: 'first_name ASC, last_name ASC',
     );
-    return maps.map((map) => User.fromMap(map)).toList();
+    return maps.map(User.fromMap).toList();
   }
 
   Future<List<User>> getUsersByRole(UserRole role) async {
@@ -74,7 +74,7 @@ class UserDAO {
       whereArgs: [role.name, UserStatus.active.name],
       orderBy: 'first_name ASC, last_name ASC',
     );
-    return maps.map((map) => User.fromMap(map)).toList();
+    return maps.map(User.fromMap).toList();
   }
 
   Future<List<User>> getActiveUsers() async {
@@ -84,7 +84,7 @@ class UserDAO {
       whereArgs: [UserStatus.active.name],
       orderBy: 'first_name ASC, last_name ASC',
     );
-    return maps.map((map) => User.fromMap(map)).toList();
+    return maps.map(User.fromMap).toList();
   }
 
   Future<User?> getUserById(String id) async {
@@ -124,7 +124,7 @@ class UserDAO {
       ],
       orderBy: 'first_name ASC, last_name ASC',
     );
-    return maps.map((map) => User.fromMap(map)).toList();
+    return maps.map(User.fromMap).toList();
   }
 
   Future<void> insertUser(User user) async {
@@ -320,6 +320,6 @@ class UserDAO {
       orderBy: 'last_login_at DESC',
       limit: limit,
     );
-    return maps.map((map) => User.fromMap(map)).toList();
+    return maps.map(User.fromMap).toList();
   }
 }

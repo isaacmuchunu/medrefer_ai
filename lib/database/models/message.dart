@@ -30,7 +30,7 @@ class Message extends BaseModel {
   }) : timestamp = timestamp ?? DateTime.now();
 
   factory Message.fromMap(Map<String, dynamic> map) {
-    List<Map<String, dynamic>> attachmentsList = [];
+    var attachmentsList = <Map<String, dynamic>>[];
     if (map['attachments'] != null && map['attachments'].isNotEmpty) {
       try {
         final decoded = jsonDecode(map['attachments']);

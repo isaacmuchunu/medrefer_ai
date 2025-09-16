@@ -79,7 +79,7 @@ class PatientDao {
         limit: limit ?? defaultPageSize,
         offset: offset ?? 0,
       );
-      final patients = maps.map((map) => Patient.fromMap(map)).toList();
+      final patients = maps.map(Patient.fromMap).toList();
       
       // Update stream
       _patientsStreamController.add(patients);
@@ -138,7 +138,7 @@ class PatientDao {
         whereArgs: ['%$searchTerm%', '%$searchTerm%', '%$searchTerm%'],
         orderBy: 'name ASC',
       );
-      return maps.map((map) => Patient.fromMap(map)).toList();
+      return maps.map(Patient.fromMap).toList();
     } catch (e) {
       throw Exception('Failed to search patients: $e');
     }
@@ -152,7 +152,7 @@ class PatientDao {
         whereArgs: [minAge, maxAge],
         orderBy: 'age ASC',
       );
-      return maps.map((map) => Patient.fromMap(map)).toList();
+      return maps.map(Patient.fromMap).toList();
     } catch (e) {
       throw Exception('Failed to get patients by age: $e');
     }
@@ -166,7 +166,7 @@ class PatientDao {
         whereArgs: [gender],
         orderBy: 'name ASC',
       );
-      return maps.map((map) => Patient.fromMap(map)).toList();
+      return maps.map(Patient.fromMap).toList();
     } catch (e) {
       throw Exception('Failed to get patients by gender: $e');
     }
@@ -221,7 +221,7 @@ class PatientDao {
         GROUP BY gender
       ''');
       
-      Map<String, int> genderCounts = {};
+      final genderCounts = <String, int>{};
       for (var row in result) {
         genderCounts[row['gender'] as String] = row['count'] as int;
       }
@@ -248,7 +248,7 @@ class PatientDao {
         GROUP BY age_group
       ''');
       
-      Map<String, int> ageCounts = {};
+      final ageCounts = <String, int>{};
       for (var row in result) {
         ageCounts[row['age_group'] as String] = row['count'] as int;
       }
@@ -303,7 +303,7 @@ class PatientDao {
         orderBy: 'created_at DESC',
         limit: limit,
       );
-      return maps.map((map) => Patient.fromMap(map)).toList();
+      return maps.map(Patient.fromMap).toList();
     } catch (e) {
       debugPrint('Error getting recent patients: $e');
       throw PatientDaoException('Failed to get recent patients: $e');
@@ -322,7 +322,7 @@ class PatientDao {
         ORDER BY a.date ASC
       ''', [DateTime.now().millisecondsSinceEpoch]);
       
-      return result.map((map) => Patient.fromMap(map)).toList();
+      return result.map(Patient.fromMap).toList();
     } catch (e) {
       debugPrint('Error getting patients with appointments: $e');
       throw PatientDaoException('Failed to get patients with appointments: $e');
@@ -347,7 +347,7 @@ class PatientDao {
       final List<dynamic> jsonData = jsonDecode(jsonString);
       final patients = jsonData.map((map) => Patient.fromMap(map)).toList();
       
-      int imported = 0;
+      var imported = 0;
       for (final patient in patients) {
         try {
           await createPatient(patient);
@@ -384,10 +384,10 @@ class PatientDaoException implements Exception {
 
 /// Exception for validation errors
 class ValidationException extends PatientDaoException {
-  ValidationException(String message) : super(message);
+  ValidationException(super.message);
 }
 
 /// Exception for duplicate records
 class DuplicateRecordException extends PatientDaoException {
-  DuplicateRecordException(String message) : super(message);
+  DuplicateRecordException(super.message);
 }

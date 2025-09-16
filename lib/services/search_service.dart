@@ -150,7 +150,7 @@ class SearchService extends ChangeNotifier {
       final expandedQuery = enableSynonyms ? _expandWithSynonyms(cleanedQuery) : cleanedQuery;
       
       // Perform search
-      List<SearchResult> results = await _performFullTextSearch(expandedQuery, filters);
+      var results = await _performFullTextSearch(expandedQuery, filters);
       
       // Apply fuzzy matching if enabled and results are limited
       if (enableFuzzy && results.length < 5) {
@@ -275,7 +275,7 @@ class SearchService extends ChangeNotifier {
       }
       
       // Apply selected facets
-      List<SearchResult> filteredResults = searchResults.results;
+      var filteredResults = searchResults.results;
       if (selectedFacets != null && selectedFacets.isNotEmpty) {
         filteredResults = _applyFacetFilters(filteredResults, selectedFacets);
       }
@@ -510,16 +510,16 @@ class SearchService extends ChangeNotifier {
       (i) => List.generate(s2.length + 1, (j) => 0),
     );
     
-    for (int i = 0; i <= s1.length; i++) {
+    for (var i = 0; i <= s1.length; i++) {
       matrix[i][0] = i;
     }
     
-    for (int j = 0; j <= s2.length; j++) {
+    for (var j = 0; j <= s2.length; j++) {
       matrix[0][j] = j;
     }
     
-    for (int i = 1; i <= s1.length; i++) {
-      for (int j = 1; j <= s2.length; j++) {
+    for (var i = 1; i <= s1.length; i++) {
+      for (var j = 1; j <= s2.length; j++) {
         final cost = s1[i - 1] == s2[j - 1] ? 0 : 1;
         matrix[i][j] = [
           matrix[i - 1][j] + 1,      // deletion
@@ -595,10 +595,10 @@ class SearchService extends ChangeNotifier {
     final sorted = List<SearchResult>.from(results);
     
     sorted.sort((a, b) {
-      dynamic aValue = a.metadata[sort.field] ?? a.score;
-      dynamic bValue = b.metadata[sort.field] ?? b.score;
+      final dynamic aValue = a.metadata[sort.field] ?? a.score;
+      final dynamic bValue = b.metadata[sort.field] ?? b.score;
       
-      int comparison = 0;
+      var comparison = 0;
       if (aValue is num && bValue is num) {
         comparison = aValue.compareTo(bValue);
       } else {
@@ -624,7 +624,7 @@ class SearchService extends ChangeNotifier {
       'urgent': ['emergency', 'critical', 'immediate'],
     };
     
-    String expanded = query;
+    var expanded = query;
     
     for (final entry in synonyms.entries) {
       if (query.contains(entry.key)) {
@@ -670,7 +670,7 @@ class SearchService extends ChangeNotifier {
     final start = (index - 50).clamp(0, content.length);
     final end = (index + query.length + 100).clamp(0, content.length);
     
-    String snippet = content.substring(start, end);
+    var snippet = content.substring(start, end);
     if (start > 0) snippet = '...$snippet';
     if (end < content.length) snippet = '$snippet...';
     

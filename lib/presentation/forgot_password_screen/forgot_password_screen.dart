@@ -1,8 +1,7 @@
 import '../../core/app_export.dart';
-import '../../services/auth_service.dart';
 
 class ForgotPasswordScreen extends StatefulWidget {
-  const ForgotPasswordScreen({Key? key}) : super(key: key);
+  const ForgotPasswordScreen({super.key});
 
   @override
   _ForgotPasswordScreenState createState() => _ForgotPasswordScreenState();
@@ -26,8 +25,8 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> with Ticker
   // State variables
   int _currentStep = 0;
   bool _isLoading = false;
-  bool _obscureNewPassword = true;
-  bool _obscureConfirmPassword = true;
+  final bool _obscureNewPassword = true;
+  final bool _obscureConfirmPassword = true;
   String? _errorMessage;
   String? _successMessage;
   bool _isCodeSent = false;

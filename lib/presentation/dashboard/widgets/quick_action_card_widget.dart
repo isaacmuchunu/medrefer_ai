@@ -55,7 +55,7 @@ class _QuickActionCardWidgetState extends State<QuickActionCardWidget>
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    Widget cardContent = Container(
+    final Widget cardContent = Container(
       width: 20.w,
       height: 20.w,
       margin: EdgeInsets.all(2.w),

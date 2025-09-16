@@ -8,7 +8,7 @@ import './widgets/symptoms_description_widget.dart';
 import './widgets/urgency_selector_widget.dart';
 
 class CreateReferral extends StatefulWidget {
-  const CreateReferral({Key? key}) : super(key: key);
+  const CreateReferral({super.key});
 
   @override
   State<CreateReferral> createState() => _CreateReferralState();
@@ -508,8 +508,8 @@ class _CreateReferralState extends State<CreateReferral> {
   }
 
   int _getCompletionPercentage() {
-    int completed = 0;
-    int total = 4; // Required fields: patient, symptoms, urgency, specialist
+    var completed = 0;
+    final total = 4; // Required fields: patient, symptoms, urgency, specialist
 
     if (_selectedPatient != null) completed++;
     if (_symptomsDescription.isNotEmpty) completed++;

@@ -18,7 +18,7 @@ class EmergencyContactDao {
   Future<List<EmergencyContact>> getAllEmergencyContacts() async {
     try {
       final maps = await _dbHelper.query(tableName, orderBy: 'name ASC');
-      return maps.map((map) => EmergencyContact.fromMap(map)).toList();
+      return maps.map(EmergencyContact.fromMap).toList();
     } catch (e) {
       throw Exception('Failed to get emergency contacts: $e');
     }
@@ -41,7 +41,7 @@ class EmergencyContactDao {
         whereArgs: [patientId],
         orderBy: 'is_primary DESC, name ASC',
       );
-      return maps.map((map) => EmergencyContact.fromMap(map)).toList();
+      return maps.map(EmergencyContact.fromMap).toList();
     } catch (e) {
       throw Exception('Failed to get emergency contacts by patient: $e');
     }

@@ -23,7 +23,7 @@ class MedicalHistoryDao {
         whereArgs: [patientId],
         orderBy: 'date DESC',
       );
-      return maps.map((map) => MedicalHistory.fromMap(map)).toList();
+      return maps.map(MedicalHistory.fromMap).toList();
     } catch (e) {
       throw Exception('Failed to get medical history: $e');
     }
@@ -46,7 +46,7 @@ class MedicalHistoryDao {
         whereArgs: [patientId, type],
         orderBy: 'date DESC',
       );
-      return maps.map((map) => MedicalHistory.fromMap(map)).toList();
+      return maps.map(MedicalHistory.fromMap).toList();
     } catch (e) {
       throw Exception('Failed to get medical history by type: $e');
     }

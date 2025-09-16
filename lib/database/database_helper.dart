@@ -25,8 +25,8 @@ class DatabaseHelper {
   }
 
   Future<Database> _initDatabase() async {
-    Directory documentsDirectory = await getApplicationDocumentsDirectory();
-    String path = join(documentsDirectory.path, 'medrefer_ai.db');
+    final documentsDirectory = await getApplicationDocumentsDirectory();
+    final path = join(documentsDirectory.path, 'medrefer_ai.db');
     
     return await openDatabase(
       path,
@@ -554,8 +554,8 @@ class DatabaseHelper {
     List<dynamic>? additionalWhereArgs,
   }) async {
     final db = await database;
-    String where = '$searchColumn LIKE ?';
-    List<dynamic> whereArgs = ['%$searchTerm%'];
+    var where = '$searchColumn LIKE ?';
+    final whereArgs = <dynamic>['%$searchTerm%'];
     
     if (additionalWhere != null) {
       where += ' AND $additionalWhere';
@@ -584,7 +584,7 @@ class DatabaseHelper {
   // Count method with optional where clause
   Future<int> getCount(String table, {String? where, List<dynamic>? whereArgs}) async {
     final db = await database;
-    String query = 'SELECT COUNT(*) as count FROM $table';
+    var query = 'SELECT COUNT(*) as count FROM $table';
     if (where != null) {
       query += ' WHERE $where';
     }
@@ -605,9 +605,9 @@ class DatabaseHelper {
   }) async {
     final db = await database;
     
-    String query = 'SELECT ${selectColumns.join(', ')} FROM $baseTable';
+    var query = 'SELECT ${selectColumns.join(', ')} FROM $baseTable';
     
-    for (String join in joinTables) {
+    for (var join in joinTables) {
       query += ' $join';
     }
     
@@ -641,7 +641,7 @@ class DatabaseHelper {
     try {
       // Try FTS5 first
       final ftsTable = '${table}_fts';
-      String query = 'SELECT * FROM $ftsTable WHERE $ftsTable MATCH ?';
+      var query = 'SELECT * FROM $ftsTable WHERE $ftsTable MATCH ?';
       
       if (limit != null) {
         query += ' LIMIT $limit';
@@ -654,7 +654,7 @@ class DatabaseHelper {
       final likeConditions = searchColumns.map((col) => '$col LIKE ?').join(' OR ');
       final searchArgs = List.filled(searchColumns.length, '%$searchTerm%');
       
-      String query = 'SELECT * FROM $table WHERE $likeConditions';
+      var query = 'SELECT * FROM $table WHERE $likeConditions';
       
       if (limit != null) {
         query += ' LIMIT $limit';

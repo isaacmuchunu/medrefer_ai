@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../../core/app_export.dart';
 
 class BookingScreen extends StatelessWidget {
-  const BookingScreen({Key? key}) : super(key: key);
+  const BookingScreen({super.key});
 
   @override
   Widget build(BuildContext context) {

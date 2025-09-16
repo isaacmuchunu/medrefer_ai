@@ -90,7 +90,7 @@ class PharmacyDAO {
       _drugsTable,
       orderBy: 'name ASC',
     );
-    return maps.map((map) => PharmacyDrug.fromMap(map)).toList();
+    return maps.map(PharmacyDrug.fromMap).toList();
   }
 
   Future<List<PharmacyDrug>> getAvailableDrugs() async {
@@ -100,7 +100,7 @@ class PharmacyDAO {
       whereArgs: [1, 0],
       orderBy: 'name ASC',
     );
-    return maps.map((map) => PharmacyDrug.fromMap(map)).toList();
+    return maps.map(PharmacyDrug.fromMap).toList();
   }
 
   Future<List<PharmacyDrug>> getDrugsByCategory(String category) async {
@@ -110,7 +110,7 @@ class PharmacyDAO {
       whereArgs: [category, 1],
       orderBy: 'name ASC',
     );
-    return maps.map((map) => PharmacyDrug.fromMap(map)).toList();
+    return maps.map(PharmacyDrug.fromMap).toList();
   }
 
   Future<List<PharmacyDrug>> getPopularDrugs() async {
@@ -121,7 +121,7 @@ class PharmacyDAO {
       orderBy: 'rating DESC, review_count DESC',
       limit: 10,
     );
-    return maps.map((map) => PharmacyDrug.fromMap(map)).toList();
+    return maps.map(PharmacyDrug.fromMap).toList();
   }
 
   Future<List<PharmacyDrug>> searchDrugs(String query) async {
@@ -131,7 +131,7 @@ class PharmacyDAO {
       whereArgs: ['%$query%', '%$query%', '%$query%', 1],
       orderBy: 'name ASC',
     );
-    return maps.map((map) => PharmacyDrug.fromMap(map)).toList();
+    return maps.map(PharmacyDrug.fromMap).toList();
   }
 
   Future<PharmacyDrug?> getDrugById(String id) async {
@@ -175,7 +175,7 @@ class PharmacyDAO {
       whereArgs: [userId],
       orderBy: 'created_at DESC',
     );
-    return maps.map((map) => CartItem.fromMap(map)).toList();
+    return maps.map(CartItem.fromMap).toList();
   }
 
   Future<CartItem?> getCartItem(String userId, String drugId) async {
@@ -254,7 +254,7 @@ class PharmacyDAO {
       whereArgs: [userId],
       orderBy: 'created_at DESC',
     );
-    return maps.map((map) => PharmacyOrder.fromMap(map)).toList();
+    return maps.map(PharmacyOrder.fromMap).toList();
   }
 
   Future<PharmacyOrder?> getOrderById(String id) async {

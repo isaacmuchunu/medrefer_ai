@@ -7,12 +7,12 @@ class ErrorOfflineScreen extends StatefulWidget {
   final VoidCallback? onRetry;
 
   const ErrorOfflineScreen({
-    Key? key,
+    super.key,
     this.errorMessage,
     this.errorType,
     this.isOffline = false,
     this.onRetry,
-  }) : super(key: key);
+  });
 
   @override
   _ErrorOfflineScreenState createState() => _ErrorOfflineScreenState();
@@ -421,7 +421,7 @@ class _ErrorOfflineScreenState extends State<ErrorOfflineScreen> with TickerProv
 
   Future<void> _syncQueuedActions() async {
     // Simulate syncing queued actions
-    for (int i = _queuedActions; i > 0; i--) {
+    for (var i = _queuedActions; i > 0; i--) {
       await Future.delayed(Duration(milliseconds: 500));
       setState(() {
         _queuedActions = i - 1;

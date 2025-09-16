@@ -50,7 +50,7 @@ class _ConsentManagementScreenState extends State<ConsentManagementScreen> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 DropdownButtonFormField<ConsentType>(
-                  value: selectedType,
+                  initialValue: selectedType,
                   decoration: const InputDecoration(labelText: 'Consent Type'),
                   items: ConsentType.values
                       .map((e) => DropdownMenuItem(value: e, child: Text(e.name)))

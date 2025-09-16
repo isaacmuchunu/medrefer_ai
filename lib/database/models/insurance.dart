@@ -13,7 +13,7 @@ class Insurance extends BaseModel {
   final String? relationship;
 
   Insurance({
-    String? id,
+    super.id,
     this.patientId,
     this.provider,
     this.policyNumber,
@@ -24,9 +24,9 @@ class Insurance extends BaseModel {
     this.status,
     this.primaryHolder,
     this.relationship,
-    DateTime? createdAt,
-    DateTime? updatedAt,
-  }) : super(id: id, createdAt: createdAt, updatedAt: updatedAt);
+    super.createdAt,
+    super.updatedAt,
+  });
 
   factory Insurance.fromMap(Map<String, dynamic> map) {
     return Insurance(

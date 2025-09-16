@@ -14,7 +14,7 @@ class LabResult extends BaseModel {
   final String? notes;
 
   LabResult({
-    String? id,
+    super.id,
     this.patientId,
     this.testName,
     this.testType,
@@ -26,9 +26,9 @@ class LabResult extends BaseModel {
     this.orderedBy,
     this.performedBy,
     this.notes,
-    DateTime? createdAt,
-    DateTime? updatedAt,
-  }) : super(id: id, createdAt: createdAt, updatedAt: updatedAt);
+    super.createdAt,
+    super.updatedAt,
+  });
 
   factory LabResult.fromMap(Map<String, dynamic> map) {
     return LabResult(

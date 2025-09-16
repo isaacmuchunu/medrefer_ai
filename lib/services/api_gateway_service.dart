@@ -1040,7 +1040,7 @@ class APIGatewayService extends ChangeNotifier {
     final totalWeight = instances.fold<int>(0, (sum, instance) => sum + instance.weight);
     final randomValue = Random().nextInt(totalWeight);
     
-    int currentWeight = 0;
+    var currentWeight = 0;
     for (final instance in instances) {
       currentWeight += instance.weight;
       if (randomValue < currentWeight) {

@@ -3,7 +3,6 @@ import 'package:sqflite/sqflite.dart';
 import 'dart:convert';
 import 'dart:async';
 import 'dart:math';
-import 'dart:typed_data';
 import '../core/app_export.dart';
 
 /// Advanced Reporting Engine with Customizable Dashboards
@@ -1105,7 +1104,7 @@ class AdvancedReportingService extends ChangeNotifier {
       final aggregatedRow = <String, dynamic>{};
       
       // Add group fields
-      for (int i = 0; i < groupings.length; i++) {
+      for (var i = 0; i < groupings.length; i++) {
         final grouping = groupings[i];
         aggregatedRow[grouping.field] = groupData.first[grouping.field];
       }
@@ -1155,7 +1154,7 @@ class AdvancedReportingService extends ChangeNotifier {
         final aValue = a[sort.field];
         final bValue = b[sort.field];
         
-        int comparison = 0;
+        var comparison = 0;
         if (aValue is num && bValue is num) {
           comparison = aValue.compareTo(bValue);
         } else {

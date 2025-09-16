@@ -6,11 +6,11 @@ class TeleconferenceCallScreen extends StatefulWidget {
   final bool isVideoCall;
 
   const TeleconferenceCallScreen({
-    Key? key,
+    super.key,
     required this.callId,
     required this.participantIds,
     this.isVideoCall = true,
-  }) : super(key: key);
+  });
 
   @override
   _TeleconferenceCallScreenState createState() => _TeleconferenceCallScreenState();
@@ -634,8 +634,8 @@ class _TeleconferenceCallScreenState extends State<TeleconferenceCallScreen> wit
 
   String _formatDuration(Duration duration) {
     String twoDigits(int n) => n.toString().padLeft(2, '0');
-    String minutes = twoDigits(duration.inMinutes.remainder(60));
-    String seconds = twoDigits(duration.inSeconds.remainder(60));
+    final minutes = twoDigits(duration.inMinutes.remainder(60));
+    final seconds = twoDigits(duration.inSeconds.remainder(60));
     return '$minutes:$seconds';
   }
 }

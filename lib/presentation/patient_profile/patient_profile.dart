@@ -11,7 +11,7 @@ import './widgets/patient_header_widget.dart';
 import './widgets/vital_statistics_card_widget.dart';
 
 class PatientProfile extends StatefulWidget {
-  const PatientProfile({Key? key}) : super(key: key);
+  const PatientProfile({super.key});
 
   @override
   State<PatientProfile> createState() => _PatientProfileState();
@@ -21,7 +21,7 @@ class _PatientProfileState extends State<PatientProfile>
     with TickerProviderStateMixin {
   late TabController _tabController;
   bool _isPrivacyEnabled = false;
-  int _selectedTabIndex = 0;
+  final int _selectedTabIndex = 0;
   bool _isLoading = true;
 
   // Dynamic patient data
@@ -177,9 +177,9 @@ class _PatientProfileState extends State<PatientProfile>
             child: PatientHeaderWidget(
               patientData: {
                 "id": _patient!.id,
-                "name": "${_patient!.firstName} ${_patient!.lastName}",
+                "name": _patient!.name,
                 "age": DateTime.now().year - _patient!.dateOfBirth.year,
-                "medicalRecordNumber": _patient!.id,
+                "medicalRecordNumber": _patient!.medicalRecordNumber,
                 "photo": _patient!.profileImageUrl ?? "",
                 "dateOfBirth": _patient!.dateOfBirth.toIso8601String().split('T')[0],
                 "gender": _patient!.gender,
@@ -209,7 +209,7 @@ class _PatientProfileState extends State<PatientProfile>
         ],
       ),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => _createReferral(),
+        onPressed: _createReferral,
         icon: CustomIconWidget(
           iconName: 'send',
           color: Colors.white,
@@ -302,14 +302,12 @@ class _PatientProfileState extends State<PatientProfile>
           CurrentReferralsWidget(
             referrals: _referrals.map((referral) => {
               "id": referral.id,
-              "specialty": referral.specialty,
-              "specialistName": referral.specialistName,
-              "reason": referral.reason,
-              "status": referral.status.name,
-              "referredDate": referral.referredDate.toIso8601String().split('T')[0],
-              "appointmentDate": referral.appointmentDate?.toIso8601String().split('T')[0],
-              "priority": referral.priority.name,
+              "trackingNumber": referral.trackingNumber,
+              "status": referral.status,
+              "urgency": referral.urgency,
+              "reason": referral.symptomsDescription,
               "referringPhysician": referral.referringPhysician,
+              "createdAt": referral.createdAt.toIso8601String().split('T')[0],
             }).toList(),
             onReferralTap: (referral) {
               Navigator.pushNamed(context, '/referral-tracking');
@@ -340,7 +338,7 @@ class _PatientProfileState extends State<PatientProfile>
         children: [
           ContactInfoWidget(
             contactData: {
-              "phone": _patient!.phoneNumber ?? "Not provided",
+              "phone": _patient!.phone ?? "Not provided",
               "email": _patient!.email ?? "Not provided",
               "address": _patient!.address ?? "Not provided",
             },

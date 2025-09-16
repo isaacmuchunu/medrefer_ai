@@ -1,5 +1,3 @@
-import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'logging_service.dart';
 
@@ -11,7 +9,7 @@ class AccessibilityService {
 
   final LoggingService _loggingService = LoggingService();
   bool _isInitialized = false;
-  bool _isScreenReaderEnabled = false;
+  final bool _isScreenReaderEnabled = false;
   String _preferredLanguage = 'en';
 
   bool get isInitialized => _isInitialized;

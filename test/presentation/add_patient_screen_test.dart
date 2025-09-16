@@ -4,9 +4,8 @@ import 'package:provider/provider.dart';
 import 'package:mockito/mockito.dart';
 import 'package:mockito/annotations.dart';
 
-import '../../lib/presentation/add_patient_screen/add_patient_screen.dart';
-import '../../lib/database/services/data_service.dart';
-import '../../lib/database/models/models.dart';
+import 'package:medrefer_ai/presentation/add_patient_screen/add_patient_screen.dart';
+import 'package:medrefer_ai/database/services/data_service.dart';
 
 // Generate mocks
 @GenerateMocks([DataService])

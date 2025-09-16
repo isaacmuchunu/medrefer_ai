@@ -123,7 +123,7 @@ class _ReferralTrackingState extends State<ReferralTracking>
   }
 
   List<Map<String, dynamic>> _getFilteredReferrals() {
-    List<Map<String, dynamic>> filtered = List.from(_allReferrals);
+    var filtered = List<Map<String, dynamic>>.from(_allReferrals);
 
     // Filter by status tab
     if (_selectedTabIndex > 0) {
@@ -164,7 +164,7 @@ class _ReferralTrackingState extends State<ReferralTracking>
 
   List<Map<String, dynamic>> _applyAdvancedFilters(
       List<Map<String, dynamic>> referrals) {
-    List<Map<String, dynamic>> filtered = List.from(referrals);
+    var filtered = List<Map<String, dynamic>>.from(referrals);
 
     // Date range filter
     if (_currentFilters['startDate'] != null &&

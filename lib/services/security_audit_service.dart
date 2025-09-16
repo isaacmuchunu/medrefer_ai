@@ -276,7 +276,7 @@ class SecurityAuditService {
       highRiskEvents: highRiskEvents,
       failedLoginAttempts: failedLogins,
       uniqueActiveUsers: uniqueUsers,
-      blockedUsers: _failedLoginAttempts.keys.where((userId) => isUserBlocked(userId)).length,
+      blockedUsers: _failedLoginAttempts.keys.where(isUserBlocked).length,
     );
   }
 

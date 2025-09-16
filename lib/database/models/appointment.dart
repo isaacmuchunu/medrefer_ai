@@ -14,7 +14,7 @@ class Appointment extends BaseModel {
   final String? location;
 
   Appointment({
-    String? id,
+    super.id,
     this.patientId,
     this.specialistId,
     this.referralId,
@@ -26,9 +26,9 @@ class Appointment extends BaseModel {
     this.type,
     this.duration,
     this.location,
-    DateTime? createdAt,
-    DateTime? updatedAt,
-  }) : super(id: id, createdAt: createdAt, updatedAt: updatedAt);
+    super.createdAt,
+    super.updatedAt,
+  });
 
   factory Appointment.fromMap(Map<String, dynamic> map) {
     return Appointment(

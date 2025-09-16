@@ -1,6 +1,7 @@
 import 'base_model.dart';
 
 class EmergencyProtocol extends BaseModel {
+  @override
   final String id;
   final String title;
   final String description;
@@ -24,7 +25,9 @@ class EmergencyProtocol extends BaseModel {
   final List<String> tags;
   final Map<String, dynamic> metadata;
   final String? notes;
+  @override
   final DateTime createdAt;
+  @override
   final DateTime updatedAt;
   final bool isActive;
   final bool isPublic;

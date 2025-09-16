@@ -1,6 +1,7 @@
 import 'base_model.dart';
 
 class InventoryItem extends BaseModel {
+  @override
   final String id;
   final String name;
   final String description;
@@ -29,7 +30,9 @@ class InventoryItem extends BaseModel {
   final List<String> tags;
   final Map<String, dynamic> specifications;
   final String? notes;
+  @override
   final DateTime createdAt;
+  @override
   final DateTime updatedAt;
   final bool isActive;
   final bool requiresMaintenance;

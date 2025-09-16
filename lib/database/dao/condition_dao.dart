@@ -18,7 +18,7 @@ class ConditionDao {
   Future<List<Condition>> getAllConditions() async {
     try {
       final maps = await _dbHelper.query(tableName, orderBy: 'name ASC');
-      return maps.map((map) => Condition.fromMap(map)).toList();
+      return maps.map(Condition.fromMap).toList();
     } catch (e) {
       throw Exception('Failed to get conditions: $e');
     }
@@ -41,7 +41,7 @@ class ConditionDao {
         whereArgs: [patientId],
         orderBy: 'diagnosed_date DESC',
       );
-      return maps.map((map) => Condition.fromMap(map)).toList();
+      return maps.map(Condition.fromMap).toList();
     } catch (e) {
       throw Exception('Failed to get conditions by patient: $e');
     }
@@ -55,7 +55,7 @@ class ConditionDao {
         whereArgs: [patientId],
         orderBy: 'severity DESC',
       );
-      return maps.map((map) => Condition.fromMap(map)).toList();
+      return maps.map(Condition.fromMap).toList();
     } catch (e) {
       throw Exception('Failed to get active conditions: $e');
     }

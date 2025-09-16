@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
 import 'dart:math';
 import 'package:medrefer_ai/core/app_export.dart';
 import 'package:medrefer_ai/database/models/notification_models.dart';
@@ -489,7 +488,7 @@ class AdvancedNotificationService extends ChangeNotifier {
 
   /// Replace template variables
   String _replaceTemplateVariables(String template, Map<String, dynamic> variables) {
-    String result = template;
+    var result = template;
     variables.forEach((key, value) {
       result = result.replaceAll('{{$key}}', value.toString());
     });

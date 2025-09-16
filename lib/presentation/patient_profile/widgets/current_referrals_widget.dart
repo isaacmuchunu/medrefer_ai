@@ -6,10 +6,10 @@ class CurrentReferralsWidget extends StatelessWidget {
   final Function(Map<String, dynamic>) onReferralTap;
 
   const CurrentReferralsWidget({
-    Key? key,
+    super.key,
     required this.referrals,
     required this.onReferralTap,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

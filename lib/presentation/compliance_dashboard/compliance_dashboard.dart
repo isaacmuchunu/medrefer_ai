@@ -5,7 +5,7 @@ import '../../database/models/compliance_audit.dart';
 import '../../theme/app_theme.dart';
 
 class ComplianceDashboard extends StatefulWidget {
-  const ComplianceDashboard({Key? key}) : super(key: key);
+  const ComplianceDashboard({super.key});
 
   @override
   State<ComplianceDashboard> createState() => _ComplianceDashboardState();
@@ -57,7 +57,7 @@ class _ComplianceDashboardState extends State<ComplianceDashboard>
   }
 
   List<ComplianceAudit> get _filteredAudits {
-    List<ComplianceAudit> filtered = _audits;
+    var filtered = _audits;
 
     if (_searchQuery.isNotEmpty) {
       filtered = filtered.where((audit) =>
@@ -380,7 +380,7 @@ class _ComplianceDashboardState extends State<ComplianceDashboard>
                 ),
               )
             else
-              ...audits.take(5).map((audit) => _buildAuditItem(audit)),
+              ...audits.take(5).map(_buildAuditItem),
           ],
         ),
       ),
@@ -407,7 +407,7 @@ class _ComplianceDashboardState extends State<ComplianceDashboard>
                 ),
               )
             else
-              ...audits.take(5).map((audit) => _buildAuditItem(audit)),
+              ...audits.take(5).map(_buildAuditItem),
           ],
         ),
       ),
@@ -813,7 +813,7 @@ class _ComplianceDashboardState extends State<ComplianceDashboard>
 
   List<FlSpot> _buildTrendSpots(Map<String, int> monthlyAudits) {
     final spots = <FlSpot>[];
-    int index = 0;
+    var index = 0;
     monthlyAudits.forEach((month, count) {
       spots.add(FlSpot(index.toDouble(), count.toDouble()));
       index++;

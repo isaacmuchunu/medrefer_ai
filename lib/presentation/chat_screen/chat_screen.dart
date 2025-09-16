@@ -1,8 +1,4 @@
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:provider/provider.dart';
 import '../../core/app_export.dart';
-import '../../database/database.dart';
 
 class ChatScreen extends StatefulWidget {
   final String? patientId;
@@ -10,11 +6,11 @@ class ChatScreen extends StatefulWidget {
   final String? conversationId;
   
   const ChatScreen({
-    Key? key,
+    super.key,
     this.patientId,
     this.specialistId,
     this.conversationId,
-  }) : super(key: key);
+  });
 
   @override
   _ChatScreenState createState() => _ChatScreenState();
@@ -32,7 +28,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
   bool _isLoading = true;
   bool _isSending = false;
   bool _isTyping = false;
-  bool _isEncrypted = true;
+  final bool _isEncrypted = true;
   String _conversationTitle = 'Secure Chat';
   String _participantName = 'Healthcare Professional';
   String _participantRole = 'Doctor';

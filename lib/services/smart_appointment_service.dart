@@ -1,6 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
-import 'package:flutter/foundation.dart';
 import '../database/models/patient.dart';
 import '../database/services/data_service.dart';
 import '../core/result.dart';
@@ -592,8 +590,6 @@ class SmartAppointmentService {
       orElse: () => null as AppointmentSlot,
     );
 
-    if (availableSlot == null) return false;
-
     // Check for conflicts with existing appointments
     final conflictingAppointments = _activeAppointments.values.where(
       (appointment) => 
@@ -615,33 +611,31 @@ class SmartAppointmentService {
       orElse: () => null as AppointmentSlot,
     );
 
-    if (slot != null) {
-      // Mark slot as unavailable
-      await _dataService.update('appointment_slots', {
-        'isAvailable': false,
-      }, slot.id);
+    // Mark slot as unavailable
+    await _dataService.update('appointment_slots', {
+      'isAvailable': false,
+    }, slot.id);
 
-      // Update in memory
-      final updatedSlot = AppointmentSlot(
-        id: slot.id,
-        providerId: slot.providerId,
-        providerName: slot.providerName,
-        specialty: slot.specialty,
-        startTime: slot.startTime,
-        endTime: slot.endTime,
-        isAvailable: false,
-        duration: slot.duration,
-        location: slot.location,
-        allowedTypes: slot.allowedTypes,
-        metadata: slot.metadata,
-      );
+    // Update in memory
+    final updatedSlot = AppointmentSlot(
+      id: slot.id,
+      providerId: slot.providerId,
+      providerName: slot.providerName,
+      specialty: slot.specialty,
+      startTime: slot.startTime,
+      endTime: slot.endTime,
+      isAvailable: false,
+      duration: slot.duration,
+      location: slot.location,
+      allowedTypes: slot.allowedTypes,
+      metadata: slot.metadata,
+    );
 
-      final index = providerSlots.indexWhere((s) => s.id == slot.id);
-      if (index >= 0) {
-        providerSlots[index] = updatedSlot;
-      }
+    final index = providerSlots.indexWhere((s) => s.id == slot.id);
+    if (index >= 0) {
+      providerSlots[index] = updatedSlot;
     }
-  }
+    }
 
   Future<List<String>> _getRequiredPreparations(
     AppointmentType type,
@@ -693,7 +687,7 @@ class SmartAppointmentService {
     if (appointment.recurrence == RecurrenceType.none) return;
 
     final recurringAppointments = <SmartAppointment>[];
-    DateTime nextDate = _getNextRecurrenceDate(appointment.scheduledTime, appointment.recurrence);
+    var nextDate = _getNextRecurrenceDate(appointment.scheduledTime, appointment.recurrence);
     final endDate = appointment.recurrenceEndDate ?? 
                    appointment.scheduledTime.add(const Duration(days: 365));
 
@@ -893,33 +887,31 @@ class SmartAppointmentService {
       orElse: () => null as AppointmentSlot,
     );
 
-    if (slot != null) {
-      // Mark slot as available
-      await _dataService.update('appointment_slots', {
-        'isAvailable': true,
-      }, slot.id);
+    // Mark slot as available
+    await _dataService.update('appointment_slots', {
+      'isAvailable': true,
+    }, slot.id);
 
-      // Update in memory
-      final updatedSlot = AppointmentSlot(
-        id: slot.id,
-        providerId: slot.providerId,
-        providerName: slot.providerName,
-        specialty: slot.specialty,
-        startTime: slot.startTime,
-        endTime: slot.endTime,
-        isAvailable: true,
-        duration: slot.duration,
-        location: slot.location,
-        allowedTypes: slot.allowedTypes,
-        metadata: slot.metadata,
-      );
+    // Update in memory
+    final updatedSlot = AppointmentSlot(
+      id: slot.id,
+      providerId: slot.providerId,
+      providerName: slot.providerName,
+      specialty: slot.specialty,
+      startTime: slot.startTime,
+      endTime: slot.endTime,
+      isAvailable: true,
+      duration: slot.duration,
+      location: slot.location,
+      allowedTypes: slot.allowedTypes,
+      metadata: slot.metadata,
+    );
 
-      final index = providerSlots.indexWhere((s) => s.id == slot.id);
-      if (index >= 0) {
-        providerSlots[index] = updatedSlot;
-      }
+    final index = providerSlots.indexWhere((s) => s.id == slot.id);
+    if (index >= 0) {
+      providerSlots[index] = updatedSlot;
     }
-  }
+    }
 
   /// Cancel an appointment
   Future<Result<void>> cancelAppointment({
@@ -941,7 +933,7 @@ class SmartAppointmentService {
       await _dataService.update('smart_appointments', {
         'status': AppointmentStatus.cancelled.name,
         'updatedAt': DateTime.now().toIso8601String(),
-        'notes': (appointment.notes ?? '') + '\nCancelled: $reason',
+        'notes': '${appointment.notes ?? ''}\nCancelled: $reason',
       }, appointmentId);
 
       // Update in memory
@@ -960,7 +952,7 @@ class SmartAppointmentService {
         duration: appointment.duration,
         location: appointment.location,
         reason: appointment.reason,
-        notes: (appointment.notes ?? '') + '\nCancelled: $reason',
+        notes: '${appointment.notes ?? ''}\nCancelled: $reason',
         symptoms: appointment.symptoms,
         requiredPreparations: appointment.requiredPreparations,
         recurrence: appointment.recurrence,

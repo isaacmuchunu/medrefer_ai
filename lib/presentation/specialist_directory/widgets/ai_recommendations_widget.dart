@@ -6,10 +6,10 @@ class AiRecommendationsWidget extends StatelessWidget {
   final Function(Map<String, dynamic>) onSpecialistTap;
 
   const AiRecommendationsWidget({
-    Key? key,
+    super.key,
     required this.recommendations,
     required this.onSpecialistTap,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

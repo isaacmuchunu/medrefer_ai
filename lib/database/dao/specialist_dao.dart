@@ -18,7 +18,7 @@ class SpecialistDao {
   Future<List<Specialist>> getAllSpecialists() async {
     try {
       final maps = await _dbHelper.query(tableName, orderBy: 'name ASC');
-      return maps.map((map) => Specialist.fromMap(map)).toList();
+      return maps.map(Specialist.fromMap).toList();
     } catch (e) {
       throw Exception('Failed to get specialists: $e');
     }
@@ -41,7 +41,7 @@ class SpecialistDao {
         whereArgs: [specialty],
         orderBy: 'rating DESC, success_rate DESC',
       );
-      return maps.map((map) => Specialist.fromMap(map)).toList();
+      return maps.map(Specialist.fromMap).toList();
     } catch (e) {
       throw Exception('Failed to get specialists by specialty: $e');
     }
@@ -55,7 +55,7 @@ class SpecialistDao {
         whereArgs: [1],
         orderBy: 'rating DESC',
       );
-      return maps.map((map) => Specialist.fromMap(map)).toList();
+      return maps.map(Specialist.fromMap).toList();
     } catch (e) {
       throw Exception('Failed to get available specialists: $e');
     }
@@ -69,7 +69,7 @@ class SpecialistDao {
         whereArgs: ['%$searchTerm%', '%$searchTerm%', '%$searchTerm%'],
         orderBy: 'rating DESC',
       );
-      return maps.map((map) => Specialist.fromMap(map)).toList();
+      return maps.map(Specialist.fromMap).toList();
     } catch (e) {
       throw Exception('Failed to search specialists: $e');
     }
@@ -83,7 +83,7 @@ class SpecialistDao {
         whereArgs: [hospital],
         orderBy: 'name ASC',
       );
-      return maps.map((map) => Specialist.fromMap(map)).toList();
+      return maps.map(Specialist.fromMap).toList();
     } catch (e) {
       throw Exception('Failed to get specialists by hospital: $e');
     }
@@ -97,7 +97,7 @@ class SpecialistDao {
         whereArgs: [minRating],
         orderBy: 'rating DESC',
       );
-      return maps.map((map) => Specialist.fromMap(map)).toList();
+      return maps.map(Specialist.fromMap).toList();
     } catch (e) {
       throw Exception('Failed to get specialists by rating: $e');
     }
@@ -113,8 +113,8 @@ class SpecialistDao {
     String? hospitalNetwork,
   }) async {
     try {
-      List<String> whereConditions = [];
-      List<dynamic> whereArgs = [];
+      final whereConditions = <String>[];
+      final whereArgs = <dynamic>[];
 
       if (specialty != null) {
         whereConditions.add('specialty = ?');
@@ -159,7 +159,7 @@ class SpecialistDao {
         whereArgs: whereArgs.isNotEmpty ? whereArgs : null,
         orderBy: 'rating DESC, success_rate DESC',
       );
-      return maps.map((map) => Specialist.fromMap(map)).toList();
+      return maps.map(Specialist.fromMap).toList();
     } catch (e) {
       throw Exception('Failed to filter specialists: $e');
     }
@@ -247,7 +247,7 @@ class SpecialistDao {
         ORDER BY count DESC
       ''');
       
-      Map<String, int> specialtyCounts = {};
+      final specialtyCounts = <String, int>{};
       for (var row in result) {
         specialtyCounts[row['specialty'] as String] = row['count'] as int;
       }

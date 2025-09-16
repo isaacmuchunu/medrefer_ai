@@ -11,7 +11,7 @@ class Feedback extends BaseModel {
   final String? category;
 
   Feedback({
-    String? id,
+    super.id,
     this.userId,
     this.referralId,
     this.patientId,
@@ -20,9 +20,9 @@ class Feedback extends BaseModel {
     this.comments,
     this.type,
     this.category,
-    DateTime? createdAt,
-    DateTime? updatedAt,
-  }) : super(id: id, createdAt: createdAt, updatedAt: updatedAt);
+    super.createdAt,
+    super.updatedAt,
+  });
 
   factory Feedback.fromMap(Map<String, dynamic> map) {
     return Feedback(

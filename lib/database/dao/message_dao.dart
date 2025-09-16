@@ -18,7 +18,7 @@ class MessageDao {
   Future<List<Message>> getAllMessages() async {
     try {
       final maps = await _dbHelper.query(tableName, orderBy: 'timestamp DESC');
-      return maps.map((map) => Message.fromMap(map)).toList();
+      return maps.map(Message.fromMap).toList();
     } catch (e) {
       throw Exception('Failed to get messages: $e');
     }
@@ -41,7 +41,7 @@ class MessageDao {
         whereArgs: [conversationId],
         orderBy: 'timestamp ASC',
       );
-      return maps.map((map) => Message.fromMap(map)).toList();
+      return maps.map(Message.fromMap).toList();
     } catch (e) {
       throw Exception('Failed to get messages by conversation: $e');
     }
@@ -55,7 +55,7 @@ class MessageDao {
         whereArgs: [senderId],
         orderBy: 'timestamp DESC',
       );
-      return maps.map((map) => Message.fromMap(map)).toList();
+      return maps.map(Message.fromMap).toList();
     } catch (e) {
       throw Exception('Failed to get messages by sender: $e');
     }
@@ -69,7 +69,7 @@ class MessageDao {
         whereArgs: [referralId],
         orderBy: 'timestamp ASC',
       );
-      return maps.map((map) => Message.fromMap(map)).toList();
+      return maps.map(Message.fromMap).toList();
     } catch (e) {
       throw Exception('Failed to get messages by referral: $e');
     }
@@ -83,7 +83,7 @@ class MessageDao {
         whereArgs: [messageType],
         orderBy: 'timestamp DESC',
       );
-      return maps.map((map) => Message.fromMap(map)).toList();
+      return maps.map(Message.fromMap).toList();
     } catch (e) {
       throw Exception('Failed to get messages by type: $e');
     }
@@ -97,7 +97,7 @@ class MessageDao {
         whereArgs: ['%$searchTerm%', '%$searchTerm%'],
         orderBy: 'timestamp DESC',
       );
-      return maps.map((map) => Message.fromMap(map)).toList();
+      return maps.map(Message.fromMap).toList();
     } catch (e) {
       throw Exception('Failed to search messages: $e');
     }
@@ -110,7 +110,7 @@ class MessageDao {
         orderBy: 'timestamp DESC',
         limit: limit,
       );
-      return maps.map((map) => Message.fromMap(map)).toList();
+      return maps.map(Message.fromMap).toList();
     } catch (e) {
       throw Exception('Failed to get recent messages: $e');
     }
@@ -124,7 +124,7 @@ class MessageDao {
         whereArgs: ['read', userId],
         orderBy: 'timestamp DESC',
       );
-      return maps.map((map) => Message.fromMap(map)).toList();
+      return maps.map(Message.fromMap).toList();
     } catch (e) {
       throw Exception('Failed to get unread messages: $e');
     }
@@ -232,7 +232,7 @@ class MessageDao {
         GROUP BY message_type
       ''');
       
-      Map<String, int> typeCounts = {};
+      final typeCounts = <String, int>{};
       for (var row in result) {
         typeCounts[row['message_type'] as String] = row['count'] as int;
       }

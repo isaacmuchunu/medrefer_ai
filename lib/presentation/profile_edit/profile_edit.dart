@@ -1,16 +1,11 @@
 import 'dart:io';
-import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:provider/provider.dart';
 import '../../core/app_export.dart';
-import '../../services/auth_service.dart';
-import '../../database/models/user.dart';
 
 class ProfileEdit extends StatefulWidget {
-  const ProfileEdit({Key? key}) : super(key: key);
+  const ProfileEdit({super.key});
 
-  @override
-  State<ProfileEdit> createState() => _ProfileEditState();
+  @overridsuper.StateteState() => _ProfileEditState();
 }
 
 class _ProfileEditState extends State<ProfileEdit> {
@@ -89,7 +84,7 @@ class _ProfileEditState extends State<ProfileEdit> {
       setState(() => _isLoading = true);
       
       // In a real app, you would upload the image and get the URL
-      String? newImageUrl = _networkImage;
+      var newImageUrl = _networkImage;
       if (_imageFile != null) {
         // Simulate image upload
         await Future.delayed(const Duration(seconds: 1));

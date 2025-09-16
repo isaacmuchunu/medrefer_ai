@@ -1,6 +1,5 @@
 import 'package:flutter/foundation.dart';
 import 'package:dio/dio.dart';
-import 'package:crypto/crypto.dart';
 import 'dart:convert';
 import 'dart:async';
 import '../core/app_export.dart';
@@ -31,7 +30,7 @@ class EnterpriseERPService extends ChangeNotifier {
 
   final Dio _dio = Dio();
   bool _isInitialized = false;
-  bool _isConnected = false;
+  final bool _isConnected = false;
   Timer? _syncTimer;
   Timer? _healthCheckTimer;
 

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../../core/app_export.dart';
 
 class SignUpSuccessScreen extends StatelessWidget {
-  const SignUpSuccessScreen({Key? key}) : super(key: key);
+  const SignUpSuccessScreen({super.key});
 
   @override
   Widget build(BuildContext context) {

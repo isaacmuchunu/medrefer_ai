@@ -1,11 +1,7 @@
 import 'dart:async';
-import 'dart:convert';
 import 'dart:math';
 import 'package:flutter/foundation.dart';
 import '../database/services/data_service.dart';
-import '../database/models/patient.dart';
-import '../database/models/referral.dart';
-import '../database/models/appointment.dart';
 
 /// AI-Powered Workflow Automation Service for healthcare administrative tasks
 class AIWorkflowAutomationService extends ChangeNotifier {
@@ -565,7 +561,7 @@ class AIWorkflowAutomationService extends ChangeNotifier {
   /// Execute workflow steps
   Future<void> _executeWorkflowSteps(WorkflowInstance instance, WorkflowDefinition definition) async {
     try {
-      for (int i = instance.currentStepIndex; i < definition.steps.length; i++) {
+      for (var i = instance.currentStepIndex; i < definition.steps.length; i++) {
         final step = definition.steps[i];
         instance.currentStepIndex = i;
         
@@ -762,6 +758,7 @@ class AIWorkflowAutomationService extends ChangeNotifier {
   // Helper methods and additional functionality...
   // Due to space constraints, showing key structure and main methods
 
+  @override
   void dispose() {
     _automationTimer?.cancel();
     _optimizationTimer?.cancel();

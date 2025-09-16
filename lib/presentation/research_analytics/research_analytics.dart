@@ -5,7 +5,7 @@ import '../../database/models/research_study.dart';
 import '../../theme/app_theme.dart';
 
 class ResearchAnalytics extends StatefulWidget {
-  const ResearchAnalytics({Key? key}) : super(key: key);
+  const ResearchAnalytics({super.key});
 
   @override
   State<ResearchAnalytics> createState() => _ResearchAnalyticsState();
@@ -57,7 +57,7 @@ class _ResearchAnalyticsState extends State<ResearchAnalytics>
   }
 
   List<ResearchStudy> get _filteredStudies {
-    List<ResearchStudy> filtered = _studies;
+    var filtered = _studies;
 
     if (_searchQuery.isNotEmpty) {
       filtered = filtered.where((study) =>
@@ -381,7 +381,7 @@ class _ResearchAnalyticsState extends State<ResearchAnalytics>
                 ),
               )
             else
-              ...studies.take(5).map((study) => _buildStudyItem(study)),
+              ...studies.take(5).map(_buildStudyItem),
           ],
         ),
       ),
@@ -408,7 +408,7 @@ class _ResearchAnalyticsState extends State<ResearchAnalytics>
                 ),
               )
             else
-              ...studies.take(5).map((study) => _buildStudyItem(study)),
+              ...studies.take(5).map(_buildStudyItem),
           ],
         ),
       ),
@@ -804,7 +804,7 @@ class _ResearchAnalyticsState extends State<ResearchAnalytics>
 
   List<FlSpot> _buildTrendSpots(Map<String, int> monthlyStudies) {
     final spots = <FlSpot>[];
-    int index = 0;
+    var index = 0;
     monthlyStudies.forEach((month, count) {
       spots.add(FlSpot(index.toDouble(), count.toDouble()));
       index++;

@@ -1,4 +1,3 @@
-import 'package:flutter/services.dart';
 import 'package:just_audio/just_audio.dart';
 
 import '../../../core/app_export.dart';
@@ -10,12 +9,12 @@ class UrgencySelectorWidget extends StatefulWidget {
   final ValueNotifier<String>? symptomsNotifier;
 
   const UrgencySelectorWidget({
-    Key? key,
+    super.key,
     required this.onUrgencySelected,
     this.initialUrgency,
     this.errorText,
     this.symptomsNotifier,
-  }) : super(key: key);
+  });
 
   @override
   State<UrgencySelectorWidget> createState() => _UrgencySelectorWidgetState();

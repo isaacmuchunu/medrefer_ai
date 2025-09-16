@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
-import 'package:crypto/crypto.dart';
 import 'package:path_provider/path_provider.dart';
 
 /// Document security service for handling secure document operations
@@ -34,7 +33,7 @@ class DocumentSecurityService {
       
       // Check file extension
       final fileName = file.path.toLowerCase();
-      final hasValidExtension = _allowedExtensions.any((ext) => fileName.endsWith(ext));
+      final hasValidExtension = _allowedExtensions.any(fileName.endsWith);
       if (!hasValidExtension) {
         return DocumentValidationResult(
           isValid: false,
@@ -245,7 +244,7 @@ class DocumentSecurityService {
     final key = utf8.encode(_encryptionKey);
     final encrypted = <int>[];
     
-    for (int i = 0; i < bytes.length; i++) {
+    for (var i = 0; i < bytes.length; i++) {
       encrypted.add(bytes[i] ^ key[i % key.length]);
     }
     

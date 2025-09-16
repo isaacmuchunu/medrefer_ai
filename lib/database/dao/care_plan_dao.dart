@@ -32,7 +32,7 @@ class CarePlanDao {
       whereArgs: [patientId],
       orderBy: 'updated_at DESC',
     );
-    return maps.map((e) => CarePlan.fromMap(e)).toList();
+    return maps.map(CarePlan.fromMap).toList();
   }
 
   Future<int> getActiveCarePlanCount(String patientId) async {

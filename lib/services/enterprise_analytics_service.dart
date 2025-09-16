@@ -86,7 +86,7 @@ class EnterpriseAnalyticsService extends ChangeNotifier {
   /// Get trend data
   Future<List<Map<String, dynamic>>> _getTrendData() async {
     final trends = <Map<String, dynamic>>[];
-    for (int i = 30; i >= 0; i--) {
+    for (var i = 30; i >= 0; i--) {
       trends.add({
         'date': DateTime.now().subtract(Duration(days: i)).toIso8601String().split('T')[0],
         'value': Random().nextInt(100) + 50,

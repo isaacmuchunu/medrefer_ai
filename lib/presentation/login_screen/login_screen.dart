@@ -1,9 +1,7 @@
 import '../../core/app_export.dart';
-import '../../services/auth_service.dart';
-import '../../services/biometric_service.dart';
 
 class LoginScreen extends StatefulWidget {
-  const LoginScreen({Key? key}) : super(key: key);
+  const LoginScreen({super.key});
 
   @override
   _LoginScreenState createState() => _LoginScreenState();

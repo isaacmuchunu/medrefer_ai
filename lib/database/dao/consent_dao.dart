@@ -32,7 +32,7 @@ class ConsentDao {
       whereArgs: [patientId],
       orderBy: 'updated_at DESC',
     );
-    return maps.map((e) => Consent.fromMap(e)).toList();
+    return maps.map(Consent.fromMap).toList();
   }
 
   Future<int> getActiveConsentCount(String patientId) async {

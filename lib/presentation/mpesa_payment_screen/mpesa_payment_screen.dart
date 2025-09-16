@@ -1,7 +1,4 @@
-import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import '../../core/app_export.dart';
-import '../../services/mpesa_service.dart';
 
 class MpesaPaymentScreen extends StatefulWidget {
   final double amount;
@@ -9,11 +6,11 @@ class MpesaPaymentScreen extends StatefulWidget {
   final String? orderId;
 
   const MpesaPaymentScreen({
-    Key? key,
+    super.key,
     required this.amount,
     required this.description,
     this.orderId,
-  }) : super(key: key);
+  });
 
   @override
   State<MpesaPaymentScreen> createState() => _MpesaPaymentScreenState();

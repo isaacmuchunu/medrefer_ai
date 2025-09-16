@@ -1,10 +1,7 @@
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:provider/provider.dart';
 import '../../core/app_export.dart';
 
 class AddPatientScreen extends StatefulWidget {
-  const AddPatientScreen({Key? key}) : super(key: key);
+  const AddPatientScreen({super.key});
 
   @override
   _AddPatientScreenState createState() => _AddPatientScreenState();

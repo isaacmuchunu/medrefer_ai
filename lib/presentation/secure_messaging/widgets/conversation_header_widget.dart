@@ -7,11 +7,11 @@ class ConversationHeaderWidget extends StatelessWidget {
   final VoidCallback? onProfileTap;
 
   const ConversationHeaderWidget({
-    Key? key,
+    super.key,
     required this.participant,
     this.onBackPressed,
     this.onProfileTap,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

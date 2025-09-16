@@ -5,9 +5,9 @@ class SymptomsDescriptionWidget extends StatefulWidget {
   final Function(String) onSymptomsUpdated;
 
   const SymptomsDescriptionWidget({
-    Key? key,
+    super.key,
     required this.onSymptomsUpdated,
-  }) : super(key: key);
+  });
 
   @override
   State<SymptomsDescriptionWidget> createState() =>

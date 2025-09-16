@@ -6,11 +6,11 @@ class SpecialistSelectionScreen extends StatefulWidget {
   final Function(Specialist)? onSpecialistSelected;
   
   const SpecialistSelectionScreen({
-    Key? key,
+    super.key,
     this.department,
     this.isSelectionMode = false,
     this.onSpecialistSelected,
-  }) : super(key: key);
+  });
 
   @override
   _SpecialistSelectionScreenState createState() => _SpecialistSelectionScreenState();
@@ -95,7 +95,7 @@ class _SpecialistSelectionScreenState extends State<SpecialistSelectionScreen> w
   }
 
   void _applyFiltersAndSort() {
-    List<Specialist> filtered = List.from(_allSpecialists);
+    var filtered = List<Specialist>.from(_allSpecialists);
     
     // Apply search filter
     if (_searchQuery.isNotEmpty) {
@@ -122,7 +122,7 @@ class _SpecialistSelectionScreenState extends State<SpecialistSelectionScreen> w
     
     // Apply sorting
     filtered.sort((a, b) {
-      int comparison = 0;
+      var comparison = 0;
       switch (_sortBy) {
         case 'Name':
           comparison = a.name.compareTo(b.name);

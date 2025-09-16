@@ -1,14 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import '../../services/clinical_decision_service.dart';
 import '../../database/models/clinical_decision.dart';
 import '../../theme/app_theme.dart';
 
 class ClinicalDecisionSupport extends StatefulWidget {
-  const ClinicalDecisionSupport({Key? key}) : super(key: key);
+  const ClinicalDecisionSupport({super.key});
 
-  @override
-  State<ClinicalDecisionSupport> createState() => _ClinicalDecisionSupportState();
+  @overrisuper. StatSupport> createState() => _ClinicalDecisionSupportState();
 }
 
 class _ClinicalDecisionSupportState extends State<ClinicalDecisionSupport>
@@ -57,7 +55,7 @@ class _ClinicalDecisionSupportState extends State<ClinicalDecisionSupport>
   }
 
   List<ClinicalDecision> get _filteredDecisions {
-    List<ClinicalDecision> filtered = _decisions;
+    var filtered = _decisions;
 
     if (_searchQuery.isNotEmpty) {
       filtered = filtered.where((decision) =>

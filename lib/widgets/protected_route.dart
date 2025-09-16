@@ -1,9 +1,4 @@
-import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import '../core/app_export.dart';
-import '../services/route_guard_service.dart';
-import '../services/rbac_service.dart';
-import '../services/auth_service.dart';
 
 /// Protected Route Widget that checks permissions before rendering content
 class ProtectedRoute extends StatelessWidget {
@@ -17,7 +12,7 @@ class ProtectedRoute extends StatelessWidget {
   final bool showUnauthorizedMessage;
 
   const ProtectedRoute({
-    Key? key,
+    super.key,
     required this.child,
     this.requiredPermission,
     this.requiredPermissions,
@@ -26,7 +21,7 @@ class ProtectedRoute extends StatelessWidget {
     this.feature,
     this.fallbackWidget,
     this.showUnauthorizedMessage = true,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -235,7 +230,7 @@ class PermissionWidget extends StatelessWidget {
   final Widget? fallback;
 
   const PermissionWidget({
-    Key? key,
+    super.key,
     required this.child,
     this.permission,
     this.permissions,
@@ -243,13 +238,13 @@ class PermissionWidget extends StatelessWidget {
     this.roles,
     this.feature,
     this.fallback,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
     return Consumer<RBACService>(
       builder: (context, rbacService, child) {
-        bool hasAccess = true;
+        var hasAccess = true;
 
         // Check specific permission
         if (permission != null) {
@@ -288,7 +283,7 @@ class PermissionWidget extends StatelessWidget {
 
 /// Role-based navigation drawer
 class RoleBasedDrawer extends StatelessWidget {
-  const RoleBasedDrawer({Key? key}) : super(key: key);
+  const RoleBasedDrawer({super.key});
 
   @override
   Widget build(BuildContext context) {

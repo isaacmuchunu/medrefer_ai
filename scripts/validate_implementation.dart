@@ -52,7 +52,7 @@ Future<bool> _validateCoreScreens() async {
     'lib/presentation/biometrics_screen/biometrics_screen.dart',
   ];
 
-  bool allExist = true;
+  var allExist = true;
   for (final screen in coreScreens) {
     final file = File(screen);
     if (await file.exists()) {
@@ -87,7 +87,7 @@ Future<bool> _validateDatabase() async {
     'lib/database/services/migration_service.dart',
   ];
 
-  bool allExist = true;
+  var allExist = true;
   for (final file in databaseFiles) {
     final fileObj = File(file);
     if (await fileObj.exists()) {
@@ -124,7 +124,7 @@ Future<bool> _validateRoutes() async {
     'helpSupport',
   ];
 
-  bool allRoutesExist = true;
+  var allRoutesExist = true;
   for (final route in requiredRoutes) {
     if (content.contains(route)) {
       print('  ✅ $route route');
@@ -149,7 +149,7 @@ Future<bool> _validateNewScreens() async {
     'lib/presentation/notifications_screen/notifications_screen.dart',
   ];
 
-  bool allExist = true;
+  var allExist = true;
   for (final screen in newScreens) {
     final file = File(screen);
     if (await file.exists()) {
@@ -173,7 +173,7 @@ Future<bool> _validatePerformance() async {
     'lib/widgets/performance_monitor.dart',
   ];
 
-  bool allExist = true;
+  var allExist = true;
   for (final file in performanceFiles) {
     final fileObj = File(file);
     if (await fileObj.exists()) {
@@ -212,7 +212,7 @@ Future<bool> _validateTests() async {
     'test/integration/complete_app_test.dart',
   ];
 
-  bool allExist = true;
+  var allExist = true;
   for (final test in testFiles) {
     final file = File(test);
     if (await file.exists()) {
@@ -262,7 +262,7 @@ Future<bool> _validateDependencies() async {
     'shared_preferences',
   ];
 
-  bool allDepsExist = true;
+  var allDepsExist = true;
   for (final dep in requiredDependencies) {
     if (content.contains('$dep:')) {
       print('  ✅ $dep dependency');
@@ -289,7 +289,7 @@ Future<bool> _validateAssets() async {
     'assets/icons',
   ];
 
-  bool allAssetsExist = true;
+  var allAssetsExist = true;
   for (final asset in requiredAssets) {
     final dir = Directory(asset);
     if (await dir.exists()) {
@@ -311,7 +311,7 @@ Future<bool> _validateDocumentation() async {
     'docs/SCREENS_DOCUMENTATION.md',
   ];
 
-  bool allDocsExist = true;
+  var allDocsExist = true;
   for (final doc in docFiles) {
     final file = File(doc);
     if (await file.exists()) {

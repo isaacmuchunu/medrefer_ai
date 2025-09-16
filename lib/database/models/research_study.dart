@@ -1,6 +1,7 @@
 import 'base_model.dart';
 
 class ResearchStudy extends BaseModel {
+  @override
   final String id;
   final String title;
   final String description;
@@ -29,7 +30,9 @@ class ResearchStudy extends BaseModel {
   final String? results;
   final String? conclusions;
   final List<String> publications;
+  @override
   final DateTime createdAt;
+  @override
   final DateTime updatedAt;
   final bool isActive;
   final bool isPublic;

@@ -11,11 +11,11 @@ class PatientSelectionWidget extends StatefulWidget {
   final String? errorText;
 
   const PatientSelectionWidget({
-    Key? key,
+    super.key,
     required this.onPatientSelected,
     this.onAddNewPatient,
     this.errorText,
-  }) : super(key: key);
+  });
 
   @override
   State<PatientSelectionWidget> createState() => _PatientSelectionWidgetState();

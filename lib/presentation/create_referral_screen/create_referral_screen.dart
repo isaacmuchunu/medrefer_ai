@@ -5,10 +5,10 @@ class CreateReferralScreen extends StatefulWidget {
   final String? specialistId;
   
   const CreateReferralScreen({
-    Key? key,
+    super.key,
     this.patientId,
     this.specialistId,
-  }) : super(key: key);
+  });
 
   @override
   _CreateReferralScreenState createState() => _CreateReferralScreenState();
@@ -36,13 +36,13 @@ class _CreateReferralScreenState extends State<CreateReferralScreen> with Ticker
   // Form data
   Patient? _selectedPatient;
   Specialist? _selectedSpecialist;
-  String _selectedUrgency = 'Medium';
+  final String _selectedUrgency = 'Medium';
   String _selectedDepartment = 'General Medicine';
   DateTime? _preferredDate;
-  List<String> _attachedDocuments = [];
-  bool _requiresTranslation = false;
-  bool _hasInsurance = true;
-  String _insuranceType = 'Primary';
+  final List<String> _attachedDocuments = [];
+  final bool _requiresTranslation = false;
+  final bool _hasInsurance = true;
+  final String _insuranceType = 'Primary';
   
   // Options
   final List<String> _urgencyLevels = ['Low', 'Medium', 'High', 'Urgent'];

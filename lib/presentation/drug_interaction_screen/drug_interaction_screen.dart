@@ -11,9 +11,9 @@ class DrugInteractionScreen extends StatefulWidget {
   final String patientId;
   
   const DrugInteractionScreen({
-    Key? key,
+    super.key,
     required this.patientId,
-  }) : super(key: key);
+  });
 
   @override
   State<DrugInteractionScreen> createState() => _DrugInteractionScreenState();
@@ -195,7 +195,7 @@ class _DrugInteractionScreenState extends State<DrugInteractionScreen>
               ],
             ),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => _showAddMedicationDialog(),
+        onPressed: _showAddMedicationDialog,
         icon: const Icon(Icons.add),
         label: const Text('Add Medication'),
       ),
@@ -574,7 +574,7 @@ class _DrugInteractionScreenState extends State<DrugInteractionScreen>
   double _calculateRiskScore() {
     if (interactions.isEmpty) return 0.0;
     
-    double totalScore = 0.0;
+    var totalScore = 0.0;
     for (final interaction in interactions) {
       switch (interaction.severity) {
         case InteractionSeverity.minor:

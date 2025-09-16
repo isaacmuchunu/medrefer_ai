@@ -1,4 +1,3 @@
-import 'package:sqflite/sqflite.dart';
 import '../models/emergency_protocol.dart';
 import 'dao.dart';
 
@@ -54,7 +53,7 @@ class EmergencyProtocolDao extends BaseDao<EmergencyProtocol> {
       whereArgs: [emergencyType],
       orderBy: 'severity DESC, title ASC',
     );
-    return maps.map((map) => fromMap(map)).toList();
+    return maps.map(fromMap).toList();
   }
 
   // Get protocols by severity
@@ -66,7 +65,7 @@ class EmergencyProtocolDao extends BaseDao<EmergencyProtocol> {
       whereArgs: [severity],
       orderBy: 'title ASC',
     );
-    return maps.map((map) => fromMap(map)).toList();
+    return maps.map(fromMap).toList();
   }
 
   // Get protocols by category
@@ -78,7 +77,7 @@ class EmergencyProtocolDao extends BaseDao<EmergencyProtocol> {
       whereArgs: [category],
       orderBy: 'severity DESC, title ASC',
     );
-    return maps.map((map) => fromMap(map)).toList();
+    return maps.map(fromMap).toList();
   }
 
   // Get protocols by status
@@ -90,7 +89,7 @@ class EmergencyProtocolDao extends BaseDao<EmergencyProtocol> {
       whereArgs: [status],
       orderBy: 'title ASC',
     );
-    return maps.map((map) => fromMap(map)).toList();
+    return maps.map(fromMap).toList();
   }
 
   // Get active protocols
@@ -102,7 +101,7 @@ class EmergencyProtocolDao extends BaseDao<EmergencyProtocol> {
       whereArgs: ['active'],
       orderBy: 'severity DESC, title ASC',
     );
-    return maps.map((map) => fromMap(map)).toList();
+    return maps.map(fromMap).toList();
   }
 
   // Get critical protocols
@@ -114,7 +113,7 @@ class EmergencyProtocolDao extends BaseDao<EmergencyProtocol> {
       whereArgs: ['critical', 'active'],
       orderBy: 'title ASC',
     );
-    return maps.map((map) => fromMap(map)).toList();
+    return maps.map(fromMap).toList();
   }
 
   // Get protocols by department
@@ -126,7 +125,7 @@ class EmergencyProtocolDao extends BaseDao<EmergencyProtocol> {
       whereArgs: [departmentId],
       orderBy: 'severity DESC, title ASC',
     );
-    return maps.map((map) => fromMap(map)).toList();
+    return maps.map(fromMap).toList();
   }
 
   // Get protocols needing review
@@ -139,7 +138,7 @@ class EmergencyProtocolDao extends BaseDao<EmergencyProtocol> {
       whereArgs: [now],
       orderBy: 'next_review ASC',
     );
-    return maps.map((map) => fromMap(map)).toList();
+    return maps.map(fromMap).toList();
   }
 
   // Get approved protocols
@@ -150,7 +149,7 @@ class EmergencyProtocolDao extends BaseDao<EmergencyProtocol> {
       where: 'approved_by IS NOT NULL AND is_active = 1',
       orderBy: 'approved_at DESC',
     );
-    return maps.map((map) => fromMap(map)).toList();
+    return maps.map(fromMap).toList();
   }
 
   // Get public protocols
@@ -162,7 +161,7 @@ class EmergencyProtocolDao extends BaseDao<EmergencyProtocol> {
       whereArgs: ['active'],
       orderBy: 'severity DESC, title ASC',
     );
-    return maps.map((map) => fromMap(map)).toList();
+    return maps.map(fromMap).toList();
   }
 
   // Update protocol status
@@ -225,7 +224,7 @@ class EmergencyProtocolDao extends BaseDao<EmergencyProtocol> {
       whereArgs: ['%$query%', '%$query%', '%$query%'],
       orderBy: 'severity DESC, title ASC',
     );
-    return maps.map((map) => fromMap(map)).toList();
+    return maps.map(fromMap).toList();
   }
 
   // Get protocols summary

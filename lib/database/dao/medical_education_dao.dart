@@ -1,4 +1,3 @@
-import 'package:sqflite/sqflite.dart';
 import '../models/medical_education.dart';
 import 'dao.dart';
 
@@ -58,7 +57,7 @@ class MedicalEducationDao extends BaseDao<MedicalEducation> {
       whereArgs: [type],
       orderBy: 'start_date DESC',
     );
-    return maps.map((map) => fromMap(map)).toList();
+    return maps.map(fromMap).toList();
   }
 
   // Get education by category
@@ -70,7 +69,7 @@ class MedicalEducationDao extends BaseDao<MedicalEducation> {
       whereArgs: [category],
       orderBy: 'start_date DESC',
     );
-    return maps.map((map) => fromMap(map)).toList();
+    return maps.map(fromMap).toList();
   }
 
   // Get education by status
@@ -82,7 +81,7 @@ class MedicalEducationDao extends BaseDao<MedicalEducation> {
       whereArgs: [status],
       orderBy: 'start_date DESC',
     );
-    return maps.map((map) => fromMap(map)).toList();
+    return maps.map(fromMap).toList();
   }
 
   // Get upcoming education
@@ -95,7 +94,7 @@ class MedicalEducationDao extends BaseDao<MedicalEducation> {
       whereArgs: [now, 'upcoming'],
       orderBy: 'start_date ASC',
     );
-    return maps.map((map) => fromMap(map)).toList();
+    return maps.map(fromMap).toList();
   }
 
   // Get ongoing education
@@ -108,7 +107,7 @@ class MedicalEducationDao extends BaseDao<MedicalEducation> {
       whereArgs: [now, now, 'ongoing'],
       orderBy: 'start_date DESC',
     );
-    return maps.map((map) => fromMap(map)).toList();
+    return maps.map(fromMap).toList();
   }
 
   // Get completed education
@@ -120,7 +119,7 @@ class MedicalEducationDao extends BaseDao<MedicalEducation> {
       whereArgs: ['completed'],
       orderBy: 'end_date DESC',
     );
-    return maps.map((map) => fromMap(map)).toList();
+    return maps.map(fromMap).toList();
   }
 
   // Get education by provider
@@ -132,7 +131,7 @@ class MedicalEducationDao extends BaseDao<MedicalEducation> {
       whereArgs: [provider],
       orderBy: 'start_date DESC',
     );
-    return maps.map((map) => fromMap(map)).toList();
+    return maps.map(fromMap).toList();
   }
 
   // Get education by instructor
@@ -144,7 +143,7 @@ class MedicalEducationDao extends BaseDao<MedicalEducation> {
       whereArgs: [instructor],
       orderBy: 'start_date DESC',
     );
-    return maps.map((map) => fromMap(map)).toList();
+    return maps.map(fromMap).toList();
   }
 
   // Get available education (not full)
@@ -156,7 +155,7 @@ class MedicalEducationDao extends BaseDao<MedicalEducation> {
       whereArgs: ['upcoming'],
       orderBy: 'start_date ASC',
     );
-    return maps.map((map) => fromMap(map)).toList();
+    return maps.map(fromMap).toList();
   }
 
   // Get education with CME credits
@@ -167,7 +166,7 @@ class MedicalEducationDao extends BaseDao<MedicalEducation> {
       where: 'cme_credits > 0 AND is_active = 1',
       orderBy: 'cme_credits DESC, start_date DESC',
     );
-    return maps.map((map) => fromMap(map)).toList();
+    return maps.map(fromMap).toList();
   }
 
   // Update participant count
@@ -212,7 +211,7 @@ class MedicalEducationDao extends BaseDao<MedicalEducation> {
       whereArgs: ['%$query%', '%$query%', '%$query%', '%$query%'],
       orderBy: 'start_date DESC',
     );
-    return maps.map((map) => fromMap(map)).toList();
+    return maps.map(fromMap).toList();
   }
 
   // Get education by keyword
@@ -224,7 +223,7 @@ class MedicalEducationDao extends BaseDao<MedicalEducation> {
       whereArgs: ['%$keyword%', '%$keyword%'],
       orderBy: 'start_date DESC',
     );
-    return maps.map((map) => fromMap(map)).toList();
+    return maps.map(fromMap).toList();
   }
 
   // Get education summary

@@ -18,7 +18,7 @@ class VitalStatisticsDao {
   Future<List<VitalStatistics>> getAllVitalStatistics() async {
     try {
       final maps = await _dbHelper.query(tableName, orderBy: 'recorded_date DESC');
-      return maps.map((map) => VitalStatistics.fromMap(map)).toList();
+      return maps.map(VitalStatistics.fromMap).toList();
     } catch (e) {
       throw Exception('Failed to get vital statistics: $e');
     }
@@ -41,7 +41,7 @@ class VitalStatisticsDao {
         whereArgs: [patientId],
         orderBy: 'recorded_date DESC',
       );
-      return maps.map((map) => VitalStatistics.fromMap(map)).toList();
+      return maps.map(VitalStatistics.fromMap).toList();
     } catch (e) {
       throw Exception('Failed to get vital statistics by patient: $e');
     }
@@ -65,7 +65,6 @@ class VitalStatisticsDao {
   // Update
   Future<bool> updateVitalStatistics(VitalStatistics vitals) async {
     try {
-      vitals.updatedAt = DateTime.now();
       final rowsAffected = await _dbHelper.update(tableName, vitals.toMap(), vitals.id);
       return rowsAffected > 0;
     } catch (e) {

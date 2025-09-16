@@ -3,7 +3,6 @@ import 'package:sqflite/sqflite.dart';
 import 'dart:convert';
 import 'dart:async';
 import 'dart:math';
-import '../core/app_export.dart';
 
 /// Comprehensive Error Handling Service
 /// 
@@ -534,8 +533,8 @@ class ComprehensiveErrorHandlingService extends ChangeNotifier {
 
   Future<ErrorClassification> _classifyError(dynamic error, StackTrace? stackTrace, String? context) async {
     // Classify error based on type, message, and context
-    ErrorType errorType = ErrorType.unknown;
-    String errorCode = 'UNKNOWN_ERROR';
+    var errorType = ErrorType.unknown;
+    var errorCode = 'UNKNOWN_ERROR';
 
     final errorString = error.toString().toLowerCase();
     final stackString = stackTrace?.toString().toLowerCase() ?? '';
@@ -714,7 +713,7 @@ class ComprehensiveErrorHandlingService extends ChangeNotifier {
     final maxRetries = action.parameters['maxRetries'] as int? ?? 3;
     final backoffMultiplier = action.parameters['backoffMultiplier'] as int? ?? 2;
     
-    for (int i = 0; i < maxRetries; i++) {
+    for (var i = 0; i < maxRetries; i++) {
       await Future.delayed(Duration(seconds: (i + 1) * backoffMultiplier));
       
       // Simulate retry attempt

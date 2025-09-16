@@ -2,6 +2,7 @@
 /// 
 /// This file contains all the configuration needed for M-Pesa integration.
 /// Replace the sandbox values with production values when going live.
+library;
 
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 

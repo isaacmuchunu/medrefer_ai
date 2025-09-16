@@ -4,7 +4,7 @@ import 'package:medrefer_ai/services/advanced_notification_service.dart';
 import 'package:medrefer_ai/database/models/notification_models.dart';
 
 class NotificationManagementScreen extends StatefulWidget {
-  const NotificationManagementScreen({Key? key}) : super(key: key);
+  const NotificationManagementScreen({super.key});
 
   @override
   State<NotificationManagementScreen> createState() => _NotificationManagementScreenState();
@@ -198,7 +198,7 @@ class _NotificationManagementScreenState extends State<NotificationManagementScr
         children: [
           Expanded(
             child: DropdownButtonFormField<String>(
-              value: _selectedCategory,
+              initialValue: _selectedCategory,
               decoration: InputDecoration(
                 labelText: 'Category',
                 border: OutlineInputBorder(),
@@ -221,7 +221,7 @@ class _NotificationManagementScreenState extends State<NotificationManagementScr
           SizedBox(width: 16.w),
           Expanded(
             child: DropdownButtonFormField<String>(
-              value: _selectedType,
+              initialValue: _selectedType,
               decoration: InputDecoration(
                 labelText: 'Type',
                 border: OutlineInputBorder(),
@@ -543,7 +543,7 @@ class _NotificationManagementScreenState extends State<NotificationManagementScr
               title: Text('Enable Quiet Hours'),
               subtitle: Text('Suppress non-critical notifications during specified hours'),
               value: _userPreferences!.enableScheduledNotifications,
-              onChanged: (value) => _updateQuietHoursEnabled(value),
+              onChanged: _updateQuietHoursEnabled,
             ),
             ListTile(
               title: Text('Start Time'),

@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
-import 'dart:typed_data';
 import 'package:flutter/foundation.dart';
 import 'package:crypto/crypto.dart';
 import '../database/services/data_service.dart';
@@ -151,7 +150,7 @@ class BlockchainMedicalRecordsService extends ChangeNotifier {
     final recordData = {
       'patient_id': patient.id,
       'name': patient.name,
-      'date_of_birth': patient.dateOfBirth?.toIso8601String(),
+      'date_of_birth': patient.dateOfBirth.toIso8601String(),
       'medical_history': patient.medicalHistory,
       'allergies': patient.allergies,
       'created_at': DateTime.now().toIso8601String(),
@@ -486,7 +485,7 @@ class BlockchainMedicalRecordsService extends ChangeNotifier {
     while (hashes.length > 1) {
       final newHashes = <String>[];
       
-      for (int i = 0; i < hashes.length; i += 2) {
+      for (var i = 0; i < hashes.length; i += 2) {
         final left = hashes[i];
         final right = i + 1 < hashes.length ? hashes[i + 1] : left;
         final combined = sha256.convert(utf8.encode(left + right)).toString();
@@ -588,6 +587,7 @@ class BlockchainMedicalRecordsService extends ChangeNotifier {
   // Additional helper methods for verification, consensus, etc.
   // Due to space constraints, showing key structure and main methods
 
+  @override
   void dispose() {
     _miningTimer?.cancel();
     _syncTimer?.cancel();

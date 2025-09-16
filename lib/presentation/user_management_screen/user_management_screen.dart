@@ -4,7 +4,7 @@ import 'package:medrefer_ai/services/enterprise_user_management_service.dart';
 import 'package:medrefer_ai/database/models/user_management_models.dart';
 
 class UserManagementScreen extends StatefulWidget {
-  const UserManagementScreen({Key? key}) : super(key: key);
+  const UserManagementScreen({super.key});
 
   @override
   State<UserManagementScreen> createState() => _UserManagementScreenState();
@@ -195,7 +195,7 @@ class _UserManagementScreenState extends State<UserManagementScreen>
             children: [
               Expanded(
                 child: DropdownButtonFormField<String>(
-                  value: _selectedRole,
+                  initialValue: _selectedRole,
                   decoration: InputDecoration(
                     labelText: 'Role',
                     border: OutlineInputBorder(),
@@ -216,7 +216,7 @@ class _UserManagementScreenState extends State<UserManagementScreen>
               SizedBox(width: 16.w),
               Expanded(
                 child: DropdownButtonFormField<String>(
-                  value: _selectedDepartment,
+                  initialValue: _selectedDepartment,
                   decoration: InputDecoration(
                     labelText: 'Department',
                     border: OutlineInputBorder(),
@@ -237,7 +237,7 @@ class _UserManagementScreenState extends State<UserManagementScreen>
               SizedBox(width: 16.w),
               Expanded(
                 child: DropdownButtonFormField<String>(
-                  value: _selectedStatus,
+                  initialValue: _selectedStatus,
                   decoration: InputDecoration(
                     labelText: 'Status',
                     border: OutlineInputBorder(),
@@ -774,7 +774,7 @@ class _UserManagementScreenState extends State<UserManagementScreen>
   }
 
   List<EnterpriseUser> _getFilteredUsers() {
-    List<EnterpriseUser> filtered = _users;
+    var filtered = _users;
 
     // Search filter
     if (_searchQuery.isNotEmpty) {

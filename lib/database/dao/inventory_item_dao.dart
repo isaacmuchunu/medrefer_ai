@@ -1,4 +1,3 @@
-import 'package:sqflite/sqflite.dart';
 import '../models/inventory_item.dart';
 import 'dao.dart';
 
@@ -59,7 +58,7 @@ class InventoryItemDao extends BaseDao<InventoryItem> {
       whereArgs: [category],
       orderBy: 'name ASC',
     );
-    return maps.map((map) => fromMap(map)).toList();
+    return maps.map(fromMap).toList();
   }
 
   // Get items by subcategory
@@ -71,7 +70,7 @@ class InventoryItemDao extends BaseDao<InventoryItem> {
       whereArgs: [subcategory],
       orderBy: 'name ASC',
     );
-    return maps.map((map) => fromMap(map)).toList();
+    return maps.map(fromMap).toList();
   }
 
   // Get items by status
@@ -83,7 +82,7 @@ class InventoryItemDao extends BaseDao<InventoryItem> {
       whereArgs: [status],
       orderBy: 'name ASC',
     );
-    return maps.map((map) => fromMap(map)).toList();
+    return maps.map(fromMap).toList();
   }
 
   // Get items by condition
@@ -95,7 +94,7 @@ class InventoryItemDao extends BaseDao<InventoryItem> {
       whereArgs: [condition],
       orderBy: 'name ASC',
     );
-    return maps.map((map) => fromMap(map)).toList();
+    return maps.map(fromMap).toList();
   }
 
   // Get low stock items
@@ -106,7 +105,7 @@ class InventoryItemDao extends BaseDao<InventoryItem> {
       where: 'current_stock <= minimum_stock AND is_active = 1',
       orderBy: 'current_stock ASC',
     );
-    return maps.map((map) => fromMap(map)).toList();
+    return maps.map(fromMap).toList();
   }
 
   // Get out of stock items
@@ -117,7 +116,7 @@ class InventoryItemDao extends BaseDao<InventoryItem> {
       where: 'current_stock <= 0 AND is_active = 1',
       orderBy: 'name ASC',
     );
-    return maps.map((map) => fromMap(map)).toList();
+    return maps.map(fromMap).toList();
   }
 
   // Get overstocked items
@@ -128,7 +127,7 @@ class InventoryItemDao extends BaseDao<InventoryItem> {
       where: 'current_stock >= maximum_stock AND is_active = 1',
       orderBy: 'current_stock DESC',
     );
-    return maps.map((map) => fromMap(map)).toList();
+    return maps.map(fromMap).toList();
   }
 
   // Get expired items
@@ -141,7 +140,7 @@ class InventoryItemDao extends BaseDao<InventoryItem> {
       whereArgs: [now],
       orderBy: 'expiry_date ASC',
     );
-    return maps.map((map) => fromMap(map)).toList();
+    return maps.map(fromMap).toList();
   }
 
   // Get items needing maintenance
@@ -154,7 +153,7 @@ class InventoryItemDao extends BaseDao<InventoryItem> {
       whereArgs: [now],
       orderBy: 'next_maintenance ASC',
     );
-    return maps.map((map) => fromMap(map)).toList();
+    return maps.map(fromMap).toList();
   }
 
   // Get items by location
@@ -166,7 +165,7 @@ class InventoryItemDao extends BaseDao<InventoryItem> {
       whereArgs: [location],
       orderBy: 'name ASC',
     );
-    return maps.map((map) => fromMap(map)).toList();
+    return maps.map(fromMap).toList();
   }
 
   // Get items by department
@@ -178,7 +177,7 @@ class InventoryItemDao extends BaseDao<InventoryItem> {
       whereArgs: [departmentId],
       orderBy: 'name ASC',
     );
-    return maps.map((map) => fromMap(map)).toList();
+    return maps.map(fromMap).toList();
   }
 
   // Get items by supplier
@@ -190,7 +189,7 @@ class InventoryItemDao extends BaseDao<InventoryItem> {
       whereArgs: [supplier],
       orderBy: 'name ASC',
     );
-    return maps.map((map) => fromMap(map)).toList();
+    return maps.map(fromMap).toList();
   }
 
   // Update stock level
@@ -235,7 +234,7 @@ class InventoryItemDao extends BaseDao<InventoryItem> {
       whereArgs: ['%$query%', '%$query%', '%$query%', '%$query%', '%$query%'],
       orderBy: 'name ASC',
     );
-    return maps.map((map) => fromMap(map)).toList();
+    return maps.map(fromMap).toList();
   }
 
   // Get items by barcode

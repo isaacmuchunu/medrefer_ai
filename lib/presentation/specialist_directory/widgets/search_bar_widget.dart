@@ -8,12 +8,12 @@ class SearchBarWidget extends StatefulWidget {
   final Function(String)? onChanged;
 
   const SearchBarWidget({
-    Key? key,
+    super.key,
     required this.controller,
     this.onVoiceSearch,
     this.onFilter,
     this.onChanged,
-  }) : super(key: key);
+  });
 
   @override
   State<SearchBarWidget> createState() => _SearchBarWidgetState();

@@ -1,10 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:math';
 import 'package:flutter/foundation.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import '../database/services/data_service.dart';
-import '../database/models/patient.dart';
 
 /// IoT Medical Device Integration Service for real-time patient monitoring
 class IoTMedicalDeviceService extends ChangeNotifier {
@@ -558,6 +556,7 @@ class IoTMedicalDeviceService extends ChangeNotifier {
   // Helper methods and additional functionality...
   // Due to space constraints, showing key structure and main methods
 
+  @override
   void dispose() {
     _monitoringTimer?.cancel();
     _alertTimer?.cancel();

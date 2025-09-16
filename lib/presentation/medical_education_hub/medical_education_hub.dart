@@ -4,7 +4,7 @@ import '../../database/models/medical_education.dart';
 import '../../theme/app_theme.dart';
 
 class MedicalEducationHub extends StatefulWidget {
-  const MedicalEducationHub({Key? key}) : super(key: key);
+  const MedicalEducationHub({super.key});
 
   @override
   State<MedicalEducationHub> createState() => _MedicalEducationHubState();
@@ -56,7 +56,7 @@ class _MedicalEducationHubState extends State<MedicalEducationHub>
   }
 
   List<MedicalEducation> get _filteredEducation {
-    List<MedicalEducation> filtered = _education;
+    var filtered = _education;
 
     if (_searchQuery.isNotEmpty) {
       filtered = filtered.where((edu) =>
@@ -315,7 +315,7 @@ class _MedicalEducationHubState extends State<MedicalEducationHub>
                 ),
               )
             else
-              ...education.take(5).map((edu) => _buildEducationItem(edu)),
+              ...education.take(5).map(_buildEducationItem),
           ],
         ),
       ),
@@ -342,7 +342,7 @@ class _MedicalEducationHubState extends State<MedicalEducationHub>
                 ),
               )
             else
-              ...education.take(5).map((edu) => _buildEducationItem(edu)),
+              ...education.take(5).map(_buildEducationItem),
           ],
         ),
       ),

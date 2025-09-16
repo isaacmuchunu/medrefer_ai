@@ -1,6 +1,4 @@
-import 'package:flutter/material.dart';
 import '../../../core/app_export.dart';
-import '../../../database/models/pharmacy_drug.dart';
 
 class DrugCardWidget extends StatelessWidget {
   final PharmacyDrug drug;
@@ -8,11 +6,11 @@ class DrugCardWidget extends StatelessWidget {
   final VoidCallback onAddToCart;
 
   const DrugCardWidget({
-    Key? key,
+    super.key,
     required this.drug,
     required this.onTap,
     required this.onAddToCart,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -152,7 +150,7 @@ class DrugCardWidget extends StatelessWidget {
                           ),
                           SizedBox(width: 1.w),
                           Text(
-                            '${drug.rating.toStringAsFixed(1)}',
+                            drug.rating.toStringAsFixed(1),
                             style: TextStyle(
                               fontSize: 11.sp,
                               color: AppTheme.textSecondaryLight,

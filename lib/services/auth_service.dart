@@ -372,7 +372,7 @@ class AuthService extends ChangeNotifier {
   String _hashPassword(String password) {
     // Use a more secure password hashing with salt
     final salt = _generateSalt();
-    final bytes = utf8.encode(password + salt + 'medrefer_salt_2024');
+    final bytes = utf8.encode('$password${salt}medrefer_salt_2024');
     final digest = sha256.convert(bytes);
     return '$salt:${digest.toString()}';
   }

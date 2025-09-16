@@ -1,17 +1,12 @@
 import '../../core/app_export.dart';
-import 'package:medrefer_ai/database/models/condition.dart';
-import 'package:medrefer_ai/database/models/medication.dart';
-import 'package:medrefer_ai/database/models/document.dart';
-import 'package:medrefer_ai/database/models/emergency_contact.dart';
-import 'package:medrefer_ai/database/models/vital_statistics.dart';
 
 class PatientProfileScreen extends StatefulWidget {
   final String patientId;
   
   const PatientProfileScreen({
-    Key? key,
+    super.key,
     required this.patientId,
-  }) : super(key: key);
+  });
 
   @override
   _PatientProfileScreenState createState() => _PatientProfileScreenState();
@@ -31,7 +26,7 @@ class _PatientProfileScreenState extends State<PatientProfileScreen> with Ticker
   List<EmergencyContact> _emergencyContacts = [];
   List<VitalStatistics> _vitalStatistics = [];
   bool _isLoading = true;
-  bool _isEmergencyContact = false;
+  final bool _isEmergencyContact = false;
 
   @override
   void initState() {

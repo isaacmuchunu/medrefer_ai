@@ -1,10 +1,8 @@
-import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import '../../core/app_export.dart';
 
 class FeedbackRating extends StatefulWidget {
   final String specialistId; // Pass specialist ID
-  const FeedbackRating({Key? key, required this.specialistId}) : super(key: key);
+  const FeedbackRating({super.key, required this.specialistId});
 
   @override
   State<FeedbackRating> createState() => _FeedbackRatingState();
@@ -17,7 +15,7 @@ class _FeedbackRatingState extends State<FeedbackRating> {
   void _submitFeedback() {
     final dataService = Provider.of<DataService>(context, listen: false);
     // Assume FeedbackDAO exists
-    dataService.feedbackDAO?.submitFeedback(widget.specialistId, _rating, _feedbackController.text);
+    dataService.feedbackDAO.submitFeedback(widget.specialistId, _rating, _feedbackController.text);
     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Feedback submitted')));
     Navigator.pop(context);
   }

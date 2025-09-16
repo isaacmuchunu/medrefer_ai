@@ -6,11 +6,11 @@ class RoleBasedActionsWidget extends StatelessWidget {
   final Function(String)? onActionTap;
 
   const RoleBasedActionsWidget({
-    Key? key,
+    super.key,
     required this.userRole,
     required this.permissions,
     this.onActionTap,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

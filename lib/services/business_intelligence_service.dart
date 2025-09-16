@@ -1,7 +1,5 @@
-import 'package:flutter/foundation.dart';
 import 'package:dio/dio.dart';
 import 'package:sqflite/sqflite.dart';
-import 'dart:convert';
 import 'dart:async';
 import 'dart:math';
 import '../core/app_export.dart';
@@ -178,7 +176,7 @@ class BusinessIntelligenceService extends ChangeNotifier {
       pipeline.status = ETLPipelineStatus.running;
       notifyListeners();
 
-      int totalRecordsProcessed = 0;
+      var totalRecordsProcessed = 0;
       final errors = <String>[];
 
       // Execute each stage
@@ -387,7 +385,7 @@ class BusinessIntelligenceService extends ChangeNotifier {
 
       // Execute prediction based on model type
       dynamic prediction;
-      double confidence = 0.0;
+      var confidence = 0.0;
 
       switch (model.type) {
         case AnalyticsModelType.regression:
@@ -869,7 +867,7 @@ class BusinessIntelligenceService extends ChangeNotifier {
     // Extract data from source
     final dataSource = _dataSources.firstWhere((ds) => ds.sourceId == stage.sourceId);
     
-    List<Map<String, dynamic>> extractedData = [];
+    var extractedData = <Map<String, dynamic>>[];
     
     switch (dataSource.type) {
       case DataSourceType.database:

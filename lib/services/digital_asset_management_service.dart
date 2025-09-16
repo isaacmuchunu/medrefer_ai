@@ -5,7 +5,6 @@ import 'package:crypto/crypto.dart';
 import 'dart:convert';
 import 'dart:async';
 import 'dart:math';
-import 'dart:typed_data';
 import '../core/app_export.dart';
 
 /// Digital Asset Management Service for Medical Imaging and Documents
@@ -434,7 +433,7 @@ class DigitalAssetManagementService extends ChangeNotifier {
     try {
       debugPrint('🔍 Searching assets: query=$query');
 
-      List<DigitalAsset> results = _assets.values.toList();
+      var results = _assets.values.toList();
 
       // Filter by asset types
       if (assetTypes != null && assetTypes.isNotEmpty) {

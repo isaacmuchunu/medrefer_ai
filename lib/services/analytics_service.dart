@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
-import 'dart:collection';
 import 'package:flutter/foundation.dart';
 import 'package:sqflite/sqflite.dart';
 import '../database/database_helper.dart';
@@ -281,7 +280,7 @@ class AnalyticsService extends ChangeNotifier {
       value: patientCount.toDouble(),
       target: 10000,
       unit: 'patients',
-      trend: await _calculateTrend('patients', 30),
+      trend: _calculateTrend('patients', 30),
       status: _getKPIStatus(patientCount.toDouble(), 10000),
     ));
     
@@ -293,7 +292,7 @@ class AnalyticsService extends ChangeNotifier {
       value: completionRate,
       target: 85,
       unit: '%',
-      trend: await _calculateTrend('referral_completion', 30),
+      trend: _calculateTrend('referral_completion', 30),
       status: _getKPIStatus(completionRate, 85),
     ));
     
@@ -305,7 +304,7 @@ class AnalyticsService extends ChangeNotifier {
       value: avgWaitTime,
       target: 15,
       unit: 'minutes',
-      trend: await _calculateTrend('wait_time', 30),
+      trend: _calculateTrend('wait_time', 30),
       status: _getKPIStatus(avgWaitTime, 15, inverse: true),
     ));
     
@@ -356,7 +355,7 @@ class AnalyticsService extends ChangeNotifier {
     final n = data.length;
     double sumX = 0, sumY = 0, sumXY = 0, sumX2 = 0;
     
-    for (int i = 0; i < n; i++) {
+    for (var i = 0; i < n; i++) {
       sumX += i;
       sumY += data[i].value;
       sumXY += i * data[i].value;
@@ -380,7 +379,7 @@ class AnalyticsService extends ChangeNotifier {
     double ssTotal = 0, ssResidual = 0;
     final meanY = sumY / n;
     
-    for (int i = 0; i < n; i++) {
+    for (var i = 0; i < n; i++) {
       final predicted = slope * i + intercept;
       ssTotal += pow(data[i].value - meanY, 2);
       ssResidual += pow(data[i].value - predicted, 2);
@@ -390,7 +389,7 @@ class AnalyticsService extends ChangeNotifier {
     
     // Generate forecast
     final forecast = <DataPoint>[];
-    for (int i = 0; i < 7; i++) {
+    for (var i = 0; i < 7; i++) {
       final futureValue = slope * (n + i) + intercept;
       forecast.add(DataPoint(
         value: futureValue,
@@ -422,14 +421,14 @@ class AnalyticsService extends ChangeNotifier {
     
     // Calculate standard deviation of residuals
     double sumSquaredResiduals = 0;
-    for (int i = 0; i < data.length; i++) {
+    for (var i = 0; i < data.length; i++) {
       final predicted = slope * i + intercept;
       sumSquaredResiduals += pow(data[i].value - predicted, 2);
     }
     final stdDev = sqrt(sumSquaredResiduals / data.length);
     
     // Identify points beyond 2 standard deviations
-    for (int i = 0; i < data.length; i++) {
+    for (var i = 0; i < data.length; i++) {
       final predicted = slope * i + intercept;
       final residual = data[i].value - predicted;
       
@@ -462,7 +461,7 @@ class AnalyticsService extends ChangeNotifier {
       if (data.length < period * 2) continue;
       
       // Calculate autocorrelation for this period
-      double correlation = _calculateAutocorrelation(data, period);
+      final correlation = _calculateAutocorrelation(data, period);
       
       if (correlation > bestScore && correlation > 0.5) {
         bestScore = correlation;
@@ -484,7 +483,7 @@ class AnalyticsService extends ChangeNotifier {
     final n = data.length - lag;
     double sumXY = 0, sumX = 0, sumY = 0, sumX2 = 0, sumY2 = 0;
     
-    for (int i = 0; i < n; i++) {
+    for (var i = 0; i < n; i++) {
       final x = data[i].value;
       final y = data[i + lag].value;
       sumXY += x * y;
@@ -523,8 +522,8 @@ class AnalyticsService extends ChangeNotifier {
     final features = await _extractFeatures(model.featureNames);
     
     // Apply model (simplified - in production would use actual ML model)
-    double predictedValue = model.intercept;
-    for (int i = 0; i < features.length && i < model.coefficients.length; i++) {
+    var predictedValue = model.intercept;
+    for (var i = 0; i < features.length && i < model.coefficients.length; i++) {
       predictedValue += features[i] * model.coefficients[i];
     }
     
@@ -800,15 +799,15 @@ class AnalyticsService extends ChangeNotifier {
       final cohorts = await _defineCohorts(cohortType, startDate, endDate);
       
       // Calculate retention
-      final retention = await _calculateCohortRetention(cohorts);
+      final retention = _calculateCohortRetention(cohorts);
       
       // Calculate metrics
-      final metrics = await _calculateCohortMetrics(cohorts);
+      final metrics = _calculateCohortMetrics(cohorts);
       
       // Segment if requested
       Map<String, CohortData>? segments;
       if (segmentBy != null) {
-        segments = await _segmentCohorts(cohorts, segmentBy);
+        segments = _segmentCohorts(cohorts, segmentBy);
       }
       
       return CohortAnalysis(
@@ -836,9 +835,9 @@ class AnalyticsService extends ChangeNotifier {
   }) async {
     try {
       final funnelData = <FunnelStep>[];
-      int previousCount = 0;
+      var previousCount = 0;
       
-      for (int i = 0; i < steps.length; i++) {
+      for (var i = 0; i < steps.length; i++) {
         final stepName = steps[i];
         final count = await _getEventCount(stepName, startDate, endDate, filters);
         
@@ -1005,7 +1004,7 @@ class AnalyticsService extends ChangeNotifier {
     final now = DateTime.now();
     
     // Simulated data generation
-    for (int i = days; i >= 0; i--) {
+    for (var i = days; i >= 0; i--) {
       final date = now.subtract(Duration(days: i));
       final value = _generateSimulatedValue(metric, i);
       

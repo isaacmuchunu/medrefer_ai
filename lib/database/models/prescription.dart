@@ -14,7 +14,7 @@ class Prescription extends BaseModel {
   final String? status;
 
   Prescription({
-    String? id,
+    super.id,
     this.patientId,
     this.prescribedBy,
     this.medicationName,
@@ -26,9 +26,9 @@ class Prescription extends BaseModel {
     this.endDate,
     this.refills,
     this.status,
-    DateTime? createdAt,
-    DateTime? updatedAt,
-  }) : super(id: id, createdAt: createdAt, updatedAt: updatedAt);
+    super.createdAt,
+    super.updatedAt,
+  });
 
   factory Prescription.fromMap(Map<String, dynamic> map) {
     return Prescription(

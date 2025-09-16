@@ -46,8 +46,8 @@ class AnalyticsDAO extends BaseDAO {
     String? organizationId,
   }) async {
     try {
-      String where = 'timestamp >= ? AND timestamp <= ?';
-      List<dynamic> whereArgs = [
+      var where = 'timestamp >= ? AND timestamp <= ?';
+      final whereArgs = <dynamic>[
         startDate.toIso8601String(),
         endDate.toIso8601String(),
       ];
@@ -90,8 +90,8 @@ class AnalyticsDAO extends BaseDAO {
     String? organizationId,
   }) async {
     try {
-      String where = 'category = ? AND timestamp >= ? AND timestamp <= ?';
-      List<dynamic> whereArgs = [category, startDate.toIso8601String(), endDate.toIso8601String()];
+      var where = 'category = ? AND timestamp >= ? AND timestamp <= ?';
+      final whereArgs = <dynamic>[category, startDate.toIso8601String(), endDate.toIso8601String()];
 
       if (userId != null) {
         where += ' AND user_id = ?';
@@ -135,8 +135,8 @@ class AnalyticsDAO extends BaseDAO {
     String? organizationId,
   }) async {
     try {
-      String where = '1=1';
-      List<dynamic> whereArgs = [];
+      var where = '1=1';
+      final whereArgs = <dynamic>[];
 
       if (userId != null) {
         where += ' AND (user_id = ? OR user_id IS NULL)';
@@ -192,8 +192,8 @@ class AnalyticsDAO extends BaseDAO {
     String? reportType,
   }) async {
     try {
-      String where = '1=1';
-      List<dynamic> whereArgs = [];
+      var where = '1=1';
+      final whereArgs = <dynamic>[];
 
       if (userId != null) {
         where += ' AND (user_id = ? OR user_id IS NULL)';
@@ -319,8 +319,8 @@ class AnalyticsDAO extends BaseDAO {
     String? organizationId,
   }) async {
     try {
-      String where = '1=1';
-      List<dynamic> whereArgs = [];
+      var where = '1=1';
+      final whereArgs = <dynamic>[];
 
       if (userId != null) {
         where += ' AND (user_id = ? OR user_id IS NULL)';
@@ -385,8 +385,8 @@ class AnalyticsDAO extends BaseDAO {
     DateTime? endDate,
   }) async {
     try {
-      String where = 'metadata LIKE ?';
-      List<dynamic> whereArgs = ['%"entity_type":"$entityType"%'];
+      var where = 'metadata LIKE ?';
+      final whereArgs = <dynamic>['%"entity_type":"$entityType"%'];
 
       if (category != null) {
         where += ' AND category = ?';

@@ -5,9 +5,9 @@ class DocumentsViewerWidget extends StatefulWidget {
   final List<Map<String, dynamic>> documents;
 
   const DocumentsViewerWidget({
-    Key? key,
+    super.key,
     required this.documents,
-  }) : super(key: key);
+  });
 
   @override
   State<DocumentsViewerWidget> createState() => _DocumentsViewerWidgetState();

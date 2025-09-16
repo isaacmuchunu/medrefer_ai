@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:web_socket_channel/status.dart' as status;
-import '../database/database.dart';
 
 /// Advanced Real-time Collaboration Service
 /// Provides WebSocket-based live updates, collaborative editing, and presence tracking
@@ -590,7 +589,7 @@ class CollaborationService extends ChangeNotifier {
     final documentState = _documentStates[documentId]!;
     
     // Transform based on pending operations
-    DocumentChange transformedChange = change;
+    final transformedChange = change;
     
     // Apply transformation rules
     if (change.type == ChangeType.insert) {

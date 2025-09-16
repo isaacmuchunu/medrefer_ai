@@ -1,4 +1,3 @@
-import 'package:sqflite/sqflite.dart';
 import '../models/quality_metric.dart';
 import 'dao.dart';
 
@@ -48,7 +47,7 @@ class QualityMetricDao extends BaseDao<QualityMetric> {
       whereArgs: [category],
       orderBy: 'measurement_date DESC',
     );
-    return maps.map((map) => fromMap(map)).toList();
+    return maps.map(fromMap).toList();
   }
 
   // Get metrics by type
@@ -60,7 +59,7 @@ class QualityMetricDao extends BaseDao<QualityMetric> {
       whereArgs: [metricType],
       orderBy: 'measurement_date DESC',
     );
-    return maps.map((map) => fromMap(map)).toList();
+    return maps.map(fromMap).toList();
   }
 
   // Get metrics by status
@@ -72,7 +71,7 @@ class QualityMetricDao extends BaseDao<QualityMetric> {
       whereArgs: [status],
       orderBy: 'measurement_date DESC',
     );
-    return maps.map((map) => fromMap(map)).toList();
+    return maps.map(fromMap).toList();
   }
 
   // Get metrics by department
@@ -84,7 +83,7 @@ class QualityMetricDao extends BaseDao<QualityMetric> {
       whereArgs: [departmentId],
       orderBy: 'measurement_date DESC',
     );
-    return maps.map((map) => fromMap(map)).toList();
+    return maps.map(fromMap).toList();
   }
 
   // Get metrics by specialist
@@ -96,7 +95,7 @@ class QualityMetricDao extends BaseDao<QualityMetric> {
       whereArgs: [specialistId],
       orderBy: 'measurement_date DESC',
     );
-    return maps.map((map) => fromMap(map)).toList();
+    return maps.map(fromMap).toList();
   }
 
   // Get metrics by period
@@ -108,7 +107,7 @@ class QualityMetricDao extends BaseDao<QualityMetric> {
       whereArgs: [period],
       orderBy: 'measurement_date DESC',
     );
-    return maps.map((map) => fromMap(map)).toList();
+    return maps.map(fromMap).toList();
   }
 
   // Get metrics within date range
@@ -120,7 +119,7 @@ class QualityMetricDao extends BaseDao<QualityMetric> {
       whereArgs: [startDate.toIso8601String(), endDate.toIso8601String()],
       orderBy: 'measurement_date DESC',
     );
-    return maps.map((map) => fromMap(map)).toList();
+    return maps.map(fromMap).toList();
   }
 
   // Get underperforming metrics
@@ -131,7 +130,7 @@ class QualityMetricDao extends BaseDao<QualityMetric> {
       where: 'current_value < target_value AND is_active = 1',
       orderBy: '(target_value - current_value) DESC',
     );
-    return maps.map((map) => fromMap(map)).toList();
+    return maps.map(fromMap).toList();
   }
 
   // Get critical metrics
@@ -143,7 +142,7 @@ class QualityMetricDao extends BaseDao<QualityMetric> {
       whereArgs: ['critical'],
       orderBy: 'measurement_date DESC',
     );
-    return maps.map((map) => fromMap(map)).toList();
+    return maps.map(fromMap).toList();
   }
 
   // Update metric value

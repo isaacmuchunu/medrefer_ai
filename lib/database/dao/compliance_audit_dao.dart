@@ -1,4 +1,3 @@
-import 'package:sqflite/sqflite.dart';
 import '../models/compliance_audit.dart';
 import 'dao.dart';
 
@@ -55,7 +54,7 @@ class ComplianceAuditDao extends BaseDao<ComplianceAudit> {
       whereArgs: [auditType],
       orderBy: 'scheduled_date DESC',
     );
-    return maps.map((map) => fromMap(map)).toList();
+    return maps.map(fromMap).toList();
   }
 
   // Get audits by status
@@ -67,7 +66,7 @@ class ComplianceAuditDao extends BaseDao<ComplianceAudit> {
       whereArgs: [status],
       orderBy: 'scheduled_date DESC',
     );
-    return maps.map((map) => fromMap(map)).toList();
+    return maps.map(fromMap).toList();
   }
 
   // Get audits by severity
@@ -79,7 +78,7 @@ class ComplianceAuditDao extends BaseDao<ComplianceAudit> {
       whereArgs: [severity],
       orderBy: 'scheduled_date DESC',
     );
-    return maps.map((map) => fromMap(map)).toList();
+    return maps.map(fromMap).toList();
   }
 
   // Get audits by category
@@ -91,7 +90,7 @@ class ComplianceAuditDao extends BaseDao<ComplianceAudit> {
       whereArgs: [category],
       orderBy: 'scheduled_date DESC',
     );
-    return maps.map((map) => fromMap(map)).toList();
+    return maps.map(fromMap).toList();
   }
 
   // Get audits by auditor
@@ -103,7 +102,7 @@ class ComplianceAuditDao extends BaseDao<ComplianceAudit> {
       whereArgs: [auditorId],
       orderBy: 'scheduled_date DESC',
     );
-    return maps.map((map) => fromMap(map)).toList();
+    return maps.map(fromMap).toList();
   }
 
   // Get audits by department
@@ -115,7 +114,7 @@ class ComplianceAuditDao extends BaseDao<ComplianceAudit> {
       whereArgs: [departmentId],
       orderBy: 'scheduled_date DESC',
     );
-    return maps.map((map) => fromMap(map)).toList();
+    return maps.map(fromMap).toList();
   }
 
   // Get overdue audits
@@ -128,7 +127,7 @@ class ComplianceAuditDao extends BaseDao<ComplianceAudit> {
       whereArgs: [now, 'completed'],
       orderBy: 'due_date ASC',
     );
-    return maps.map((map) => fromMap(map)).toList();
+    return maps.map(fromMap).toList();
   }
 
   // Get scheduled audits
@@ -140,7 +139,7 @@ class ComplianceAuditDao extends BaseDao<ComplianceAudit> {
       whereArgs: ['scheduled'],
       orderBy: 'scheduled_date ASC',
     );
-    return maps.map((map) => fromMap(map)).toList();
+    return maps.map(fromMap).toList();
   }
 
   // Get audits requiring remediation
@@ -151,7 +150,7 @@ class ComplianceAuditDao extends BaseDao<ComplianceAudit> {
       where: 'requires_remediation = 1 AND is_active = 1',
       orderBy: 'scheduled_date DESC',
     );
-    return maps.map((map) => fromMap(map)).toList();
+    return maps.map(fromMap).toList();
   }
 
   // Get non-compliant audits
@@ -162,7 +161,7 @@ class ComplianceAuditDao extends BaseDao<ComplianceAudit> {
       where: 'compliance_score < target_score AND is_active = 1',
       orderBy: '(target_score - compliance_score) DESC',
     );
-    return maps.map((map) => fromMap(map)).toList();
+    return maps.map(fromMap).toList();
   }
 
   // Update audit status

@@ -1,6 +1,7 @@
 import 'base_model.dart';
 
 class QualityMetric extends BaseModel {
+  @override
   final String id;
   final String metricType; // 'patient_satisfaction', 'response_time', 'outcome', 'compliance'
   final String title;
@@ -19,7 +20,9 @@ class QualityMetric extends BaseModel {
   final List<String> tags;
   final String status; // 'good', 'warning', 'critical', 'improving', 'declining'
   final String? notes;
+  @override
   final DateTime createdAt;
+  @override
   final DateTime updatedAt;
   final bool isActive;
 

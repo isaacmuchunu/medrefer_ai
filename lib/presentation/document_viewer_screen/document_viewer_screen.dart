@@ -5,10 +5,10 @@ class DocumentViewerScreen extends StatefulWidget {
   final String? patientId;
   
   const DocumentViewerScreen({
-    Key? key,
+    super.key,
     required this.documentId,
     this.patientId,
-  }) : super(key: key);
+  });
 
   @override
   _DocumentViewerScreenState createState() => _DocumentViewerScreenState();
@@ -20,7 +20,7 @@ class _DocumentViewerScreenState extends State<DocumentViewerScreen> with Ticker
   Document? _document;
   bool _isLoading = true;
   bool _showAnnotations = false;
-  List<Annotation> _annotations = [];
+  final List<Annotation> _annotations = [];
 
   @override
   void initState() {
@@ -191,7 +191,7 @@ class _DocumentViewerScreenState extends State<DocumentViewerScreen> with Ticker
           
           // Annotations Overlay
           if (_showAnnotations)
-            ..._annotations.map((annotation) => _buildAnnotation(annotation)),
+            ..._annotations.map(_buildAnnotation),
           
           // Document Info Panel
           Positioned(

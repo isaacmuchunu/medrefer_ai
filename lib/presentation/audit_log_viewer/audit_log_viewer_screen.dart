@@ -81,7 +81,7 @@ class _AuditLogViewerScreenState extends State<AuditLogViewerScreen> {
           mainAxisSize: MainAxisSize.min,
           children: [
             DropdownButtonFormField<SecurityEventType>(
-              value: _eventType,
+              initialValue: _eventType,
               decoration: const InputDecoration(labelText: 'Event Type'),
               items: [null, ...SecurityEventType.values]
                   .map((e) => DropdownMenuItem(

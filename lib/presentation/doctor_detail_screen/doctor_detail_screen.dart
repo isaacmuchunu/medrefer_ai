@@ -1,13 +1,12 @@
-import 'package:flutter/material.dart';
 import '../../core/app_export.dart';
 
 class DoctorDetailScreen extends StatefulWidget {
   final Map<String, dynamic> doctor;
 
   const DoctorDetailScreen({
-    Key? key,
+    super.key,
     required this.doctor,
-  }) : super(key: key);
+  });
 
   @override
   State<DoctorDetailScreen> createState() => _DoctorDetailScreenState();
@@ -383,7 +382,7 @@ class _DoctorDetailScreenState extends State<DoctorDetailScreen>
               ),
             ],
           ),
-        )).toList(),
+        )),
       ],
     );
   }

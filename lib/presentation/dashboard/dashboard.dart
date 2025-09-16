@@ -1,8 +1,6 @@
 import 'dart:async';
 
 import '../../core/app_export.dart';
-import '../../services/auth_service.dart';
-import '../../services/notification_service.dart';
 import './widgets/activity_item_widget.dart';
 import './widgets/bottom_nav_bar_widget.dart';
 import './widgets/header_widget.dart';

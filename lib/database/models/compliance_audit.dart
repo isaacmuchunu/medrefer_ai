@@ -1,6 +1,7 @@
 import 'base_model.dart';
 
 class ComplianceAudit extends BaseModel {
+  @override
   final String id;
   final String auditType; // 'hipaa', 'gdpr', 'sox', 'iso27001', 'internal'
   final String title;
@@ -25,7 +26,9 @@ class ComplianceAudit extends BaseModel {
   final double targetScore;
   final Map<String, dynamic> details;
   final String? notes;
+  @override
   final DateTime createdAt;
+  @override
   final DateTime updatedAt;
   final bool isActive;
   final bool requiresRemediation;

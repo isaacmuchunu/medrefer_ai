@@ -1,10 +1,7 @@
-import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import '../../core/app_export.dart';
-import '../../services/notification_service.dart';
 
 class NotificationsScreen extends StatefulWidget {
-  const NotificationsScreen({Key? key}) : super(key: key);
+  const NotificationsScreen({super.key});
 
   @override
   _NotificationsScreenState createState() => _NotificationsScreenState();
@@ -429,31 +426,31 @@ class _NotificationsScreenState extends State<NotificationsScreen> with TickerPr
     ));
   }
 
-  NotificationType _mapType(NotificationTypeService type) {
+  NotificationType _mapType(NotificationType type) {
     switch (type) {
-      case NotificationTypeService.referral:
+      case NotificationType.referral:
         return NotificationType.referralUpdate;
-      case NotificationTypeService.message:
+      case NotificationType.message:
         return NotificationType.message;
-      case NotificationTypeService.appointment:
+      case NotificationType.appointment:
         return NotificationType.appointment;
-      case NotificationTypeService.urgent:
+      case NotificationType.urgent:
         return NotificationType.emergency;
-      case NotificationTypeService.info:
-      case NotificationTypeService.success:
-      case NotificationTypeService.warning:
-      case NotificationTypeService.error:
+      case NotificationType.info:
+      case NotificationType.success:
+      case NotificationType.warning:
+      case NotificationType.error:
         return NotificationType.system;
     }
   }
 
-  NotificationPriority _mapPriority(NotificationTypeService type) {
+  NotificationPriority _mapPriority(NotificationType type) {
     switch (type) {
-      case NotificationTypeService.urgent:
+      case NotificationType.urgent:
         return NotificationPriority.critical;
-      case NotificationTypeService.error:
+      case NotificationType.error:
         return NotificationPriority.high;
-      case NotificationTypeService.warning:
+      case NotificationType.warning:
         return NotificationPriority.medium;
       default:
         return NotificationPriority.low;

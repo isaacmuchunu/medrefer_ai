@@ -1,7 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'package:flutter/foundation.dart';
-import '../database/models/patient.dart';
 import '../database/services/data_service.dart';
 import '../core/result.dart';
 import 'ai_service.dart';
@@ -282,7 +280,7 @@ class ClinicalWorkflow {
           (t) => t.id == depId,
           orElse: () => null as WorkflowTask,
         );
-        if (depTask == null || depTask.status != WorkflowStatus.completed) {
+        if (depTask.status != WorkflowStatus.completed) {
           return false;
         }
       }
@@ -636,7 +634,7 @@ class ClinicalWorkflowService {
     final tasks = <WorkflowTask>[];
     final taskTemplates = List<Map<String, dynamic>>.from(template['tasks'] ?? []);
     
-    for (int i = 0; i < taskTemplates.length; i++) {
+    for (var i = 0; i < taskTemplates.length; i++) {
       final taskTemplate = taskTemplates[i];
       final taskId = '${workflowId}_task_$i';
       
@@ -781,12 +779,10 @@ class ClinicalWorkflowService {
         (t) => t.id == taskId,
         orElse: () => null as WorkflowTask,
       );
-      if (task != null) {
-        targetWorkflow = workflow;
-        targetTask = task;
-        break;
-      }
-    }
+      targetWorkflow = workflow;
+      targetTask = task;
+      break;
+        }
 
     if (targetWorkflow == null || targetTask == null) return;
 
@@ -870,12 +866,10 @@ class ClinicalWorkflowService {
           (t) => t.id == taskId,
           orElse: () => null as WorkflowTask,
         );
-        if (task != null) {
-          targetWorkflow = workflow;
-          targetTask = task;
-          break;
-        }
-      }
+        targetWorkflow = workflow;
+        targetTask = task;
+        break;
+            }
 
       if (targetWorkflow == null || targetTask == null) {
         return Result.error('Task not found');

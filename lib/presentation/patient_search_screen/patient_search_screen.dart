@@ -5,10 +5,10 @@ class PatientSearchScreen extends StatefulWidget {
   final Function(Patient)? onPatientSelected;
   
   const PatientSearchScreen({
-    Key? key,
+    super.key,
     this.isSelectionMode = false,
     this.onPatientSelected,
-  }) : super(key: key);
+  });
 
   @override
   _PatientSearchScreenState createState() => _PatientSearchScreenState();
@@ -93,7 +93,7 @@ class _PatientSearchScreenState extends State<PatientSearchScreen> with TickerPr
   }
 
   void _applyFiltersAndSort() {
-    List<Patient> filtered = List.from(_allPatients);
+    var filtered = List<Patient>.from(_allPatients);
     
     // Apply search filter
     if (_searchQuery.isNotEmpty) {
@@ -129,7 +129,7 @@ class _PatientSearchScreenState extends State<PatientSearchScreen> with TickerPr
     
     // Apply sorting
     filtered.sort((a, b) {
-      int comparison = 0;
+      var comparison = 0;
       switch (_sortBy) {
         case 'Name':
           comparison = a.name.compareTo(b.name);

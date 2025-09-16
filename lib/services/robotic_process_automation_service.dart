@@ -967,7 +967,7 @@ class RoboticProcessAutomationService extends ChangeNotifier {
     // Validate step order
     final orders = processDefinition.steps.map((s) => s.order).toList();
     orders.sort();
-    for (int i = 0; i < orders.length; i++) {
+    for (var i = 0; i < orders.length; i++) {
       if (orders[i] != i + 1) {
         errors.add('Process steps must have sequential order starting from 1');
         break;
@@ -990,14 +990,14 @@ class RoboticProcessAutomationService extends ChangeNotifier {
     
     // Score bots based on capabilities and performance
     RPABot? bestBot;
-    double bestScore = 0.0;
+    var bestScore = 0.0;
     
     for (final bot in availableBots) {
-      double score = 0.0;
+      var score = 0.0;
       
       // Check capability match
       final requiredCapabilities = _getRequiredCapabilities(processDefinition);
-      final matchedCapabilities = bot.capabilities.where((cap) => requiredCapabilities.contains(cap)).length;
+      final matchedCapabilities = bot.capabilities.where(requiredCapabilities.contains).length;
       score += (matchedCapabilities / requiredCapabilities.length) * 50;
       
       // Consider performance metrics
@@ -1049,7 +1049,7 @@ class RoboticProcessAutomationService extends ChangeNotifier {
   }
 
   Future<StepExecutionResult> _executeProcessSteps(BotExecution execution, ProcessDefinition processDefinition) async {
-    for (int i = execution.currentStepIndex; i < processDefinition.steps.length; i++) {
+    for (var i = execution.currentStepIndex; i < processDefinition.steps.length; i++) {
       final step = processDefinition.steps[i];
       
       try {
@@ -1469,7 +1469,7 @@ class RoboticProcessAutomationService extends ChangeNotifier {
   }
 
   String _replaceVariables(String template, Map<String, dynamic> variables) {
-    String result = template;
+    var result = template;
     
     for (final entry in variables.entries) {
       result = result.replaceAll('{{${entry.key}}}', entry.value.toString());

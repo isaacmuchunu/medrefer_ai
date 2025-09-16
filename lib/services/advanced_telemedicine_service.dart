@@ -188,7 +188,7 @@ class AdvancedTelemedicineService extends ChangeNotifier {
       _signalingChannel!.stream.listen(
         (message) => _handleSignalingMessage(jsonDecode(message)),
         onError: (error) => debugPrint('❌ Signaling error: $error'),
-        onDone: () => _reconnectSignaling(),
+        onDone: _reconnectSignaling,
       );
       
       debugPrint('✅ Signaling server connected');
@@ -603,6 +603,7 @@ class AdvancedTelemedicineService extends ChangeNotifier {
   // Helper methods and additional functionality...
   // Due to space constraints, showing key structure and main methods
 
+  @override
   void dispose() {
     // Close all WebRTC connections
     for (final connection in _peerConnections.values) {

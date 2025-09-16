@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import '../../../core/app_export.dart';
 
 class SearchBarWidget extends StatelessWidget {
@@ -8,12 +7,12 @@ class SearchBarWidget extends StatelessWidget {
   final VoidCallback? onFilterTap;
 
   const SearchBarWidget({
-    Key? key,
+    super.key,
     required this.controller,
     required this.onChanged,
     required this.hintText,
     this.onFilterTap,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

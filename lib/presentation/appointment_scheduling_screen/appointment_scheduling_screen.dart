@@ -1,5 +1,3 @@
-import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import '../../core/app_export.dart';
 
 class AppointmentSchedulingScreen extends StatefulWidget {
@@ -7,10 +5,10 @@ class AppointmentSchedulingScreen extends StatefulWidget {
   final String? patientId;
   
   const AppointmentSchedulingScreen({
-    Key? key,
+    super.key,
     this.specialistId,
     this.patientId,
-  }) : super(key: key);
+  });
 
   @override
   _AppointmentSchedulingScreenState createState() => _AppointmentSchedulingScreenState();

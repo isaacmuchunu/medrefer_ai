@@ -5,9 +5,9 @@ class ActiveConditionsWidget extends StatelessWidget {
   final List<Map<String, dynamic>> conditions;
 
   const ActiveConditionsWidget({
-    Key? key,
+    super.key,
     required this.conditions,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

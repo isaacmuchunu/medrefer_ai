@@ -39,7 +39,7 @@ abstract class BaseDao<T> {
   Future<List<T>> findAll() async {
     final db = await database;
     final List<Map<String, dynamic>> maps = await db.query(tableName);
-    return maps.map((map) => fromMap(map)).toList();
+    return maps.map(fromMap).toList();
   }
   
   /// Find records with a where clause
@@ -50,7 +50,7 @@ abstract class BaseDao<T> {
       where: where, 
       whereArgs: whereArgs
     );
-    return maps.map((map) => fromMap(map)).toList();
+    return maps.map(fromMap).toList();
   }
   
   /// Find a single record by ID

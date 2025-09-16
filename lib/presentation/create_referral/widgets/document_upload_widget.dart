@@ -10,9 +10,9 @@ class DocumentUploadWidget extends StatefulWidget {
   final Function(List<Map<String, dynamic>>) onDocumentsUpdated;
 
   const DocumentUploadWidget({
-    Key? key,
+    super.key,
     required this.onDocumentsUpdated,
-  }) : super(key: key);
+  });
 
   @override
   State<DocumentUploadWidget> createState() => _DocumentUploadWidgetState();
@@ -84,11 +84,12 @@ class _DocumentUploadWidgetState extends State<DocumentUploadWidget> {
   }
 
   Future<void> _capturePhoto() async {
-    if (_cameraController == null || !_cameraController!.value.isInitialized)
+    if (_cameraController == null || !_cameraController!.value.isInitialized) {
       return;
+    }
 
     try {
-      final XFile photo = await _cameraController!.takePicture();
+      final photo = await _cameraController!.takePicture();
       final document = {
         'id': DateTime.now().millisecondsSinceEpoch.toString(),
         'name': 'Camera_${DateTime.now().millisecondsSinceEpoch}.jpg',
@@ -114,7 +115,7 @@ class _DocumentUploadWidgetState extends State<DocumentUploadWidget> {
 
   Future<void> _pickFromGallery() async {
     try {
-      final XFile? image =
+      final image =
           await _imagePicker.pickImage(source: ImageSource.gallery);
       if (image != null) {
         final document = {
@@ -142,7 +143,7 @@ class _DocumentUploadWidgetState extends State<DocumentUploadWidget> {
 
   Future<void> _pickFiles() async {
     try {
-      FilePickerResult? result = await FilePicker.platform.pickFiles(
+      final result = await FilePicker.platform.pickFiles(
         type: FileType.custom,
         allowedExtensions: ['pdf', 'doc', 'docx', 'txt', 'jpg', 'jpeg', 'png'],
         allowMultiple: true,

@@ -1072,14 +1072,12 @@ class WorkflowManagementService extends ChangeNotifier {
               orElse: () => throw Exception('No execution found'),
             );
 
-            if (execution != null) {
-              // Merge event data into process variables
-              execution.variables.addAll(event.eventData);
-              
-              // Continue execution from the event node
-              await _moveToNextNode(execution, eventNode.nodeId);
-            }
-          }
+            // Merge event data into process variables
+            execution.variables.addAll(event.eventData);
+            
+            // Continue execution from the event node
+            await _moveToNextNode(execution, eventNode.nodeId);
+                    }
         }
       }
     }
@@ -1160,9 +1158,9 @@ class WorkflowManagementService extends ChangeNotifier {
     // Parse ISO 8601 duration format (PT1H30M)
     if (duration.startsWith('PT')) {
       final timeString = duration.substring(2);
-      int hours = 0;
-      int minutes = 0;
-      int seconds = 0;
+      var hours = 0;
+      var minutes = 0;
+      var seconds = 0;
 
       final hourMatch = RegExp(r'(\d+)H').firstMatch(timeString);
       if (hourMatch != null) {

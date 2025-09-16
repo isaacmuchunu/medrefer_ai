@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:intl/intl.dart';
 
 import '../../../core/app_export.dart';
@@ -30,7 +29,7 @@ class _HeaderWidgetState extends State<HeaderWidget> {
   late Timer _timer;
   String _currentTime = '';
   String _networkStatus = 'Checking...';
-  StreamSubscription<ConnectivityResult>? _connectivitySubscription;
+  StreamSubscription<List<ConnectivityResult>>? _connectivitySubscription;
 
   @override
   void initState() {
@@ -39,7 +38,9 @@ class _HeaderWidgetState extends State<HeaderWidget> {
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) => _updateTime());
     _checkConnectivity();
     _connectivitySubscription =
-        Connectivity().onConnectivityChanged.listen((result) {
+        Connectivity().onConnectivityChanged.listen((results) {
+      // Take the first result for status display
+      final result = results.isNotEmpty ? results.first : ConnectivityResult.none;
       _updateConnectionStatus(result);
     });
   }

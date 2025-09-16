@@ -2,7 +2,6 @@
 import 'core/app_export.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'core/performance/performance_service.dart';
 import 'services/ai_service.dart';
 import 'services/collaboration_service.dart';
 import 'services/offline_sync_service.dart';
@@ -166,16 +165,16 @@ void main() async {
     }
   }
 
-  bool _hasShownError = false;
+  var hasShownError = false;
 
   // 🚨 CRITICAL: Custom error handling - DO NOT REMOVE
   ErrorWidget.builder = (FlutterErrorDetails details) {
-    if (!_hasShownError) {
-      _hasShownError = true;
+    if (!hasShownError) {
+      hasShownError = true;
 
       // Reset flag after 3 seconds to allow error widget on new screens
       Future.delayed(Duration(seconds: 5), () {
-        _hasShownError = false;
+        hasShownError = false;
       });
 
       return CustomErrorWidget(

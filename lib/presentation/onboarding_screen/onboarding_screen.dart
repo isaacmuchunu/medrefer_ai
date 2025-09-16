@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../../core/app_export.dart';
 
 class OnboardingScreen extends StatefulWidget {
-  const OnboardingScreen({Key? key}) : super(key: key);
+  const OnboardingScreen({super.key});
 
   @override
   State<OnboardingScreen> createState() => _OnboardingScreenState();
@@ -46,7 +46,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               child: Align(
                 alignment: Alignment.topRight,
                 child: TextButton(
-                  onPressed: () => _navigateToLogin(),
+                  onPressed: _navigateToLogin,
                   child: Text(
                     'Skip',
                     style: TextStyle(
@@ -85,7 +85,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: List.generate(
                       _onboardingData.length,
-                      (index) => _buildPageIndicator(index),
+                      _buildPageIndicator,
                     ),
                   ),
                   SizedBox(height: 4.h),

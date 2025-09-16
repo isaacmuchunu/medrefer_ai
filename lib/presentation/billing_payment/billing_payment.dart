@@ -1,12 +1,9 @@
-import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import '../../core/app_export.dart';
-import '../../services/auth_service.dart';
 import '../../database/dao/payment_dao.dart';
 
 class BillingPayment extends StatefulWidget {
-  const BillingPayment({Key? key}) : super(key: key);
+  const BillingPayment({super.key});
 
   @override
   State<BillingPayment> createState() => _BillingPaymentState();
@@ -173,6 +170,6 @@ class _BillingPaymentState extends State<BillingPayment> {
 
 extension StringExtension on String {
     String capitalize() {
-      return "${this[0].toUpperCase()}${this.substring(1)}";
+      return "${this[0].toUpperCase()}${substring(1)}";
     }
 }

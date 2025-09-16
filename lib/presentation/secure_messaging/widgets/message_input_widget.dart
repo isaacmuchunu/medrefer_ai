@@ -11,11 +11,11 @@ class MessageInputWidget extends StatefulWidget {
   final Function(String) onSendVoiceNote;
 
   const MessageInputWidget({
-    Key? key,
+    super.key,
     required this.onSendMessage,
     required this.onSendAttachments,
     required this.onSendVoiceNote,
-  }) : super(key: key);
+  });
 
   @override
   State<MessageInputWidget> createState() => _MessageInputWidgetState();
@@ -251,8 +251,8 @@ class _MessageInputWidgetState extends State<MessageInputWidget> {
 
   Future<void> _pickImageFromCamera() async {
     try {
-      final ImagePicker picker = ImagePicker();
-      final XFile? image = await picker.pickImage(source: ImageSource.camera);
+      final picker = ImagePicker();
+      final image = await picker.pickImage(source: ImageSource.camera);
 
       if (image != null) {
         final attachments = [
@@ -273,8 +273,8 @@ class _MessageInputWidgetState extends State<MessageInputWidget> {
 
   Future<void> _pickImageFromGallery() async {
     try {
-      final ImagePicker picker = ImagePicker();
-      final List<XFile> images = await picker.pickMultiImage();
+      final picker = ImagePicker();
+      final images = await picker.pickMultiImage();
 
       if (images.isNotEmpty) {
         final attachments = <Map<String, dynamic>>[];
@@ -296,7 +296,7 @@ class _MessageInputWidgetState extends State<MessageInputWidget> {
 
   Future<void> _pickDocument() async {
     try {
-      FilePickerResult? result = await FilePicker.platform.pickFiles(
+      final result = await FilePicker.platform.pickFiles(
         type: FileType.custom,
         allowedExtensions: ['pdf', 'doc', 'docx', 'txt'],
         allowMultiple: true,
@@ -339,7 +339,7 @@ class _MessageInputWidgetState extends State<MessageInputWidget> {
 
   Future<void> _stopRecording() async {
     try {
-      final String? path = await _audioRecorder.stop();
+      final path = await _audioRecorder.stop();
       setState(() {
         _isRecording = false;
       });

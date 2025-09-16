@@ -1,4 +1,3 @@
-import 'package:sqflite/sqflite.dart';
 import '../models/research_study.dart';
 import 'dao.dart';
 
@@ -59,7 +58,7 @@ class ResearchStudyDao extends BaseDao<ResearchStudy> {
       whereArgs: [status],
       orderBy: 'start_date DESC',
     );
-    return maps.map((map) => fromMap(map)).toList();
+    return maps.map(fromMap).toList();
   }
 
   // Get studies by type
@@ -71,7 +70,7 @@ class ResearchStudyDao extends BaseDao<ResearchStudy> {
       whereArgs: [studyType],
       orderBy: 'start_date DESC',
     );
-    return maps.map((map) => fromMap(map)).toList();
+    return maps.map(fromMap).toList();
   }
 
   // Get studies by principal investigator
@@ -83,7 +82,7 @@ class ResearchStudyDao extends BaseDao<ResearchStudy> {
       whereArgs: [investigatorId],
       orderBy: 'start_date DESC',
     );
-    return maps.map((map) => fromMap(map)).toList();
+    return maps.map(fromMap).toList();
   }
 
   // Get studies by department
@@ -95,7 +94,7 @@ class ResearchStudyDao extends BaseDao<ResearchStudy> {
       whereArgs: [department],
       orderBy: 'start_date DESC',
     );
-    return maps.map((map) => fromMap(map)).toList();
+    return maps.map(fromMap).toList();
   }
 
   // Get recruiting studies
@@ -107,7 +106,7 @@ class ResearchStudyDao extends BaseDao<ResearchStudy> {
       whereArgs: ['recruiting'],
       orderBy: 'start_date DESC',
     );
-    return maps.map((map) => fromMap(map)).toList();
+    return maps.map(fromMap).toList();
   }
 
   // Get active studies
@@ -119,7 +118,7 @@ class ResearchStudyDao extends BaseDao<ResearchStudy> {
       whereArgs: ['active'],
       orderBy: 'start_date DESC',
     );
-    return maps.map((map) => fromMap(map)).toList();
+    return maps.map(fromMap).toList();
   }
 
   // Get completed studies
@@ -131,7 +130,7 @@ class ResearchStudyDao extends BaseDao<ResearchStudy> {
       whereArgs: ['completed'],
       orderBy: 'end_date DESC',
     );
-    return maps.map((map) => fromMap(map)).toList();
+    return maps.map(fromMap).toList();
   }
 
   // Update participant count
@@ -176,7 +175,7 @@ class ResearchStudyDao extends BaseDao<ResearchStudy> {
       whereArgs: ['%$query%', '%$query%', '%$query%'],
       orderBy: 'start_date DESC',
     );
-    return maps.map((map) => fromMap(map)).toList();
+    return maps.map(fromMap).toList();
   }
 
   // Get studies by keyword
@@ -188,7 +187,7 @@ class ResearchStudyDao extends BaseDao<ResearchStudy> {
       whereArgs: ['%$keyword%'],
       orderBy: 'start_date DESC',
     );
-    return maps.map((map) => fromMap(map)).toList();
+    return maps.map(fromMap).toList();
   }
 
   // Get studies summary

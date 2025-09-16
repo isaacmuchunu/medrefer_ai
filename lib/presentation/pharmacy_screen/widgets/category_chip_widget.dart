@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import '../../../core/app_export.dart';
 
 class CategoryChipWidget extends StatelessWidget {
@@ -7,11 +6,11 @@ class CategoryChipWidget extends StatelessWidget {
   final VoidCallback onTap;
 
   const CategoryChipWidget({
-    Key? key,
+    super.key,
     required this.label,
     required this.isSelected,
     required this.onTap,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

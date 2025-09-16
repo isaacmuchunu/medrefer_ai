@@ -7,10 +7,10 @@ class MapViewWidget extends StatefulWidget {
   final Function(Map<String, dynamic>) onSpecialistTap;
 
   const MapViewWidget({
-    Key? key,
+    super.key,
     required this.specialists,
     required this.onSpecialistTap,
-  }) : super(key: key);
+  });
 
   @override
   State<MapViewWidget> createState() => _MapViewWidgetState();
@@ -18,7 +18,7 @@ class MapViewWidget extends StatefulWidget {
 
 class _MapViewWidgetState extends State<MapViewWidget> {
   GoogleMapController? _mapController;
-  Set<Marker> _markers = {};
+  final Set<Marker> _markers = {};
   Map<String, dynamic>? _selectedSpecialist;
 
   static const CameraPosition _initialPosition = CameraPosition(

@@ -8,10 +8,10 @@ class PerformanceMonitor extends StatefulWidget {
   final bool enabled;
 
   const PerformanceMonitor({
-    Key? key,
+    super.key,
     required this.child,
     this.enabled = kDebugMode,
-  }) : super(key: key);
+  });
 
   @override
   _PerformanceMonitorState createState() => _PerformanceMonitorState();
@@ -21,7 +21,7 @@ class _PerformanceMonitorState extends State<PerformanceMonitor> with TickerProv
   double _fps = 0.0;
   int _frameCount = 0;
   DateTime _lastUpdate = DateTime.now();
-  List<double> _frameTimes = [];
+  final List<double> _frameTimes = [];
   bool _showOverlay = false;
 
   @override
@@ -213,7 +213,7 @@ class _PerformanceMonitorState extends State<PerformanceMonitor> with TickerProv
   String _getMemoryUsage() {
     // This is a simplified memory usage calculation
     // In a real implementation, you might use more sophisticated methods
-    return '${(MediaQuery.of(context).size.width * MediaQuery.of(context).size.height * 4 / 1024 / 1024).toStringAsFixed(1)}';
+    return (MediaQuery.of(context).size.width * MediaQuery.of(context).size.height * 4 / 1024 / 1024).toStringAsFixed(1);
   }
 }
 
@@ -288,10 +288,10 @@ class MemoryMonitor extends StatefulWidget {
   final bool enabled;
 
   const MemoryMonitor({
-    Key? key,
+    super.key,
     required this.child,
     this.enabled = kDebugMode,
-  }) : super(key: key);
+  });
 
   @override
   _MemoryMonitorState createState() => _MemoryMonitorState();

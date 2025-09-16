@@ -37,7 +37,7 @@ class _CarePlanScreenState extends State<CarePlanScreen> {
     final goalsController = TextEditingController();
     final interventionsController = TextEditingController();
     final assigneesController = TextEditingController();
-    CarePlanStatus status = CarePlanStatus.active;
+    var status = CarePlanStatus.active;
 
     final saved = await showDialog<bool>(
       context: context,
@@ -52,7 +52,7 @@ class _CarePlanScreenState extends State<CarePlanScreen> {
               TextField(controller: descController, decoration: const InputDecoration(labelText: 'Description')),
               const SizedBox(height: 8),
               DropdownButtonFormField<CarePlanStatus>(
-                value: status,
+                initialValue: status,
                 decoration: const InputDecoration(labelText: 'Status'),
                 items: CarePlanStatus.values.map((e) => DropdownMenuItem(value: e, child: Text(e.name))).toList(),
                 onChanged: (v) => status = v ?? CarePlanStatus.active,

@@ -115,7 +115,7 @@ class ReferralDao {
         offset: offset,
       );
       
-      final referrals = maps.map((map) => Referral.fromMap(map)).toList();
+      final referrals = maps.map(Referral.fromMap).toList();
       
       // Update stream
       _referralsStreamController.add(referrals);
@@ -196,8 +196,8 @@ class ReferralDao {
     String? status,
   }) async {
     try {
-      String where = 'patient_id = ?';
-      List<dynamic> whereArgs = [patientId];
+      var where = 'patient_id = ?';
+      final whereArgs = <dynamic>[patientId];
       
       if (status != null) {
         where += ' AND status = ?';
@@ -212,7 +212,7 @@ class ReferralDao {
         limit: limit,
       );
       
-      return maps.map((map) => Referral.fromMap(map)).toList();
+      return maps.map(Referral.fromMap).toList();
     } catch (e) {
       debugPrint('Error getting referrals by patient: $e');
       throw ReferralDaoException('Failed to get referrals by patient: $e');
@@ -224,8 +224,8 @@ class ReferralDao {
     DateTime? endDate,
   }) async {
     try {
-      String where = 'specialist_id = ?';
-      List<dynamic> whereArgs = [specialistId];
+      var where = 'specialist_id = ?';
+      final whereArgs = <dynamic>[specialistId];
       
       if (startDate != null) {
         where += ' AND created_at >= ?';
@@ -244,7 +244,7 @@ class ReferralDao {
         orderBy: 'created_at DESC',
       );
       
-      return maps.map((map) => Referral.fromMap(map)).toList();
+      return maps.map(Referral.fromMap).toList();
     } catch (e) {
       debugPrint('Error getting referrals by specialist: $e');
       throw ReferralDaoException('Failed to get referrals by specialist: $e');
@@ -266,8 +266,8 @@ class ReferralDao {
     int? offset,
   }) async {
     try {
-      List<String> whereConditions = [];
-      List<dynamic> whereArgs = [];
+      final whereConditions = <String>[];
+      final whereArgs = <dynamic>[];
 
       if (status != null) {
         whereConditions.add('status = ?');
@@ -320,7 +320,7 @@ class ReferralDao {
         offset: offset,
       );
       
-      return maps.map((map) => Referral.fromMap(map)).toList();
+      return maps.map(Referral.fromMap).toList();
     } catch (e) {
       debugPrint('Error filtering referrals: $e');
       throw ReferralDaoException('Failed to filter referrals: $e');
@@ -481,7 +481,7 @@ class ReferralDao {
         GROUP BY status
       ''');
       
-      Map<String, int> statusCounts = {};
+      final statusCounts = <String, int>{};
       for (var row in result) {
         statusCounts[row['status'] as String] = row['count'] as int;
       }
@@ -501,7 +501,7 @@ class ReferralDao {
         GROUP BY urgency
       ''');
       
-      Map<String, int> urgencyCounts = {};
+      final urgencyCounts = <String, int>{};
       for (var row in result) {
         urgencyCounts[row['urgency'] as String] = row['count'] as int;
       }
@@ -522,7 +522,7 @@ class ReferralDao {
         ORDER BY count DESC
       ''');
       
-      Map<String, int> departmentCounts = {};
+      final departmentCounts = <String, int>{};
       for (var row in result) {
         departmentCounts[row['department'] as String] = row['count'] as int;
       }
@@ -591,7 +591,7 @@ class ReferralDao {
     // Simulate AI processing
     // In production, this would call your AI service
     
-    double confidence = 0.85; // Simulated confidence
+    var confidence = 0.85; // Simulated confidence
     
     // Adjust urgency based on symptoms (simplified logic)
     if (referral.symptomsDescription != null && (referral.symptomsDescription!.toLowerCase().contains('emergency') ||
@@ -633,7 +633,7 @@ class ReferralDao {
       final List<dynamic> jsonData = jsonDecode(jsonString);
       final referrals = jsonData.map((map) => Referral.fromMap(map)).toList();
       
-      int imported = 0;
+      var imported = 0;
       for (final referral in referrals) {
         try {
           await createReferral(referral);
@@ -693,9 +693,9 @@ class ReferralDaoException implements Exception {
 }
 
 class ValidationException extends ReferralDaoException {
-  ValidationException(String message) : super(message);
+  ValidationException(super.message);
 }
 
 class DuplicateReferralException extends ReferralDaoException {
-  DuplicateReferralException(String message) : super(message);
+  DuplicateReferralException(super.message);
 }

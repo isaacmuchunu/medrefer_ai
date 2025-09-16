@@ -1,7 +1,5 @@
 import 'package:flutter/foundation.dart';
 import '../database/database.dart';
-import '../database/models/pharmacy_drug.dart';
-import '../database/dao/pharmacy_dao.dart';
 
 class PharmacyService extends ChangeNotifier {
   final DataService _dataService;

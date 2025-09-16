@@ -5,9 +5,9 @@ class MedicalHistoryTimelineWidget extends StatefulWidget {
   final List<Map<String, dynamic>> historyData;
 
   const MedicalHistoryTimelineWidget({
-    Key? key,
+    super.key,
     required this.historyData,
-  }) : super(key: key);
+  });
 
   @override
   State<MedicalHistoryTimelineWidget> createState() =>

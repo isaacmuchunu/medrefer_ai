@@ -1,9 +1,5 @@
 import 'dart:async';
-import 'dart:convert';
-import 'dart:math';
 import 'package:flutter/foundation.dart';
-import 'package:http/http.dart' as http;
-import 'package:web_socket_channel/web_socket_channel.dart';
 import '../database/services/data_service.dart';
 
 /// Enterprise Integration Service for healthcare systems (EHR, PACS, LIS, etc.)
@@ -621,6 +617,7 @@ class EnterpriseIntegrationService extends ChangeNotifier {
   // Helper methods and additional functionality...
   // Due to space constraints, showing key structure and main methods
 
+  @override
   void dispose() {
     _healthCheckTimer?.cancel();
     _messageProcessingTimer?.cancel();

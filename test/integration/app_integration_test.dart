@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
-import 'package:provider/provider.dart';
 
-import '../../lib/main.dart' as app;
-import '../../lib/database/services/data_service.dart';
-import '../../lib/database/models/models.dart';
+import 'package:medrefer_ai/main.dart' as app;
 
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();

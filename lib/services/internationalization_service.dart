@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'logging_service.dart';
@@ -135,7 +134,7 @@ class InternationalizationService {
   /// Get localized text implementation
   String _getLocalizedText(String key, Map<String, dynamic>? params) {
     // Placeholder implementation - in a real app, this would use proper localization
-    String text = key;
+    var text = key;
     
     if (params != null) {
       params.forEach((paramKey, value) {
@@ -148,7 +147,7 @@ class InternationalizationService {
 
   /// Get supported locales
   List<Locale> getSupportedLocales() {
-    return supportedLanguages.keys.map((language) => Locale(language)).toList();
+    return supportedLanguages.keys.map(Locale.new).toList();
   }
 
   /// Check if language is supported

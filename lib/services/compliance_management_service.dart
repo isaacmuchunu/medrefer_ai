@@ -215,7 +215,7 @@ class ComplianceManagementService extends ChangeNotifier {
       {'action': 'access', 'resource': 'reports', 'eventType': 'access'},
     ];
 
-    for (int i = 0; i < 100; i++) {
+    for (var i = 0; i < 100; i++) {
       final event = events[Random().nextInt(events.length)];
       final severity = ['low', 'medium', 'high', 'critical'][Random().nextInt(4)];
       

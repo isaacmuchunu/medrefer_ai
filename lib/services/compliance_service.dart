@@ -301,9 +301,10 @@ class ComplianceService {
       if (criticalAudits > 0) riskScore += (criticalAudits / totalAudits) * 20;
       if (averageComplianceScore < 80) riskScore += (80 - averageComplianceScore) / 80 * 10;
       
-      String riskLevel = 'low';
-      if (riskScore > 70) riskLevel = 'high';
-      else if (riskScore > 40) riskLevel = 'medium';
+      var riskLevel = 'low';
+      if (riskScore > 70) {
+        riskLevel = 'high';
+      } else if (riskScore > 40) riskLevel = 'medium';
       
       return {
         'total_audits': totalAudits,

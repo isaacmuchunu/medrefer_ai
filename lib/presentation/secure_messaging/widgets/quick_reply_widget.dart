@@ -5,13 +5,13 @@ class QuickReplyWidget extends StatelessWidget {
   final Function(String) onReplySelected;
 
   const QuickReplyWidget({
-    Key? key,
+    super.key,
     required this.onReplySelected,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
-    final List<String> quickReplies = [
+    final quickReplies = <String>[
       'Reviewing case',
       'Additional tests needed',
       'Patient scheduled',

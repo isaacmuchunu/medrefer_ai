@@ -4,7 +4,7 @@ import 'package:local_auth/local_auth.dart';
 import '../../core/app_export.dart';
 
 class BiometricsScreen extends StatefulWidget {
-  const BiometricsScreen({Key? key}) : super(key: key);
+  const BiometricsScreen({super.key});
 
   @override
   _BiometricsScreenState createState() => _BiometricsScreenState();
@@ -43,9 +43,9 @@ class _BiometricsScreenState extends State<BiometricsScreen> with TickerProvider
 
   Future<void> _checkBiometrics() async {
     try {
-      final bool canCheckBiometrics = await _auth.canCheckBiometrics;
-      final bool isDeviceSupported = await _auth.isDeviceSupported();
-      final bool canAuthenticate = canCheckBiometrics || isDeviceSupported;
+      final canCheckBiometrics = await _auth.canCheckBiometrics;
+      final isDeviceSupported = await _auth.isDeviceSupported();
+      final canAuthenticate = canCheckBiometrics || isDeviceSupported;
 
       if (!canAuthenticate) {
         setState(() {
@@ -54,7 +54,7 @@ class _BiometricsScreenState extends State<BiometricsScreen> with TickerProvider
         return;
       }
 
-      final List<BiometricType> availableBiometrics = await _auth.getAvailableBiometrics();
+      final availableBiometrics = await _auth.getAvailableBiometrics();
 
       if (availableBiometrics.isEmpty) {
         setState(() {
@@ -91,7 +91,7 @@ class _BiometricsScreenState extends State<BiometricsScreen> with TickerProvider
     });
 
     try {
-      final bool didAuthenticate = await _auth.authenticate(
+      final didAuthenticate = await _auth.authenticate(
         localizedReason: 'Use your biometric authentication to securely access your medical data',
         options: const AuthenticationOptions(
           biometricOnly: true,
@@ -302,19 +302,13 @@ class _BiometricsScreenState extends State<BiometricsScreen> with TickerProvider
                           context,
                           icon: Icons.pin,
                           label: 'PIN',
-                          onTap: () {
-                            // TODO: Navigate to actual PIN entry screen
-                            _skipBiometrics();
-                          },
+                          onTap: _skipBiometrics,
                         ),
                         _buildAlternativeOption(
                           context,
                           icon: Icons.pattern,
                           label: 'Pattern',
-                          onTap: () {
-                            // TODO: Navigate to actual pattern entry screen
-                            _skipBiometrics();
-                          },
+                          onTap: _skipBiometrics,
                         ),
                       ],
                     ),

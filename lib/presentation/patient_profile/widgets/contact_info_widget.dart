@@ -6,10 +6,10 @@ class ContactInfoWidget extends StatelessWidget {
   final List<Map<String, dynamic>> emergencyContacts;
 
   const ContactInfoWidget({
-    Key? key,
+    super.key,
     required this.contactData,
     required this.emergencyContacts,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

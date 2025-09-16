@@ -1,16 +1,12 @@
-import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import '../../core/app_export.dart';
-import '../../services/auth_service.dart';
-import '../../database/models/user.dart';
 
 class ProfileScreen extends StatelessWidget {
-  const ProfileScreen({Key? key}) : super(key: key);
+  const ProfileScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     final authService = Provider.of<AuthService>(context);
-    final User? user = authService.currentUser;
+    final user = authService.currentUser;
     final theme = Theme.of(context);
 
     return Scaffold(

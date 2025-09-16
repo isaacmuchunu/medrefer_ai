@@ -9,15 +9,15 @@ class VitalStatisticsCardWidget extends StatelessWidget {
   final VoidCallback onUnitToggle;
 
   const VitalStatisticsCardWidget({
-    Key? key,
+    super.key,
     required this.vitalData,
     this.isMetric = false,
     required this.onUnitToggle,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
-    final List<Map<String, dynamic>> vitals = [
+    final vitals = <Map<String, dynamic>>[
       {
         "title": "Blood Pressure",
         "value": vitalData["bloodPressure"] ?? "120/80",

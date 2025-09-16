@@ -1,8 +1,7 @@
 import '../../core/app_export.dart';
-import '../../services/auth_service.dart';
 
 class LogoutConfirmationScreen extends StatefulWidget {
-  const LogoutConfirmationScreen({Key? key}) : super(key: key);
+  const LogoutConfirmationScreen({super.key});
 
   @override
   _LogoutConfirmationScreenState createState() => _LogoutConfirmationScreenState();

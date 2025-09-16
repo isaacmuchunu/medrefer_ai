@@ -11,14 +11,14 @@ class SpecialistCardWidget extends StatelessWidget {
   final VoidCallback? onAddToFavorites;
 
   const SpecialistCardWidget({
-    Key? key,
+    super.key,
     required this.specialist,
     this.onTap,
     this.onViewProfile,
     this.onSendMessage,
     this.onCheckAvailability,
     this.onAddToFavorites,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

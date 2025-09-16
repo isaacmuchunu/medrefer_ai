@@ -1,6 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:medrefer_ai/services/validation_service.dart';
-import 'package:medrefer_ai/core/result.dart';
 
 void main() {
   group('ValidationService', () {
@@ -370,7 +369,7 @@ void main() {
           'normal text',
         ];
 
-        for (int i = 0; i < dangerousInputs.length; i++) {
+        for (var i = 0; i < dangerousInputs.length; i++) {
           final sanitized = validationService.sanitizeInput(dangerousInputs[i]);
           expect(sanitized, expectedOutputs[i]);
         }

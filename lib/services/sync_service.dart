@@ -40,7 +40,7 @@ class SyncService extends ChangeNotifier {
       
       // Listen to connectivity changes
       _connectivitySubscription = _connectivity.onConnectivityChanged.listen(
-        (List<ConnectivityResult> results) => _onConnectivityChanged(results),
+        _onConnectivityChanged,
       );
       
       // Load sync queue from storage

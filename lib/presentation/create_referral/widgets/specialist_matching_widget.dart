@@ -5,9 +5,9 @@ class SpecialistMatchingWidget extends StatefulWidget {
   final Function(Map<String, dynamic>) onSpecialistSelected;
 
   const SpecialistMatchingWidget({
-    Key? key,
+    super.key,
     required this.onSpecialistSelected,
-  }) : super(key: key);
+  });
 
   @override
   State<SpecialistMatchingWidget> createState() =>

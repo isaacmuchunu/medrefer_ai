@@ -18,7 +18,7 @@ class DocumentDao {
   Future<List<Document>> getAllDocuments() async {
     try {
       final maps = await _dbHelper.query(tableName, orderBy: 'upload_date DESC');
-      return maps.map((map) => Document.fromMap(map)).toList();
+      return maps.map(Document.fromMap).toList();
     } catch (e) {
       throw Exception('Failed to get documents: $e');
     }
@@ -41,7 +41,7 @@ class DocumentDao {
         whereArgs: [patientId],
         orderBy: 'upload_date DESC',
       );
-      return maps.map((map) => Document.fromMap(map)).toList();
+      return maps.map(Document.fromMap).toList();
     } catch (e) {
       throw Exception('Failed to get documents by patient: $e');
     }
@@ -55,7 +55,7 @@ class DocumentDao {
         whereArgs: [referralId],
         orderBy: 'upload_date DESC',
       );
-      return maps.map((map) => Document.fromMap(map)).toList();
+      return maps.map(Document.fromMap).toList();
     } catch (e) {
       throw Exception('Failed to get documents by referral: $e');
     }
@@ -69,7 +69,7 @@ class DocumentDao {
         whereArgs: [type],
         orderBy: 'upload_date DESC',
       );
-      return maps.map((map) => Document.fromMap(map)).toList();
+      return maps.map(Document.fromMap).toList();
     } catch (e) {
       throw Exception('Failed to get documents by type: $e');
     }

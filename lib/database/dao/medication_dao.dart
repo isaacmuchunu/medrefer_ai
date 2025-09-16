@@ -18,7 +18,7 @@ class MedicationDao {
   Future<List<Medication>> getAllMedications() async {
     try {
       final maps = await _dbHelper.query(tableName, orderBy: 'name ASC');
-      return maps.map((map) => Medication.fromMap(map)).toList();
+      return maps.map(Medication.fromMap).toList();
     } catch (e) {
       throw Exception('Failed to get medications: $e');
     }
@@ -41,7 +41,7 @@ class MedicationDao {
         whereArgs: [patientId],
         orderBy: 'start_date DESC',
       );
-      return maps.map((map) => Medication.fromMap(map)).toList();
+      return maps.map(Medication.fromMap).toList();
     } catch (e) {
       throw Exception('Failed to get medications by patient: $e');
     }
@@ -55,7 +55,7 @@ class MedicationDao {
         whereArgs: [patientId],
         orderBy: 'name ASC',
       );
-      return maps.map((map) => Medication.fromMap(map)).toList();
+      return maps.map(Medication.fromMap).toList();
     } catch (e) {
       throw Exception('Failed to get active medications: $e');
     }

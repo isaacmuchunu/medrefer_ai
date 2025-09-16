@@ -6,10 +6,10 @@ class ReferralContextCardWidget extends StatelessWidget {
   final VoidCallback? onTap;
 
   const ReferralContextCardWidget({
-    Key? key,
+    super.key,
     this.referralData,
     this.onTap,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

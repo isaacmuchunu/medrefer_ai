@@ -1,11 +1,8 @@
 import 'package:fl_chart/fl_chart.dart';
-import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import '../../core/app_export.dart';
-import '../../database/models/vital_statistics.dart';
 
 class HealthAnalytics extends StatefulWidget {
-  const HealthAnalytics({Key? key}) : super(key: key);
+  const HealthAnalytics({super.key});
 
   @override
   State<HealthAnalytics> createState() => _HealthAnalyticsState();

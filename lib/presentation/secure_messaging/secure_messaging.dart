@@ -10,7 +10,7 @@ import './widgets/quick_reply_widget.dart';
 import './widgets/referral_context_card_widget.dart';
 
 class SecureMessaging extends StatefulWidget {
-  const SecureMessaging({Key? key}) : super(key: key);
+  const SecureMessaging({super.key});
 
   @override
   State<SecureMessaging> createState() => _SecureMessagingState();
@@ -33,7 +33,7 @@ class _SecureMessagingState extends State<SecureMessaging> {
     'hospital': 'Metropolitan Heart Center',
   };
 
-  final Map<String, dynamic>? _referralContext = {
+  final Map<String, dynamic> _referralContext = {
     'id': 'REF-2024-001',
     'title': 'Cardiac Consultation - John Smith',
     'patientName': 'John Smith',
@@ -104,12 +104,12 @@ class _SecureMessagingState extends State<SecureMessaging> {
         children: [
           ConversationHeaderWidget(
             participant: _participant,
-            onProfileTap: () => _showParticipantProfile(),
+            onProfileTap: _showParticipantProfile,
           ),
           if (_referralContext != null)
             ReferralContextCardWidget(
               referralData: _referralContext,
-              onTap: () => _viewReferralDetails(),
+              onTap: _viewReferralDetails,
             ),
           Expanded(
             child: ListView.builder(

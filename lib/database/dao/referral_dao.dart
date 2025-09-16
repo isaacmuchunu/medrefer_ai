@@ -18,7 +18,7 @@ class ReferralDao {
   Future<List<Referral>> getAllReferrals() async {
     try {
       final maps = await _dbHelper.query(tableName, orderBy: 'created_at DESC');
-      return maps.map((map) => Referral.fromMap(map)).toList();
+      return maps.map(Referral.fromMap).toList();
     } catch (e) {
       throw Exception('Failed to get referrals: $e');
     }
@@ -55,7 +55,7 @@ class ReferralDao {
         whereArgs: [patientId],
         orderBy: 'created_at DESC',
       );
-      return maps.map((map) => Referral.fromMap(map)).toList();
+      return maps.map(Referral.fromMap).toList();
     } catch (e) {
       throw Exception('Failed to get referrals by patient: $e');
     }
@@ -69,7 +69,7 @@ class ReferralDao {
         whereArgs: [specialistId],
         orderBy: 'created_at DESC',
       );
-      return maps.map((map) => Referral.fromMap(map)).toList();
+      return maps.map(Referral.fromMap).toList();
     } catch (e) {
       throw Exception('Failed to get referrals by specialist: $e');
     }
@@ -83,7 +83,7 @@ class ReferralDao {
         whereArgs: [status],
         orderBy: 'created_at DESC',
       );
-      return maps.map((map) => Referral.fromMap(map)).toList();
+      return maps.map(Referral.fromMap).toList();
     } catch (e) {
       throw Exception('Failed to get referrals by status: $e');
     }
@@ -97,7 +97,7 @@ class ReferralDao {
         whereArgs: [urgency],
         orderBy: 'created_at DESC',
       );
-      return maps.map((map) => Referral.fromMap(map)).toList();
+      return maps.map(Referral.fromMap).toList();
     } catch (e) {
       throw Exception('Failed to get referrals by urgency: $e');
     }
@@ -111,7 +111,7 @@ class ReferralDao {
         whereArgs: ['%$searchTerm%', '%$searchTerm%', '%$searchTerm%'],
         orderBy: 'created_at DESC',
       );
-      return maps.map((map) => Referral.fromMap(map)).toList();
+      return maps.map(Referral.fromMap).toList();
     } catch (e) {
       throw Exception('Failed to search referrals: $e');
     }
@@ -126,8 +126,8 @@ class ReferralDao {
     double? minAiConfidence,
   }) async {
     try {
-      List<String> whereConditions = [];
-      List<dynamic> whereArgs = [];
+      final whereConditions = <String>[];
+      final whereArgs = <dynamic>[];
 
       if (status != null) {
         whereConditions.add('status = ?');
@@ -167,7 +167,7 @@ class ReferralDao {
         whereArgs: whereArgs.isNotEmpty ? whereArgs : null,
         orderBy: 'created_at DESC',
       );
-      return maps.map((map) => Referral.fromMap(map)).toList();
+      return maps.map(Referral.fromMap).toList();
     } catch (e) {
       throw Exception('Failed to filter referrals: $e');
     }
@@ -244,7 +244,7 @@ class ReferralDao {
         GROUP BY status
       ''');
       
-      Map<String, int> statusCounts = {};
+      final statusCounts = <String, int>{};
       for (var row in result) {
         statusCounts[row['status'] as String] = row['count'] as int;
       }
@@ -263,7 +263,7 @@ class ReferralDao {
         GROUP BY urgency
       ''');
       
-      Map<String, int> urgencyCounts = {};
+      final urgencyCounts = <String, int>{};
       for (var row in result) {
         urgencyCounts[row['urgency'] as String] = row['count'] as int;
       }

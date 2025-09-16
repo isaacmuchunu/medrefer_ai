@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../../core/app_export.dart';
 
 class HelpSupportScreen extends StatefulWidget {
-  const HelpSupportScreen({Key? key}) : super(key: key);
+  const HelpSupportScreen({super.key});
 
   @override
   _HelpSupportScreenState createState() => _HelpSupportScreenState();

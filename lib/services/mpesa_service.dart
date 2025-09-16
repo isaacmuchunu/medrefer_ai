@@ -117,7 +117,7 @@ class MpesaService extends ChangeNotifier {
       final transactionId = const Uuid().v4();
       
       // Format phone number (remove + and ensure it starts with 254)
-      String formattedPhone = phoneNumber.replaceAll('+', '').replaceAll(' ', '');
+      var formattedPhone = phoneNumber.replaceAll('+', '').replaceAll(' ', '');
       if (formattedPhone.startsWith('0')) {
         formattedPhone = '254${formattedPhone.substring(1)}';
       } else if (!formattedPhone.startsWith('254')) {
@@ -210,7 +210,7 @@ class MpesaService extends ChangeNotifier {
     if (transaction == null) return;
 
     // Poll for up to 2 minutes
-    int attempts = 0;
+    var attempts = 0;
     const maxAttempts = 24; // 2 minutes with 5-second intervals
 
     Timer.periodic(Duration(seconds: 5), (timer) async {

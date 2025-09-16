@@ -6,13 +6,12 @@ class CustomIconWidget extends StatelessWidget {
   final Color? color;
 
   const CustomIconWidget(
-      {Key? key, required this.iconName, this.size = 24, this.color})
-      : super(key: key);
+      {super.key, required this.iconName, this.size = 24, this.color});
 
   @override
   Widget build(BuildContext context) {
     // Map of available icons
-    final Map<String, IconData> iconMap = {
+    final iconMap = <String, IconData>{
       // A
       'abc': Icons.abc,
       'ac_unit': Icons.ac_unit,
@@ -2182,7 +2181,7 @@ class CustomIconWidget extends StatelessWidget {
         Icons.help_outline,
         size: size,
         color: Colors.grey,
-        semanticLabel: '$iconName',
+        semanticLabel: iconName,
       );
     }
   }

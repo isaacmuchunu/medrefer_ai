@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
 import 'dart:math';
 import 'package:flutter/foundation.dart';
 import '../database/services/data_service.dart';
@@ -473,7 +472,7 @@ class AdvancedMLAnalyticsService extends ChangeNotifier {
 
   Map<String, dynamic> _extractPatientFeatures(Patient patient, List<Referral> referrals) {
     return {
-      'age': DateTime.now().year - (patient.dateOfBirth?.year ?? 1990),
+      'age': DateTime.now().year - (patient.dateOfBirth.year ?? 1990),
       'chronic_conditions': patient.medicalHistory?.split(',').length ?? 0,
       'emergency_visits': referrals.where((r) => r.urgency == 'emergency').length,
       'referral_frequency': referrals.length,
@@ -486,7 +485,7 @@ class AdvancedMLAnalyticsService extends ChangeNotifier {
   Map<String, dynamic> _calculateHistoricalOutcomes(List<Referral> referrals) {
     return {
       'completion_rate': referrals.where((r) => r.status == 'completed').length / 
-                        (referrals.length > 0 ? referrals.length : 1),
+                        (referrals.isNotEmpty ? referrals.length : 1),
       'average_resolution_time': referrals.isNotEmpty 
           ? referrals.map((r) => DateTime.now().difference(r.createdAt).inDays)
                     .reduce((a, b) => a + b) / referrals.length 
@@ -541,7 +540,7 @@ class AdvancedMLAnalyticsService extends ChangeNotifier {
     final averageVolume = monthlyVolume.reduce((a, b) => a + b) / 12;
     final seasonalFactors = <String, double>{};
     
-    for (int i = 0; i < 12; i++) {
+    for (var i = 0; i < 12; i++) {
       final monthName = [
         'January', 'February', 'March', 'April', 'May', 'June',
         'July', 'August', 'September', 'October', 'November', 'December'
@@ -697,6 +696,7 @@ class AdvancedMLAnalyticsService extends ChangeNotifier {
   // Additional helper methods would continue here...
   // Due to length constraints, I'm showing the key structure and main methods
 
+  @override
   void dispose() {
     _analyticsTimer?.cancel();
     super.dispose();

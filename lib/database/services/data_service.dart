@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:sqflite/sqflite.dart';
 import '../database_helper.dart';
 import '../dao/dao.dart';
 import '../dao/pharmacy_dao.dart';
@@ -9,6 +10,9 @@ class DataService extends ChangeNotifier {
   static final DataService _instance = DataService._internal();
   factory DataService() => _instance;
   DataService._internal();
+
+  // Expose a static singleton for legacy callers
+  static DataService get instance => _instance;
 
   final DatabaseHelper _dbHelper = DatabaseHelper();
   final MigrationService _migrationService = MigrationService();
@@ -30,7 +34,8 @@ class DataService extends ChangeNotifier {
   final LabResultDao _labResultDao = LabResultDao();
   final PrescriptionDao _prescriptionDao = PrescriptionDao();
   final FeedbackDao _feedbackDao = FeedbackDao();
-  final PharmacyDAO _pharmacyDao = PharmacyDAO();
+  // PharmacyDAO is constructed with a Database; expose a getter via DatabaseHelper when needed
+  PharmacyDAO getPharmacyDao(Database db) => PharmacyDAO(db);
   final ConsentDao _consentDao = ConsentDao();
   final CarePlanDao _carePlanDao = CarePlanDao();
 
@@ -82,6 +87,46 @@ class DataService extends ChangeNotifier {
       debugPrint('Failed to initialize data service: $e');
       rethrow;
     }
+  }
+
+  // Low-level database accessor (needed by services that construct DAOs directly)
+  Future<Database> getDatabase() async {
+    return await _dbHelper.database;
+  }
+
+  // Generic DB helpers (legacy compatibility)
+  Future<String> insert(String table, Map<String, dynamic> data) async {
+    return await _dbHelper.insert(table, data);
+  }
+
+  Future<List<Map<String, dynamic>>> query(
+    String table, {
+    String? where,
+    List<dynamic>? whereArgs,
+    String? orderBy,
+    int? limit,
+    int? offset,
+  }) async {
+    return await _dbHelper.query(
+      table,
+      where: where,
+      whereArgs: whereArgs,
+      orderBy: orderBy,
+      limit: limit,
+      offset: offset,
+    );
+  }
+
+  Future<Map<String, dynamic>?> queryById(String table, String id) async {
+    return await _dbHelper.queryById(table, id);
+  }
+
+  Future<int> update(String table, Map<String, dynamic> data, String id) async {
+    return await _dbHelper.update(table, data, id);
+  }
+
+  Future<int> delete(String table, String id) async {
+    return await _dbHelper.delete(table, id);
   }
 
   // Patient operations
@@ -190,6 +235,9 @@ class DataService extends ChangeNotifier {
   }
 
   // Referral operations
+  Future<List<Referral>> getAllReferrals() async {
+    return await _referralDao.getAllReferrals();
+  }
   Future<List<Referral>> getReferrals({bool forceRefresh = false}) async {
     if (_cachedReferrals == null || forceRefresh) {
       _cachedReferrals = await _referralDao.getAllReferrals();
@@ -371,6 +419,9 @@ class DataService extends ChangeNotifier {
   }
 
   // Appointment operations
+  Future<List<Appointment>> getAllAppointments() async {
+    return await _appointmentDao.getAllAppointments();
+  }
   Future<List<Appointment>> getAppointmentHistory(String patientId) async {
     try {
       return await _appointmentDao.getAppointmentsByPatientId(patientId);
@@ -835,7 +886,7 @@ class DataService extends ChangeNotifier {
     final referrals = await getReferrals(forceRefresh: true);
     final appointments = await appointmentDAO.getAllAppointments();
 
-    List<Map<String, dynamic>> activities = [];
+    final activities = <Map<String, dynamic>>[];
 
     for (var referral in referrals.take(5)) {
       activities.add({

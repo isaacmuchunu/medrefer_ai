@@ -48,9 +48,7 @@ class ErrorHandlingService {
   /// Set up global error handlers
   void _setupGlobalErrorHandlers() {
     // Handle Flutter framework errors
-    FlutterError.onError = (FlutterErrorDetails details) {
-      _handleFlutterError(details);
-    };
+    FlutterError.onError = _handleFlutterError;
     
     // Handle platform errors (iOS/Android)
     PlatformDispatcher.instance.onError = (error, stack) {
@@ -95,8 +93,8 @@ class ErrorHandlingService {
 
   /// Handle network errors
   Future<void> handleNetworkError(dynamic error, {String? context}) async {
-    String message = 'Network connection failed';
-    String userAction = 'Please check your internet connection and try again.';
+    var message = 'Network connection failed';
+    var userAction = 'Please check your internet connection and try again.';
     
     if (error is SocketException) {
       message = 'Unable to connect to server';
@@ -139,8 +137,8 @@ class ErrorHandlingService {
 
   /// Handle authentication errors
   Future<void> handleAuthError(dynamic error, {String? context}) async {
-    String message = 'Authentication failed';
-    String userAction = 'Please check your credentials and try again.';
+    var message = 'Authentication failed';
+    var userAction = 'Please check your credentials and try again.';
     
     if (error.toString().contains('invalid_credentials')) {
       message = 'Invalid username or password';

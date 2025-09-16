@@ -29,12 +29,12 @@ class ActivityItemWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final String patientName = activity['patientName'] as String? ?? '';
-    final String specialist = activity['specialist'] as String? ?? '';
-    final String status = activity['status'] as String? ?? '';
-    final String timestamp = activity['timestamp'] as String? ?? '';
-    final String avatarUrl = activity['avatarUrl'] as String? ?? '';
-    final String department = activity['department'] as String? ?? '';
+    final patientName = activity['patientName'] as String? ?? '';
+    final specialist = activity['specialist'] as String? ?? '';
+    final status = activity['status'] as String? ?? '';
+    final timestamp = activity['timestamp'] as String? ?? '';
+    final avatarUrl = activity['avatarUrl'] as String? ?? '';
+    final department = activity['department'] as String? ?? '';
 
     return GestureDetector(
       onTap: onTap,

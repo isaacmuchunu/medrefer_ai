@@ -1,6 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
-import 'package:flutter/foundation.dart';
 import '../database/models/medication.dart';
 import '../database/models/patient.dart';
 import '../database/services/data_service.dart';
@@ -392,8 +390,8 @@ class DrugInteractionService {
       final allInteractions = <DrugInteraction>[];
 
       // Check each medication against all others
-      for (int i = 0; i < medications.length; i++) {
-        for (int j = i + 1; j < medications.length; j++) {
+      for (var i = 0; i < medications.length; i++) {
+        for (var j = i + 1; j < medications.length; j++) {
           final interaction = await _findInteraction(
             medications[i].name,
             medications[j].name,
@@ -700,7 +698,7 @@ class DrugInteractionService {
   }
 
   Future<void> _sendInteractionNotification(DrugInteractionAlert alert) async {
-    String priority = 'medium';
+    var priority = 'medium';
     if (alert.interaction.severity == InteractionSeverity.major ||
         alert.interaction.severity == InteractionSeverity.contraindicated) {
       priority = 'high';
@@ -749,12 +747,10 @@ class DrugInteractionService {
           (a) => a.id == alertId,
           orElse: () => null as DrugInteractionAlert,
         );
-        if (alert != null) {
-          targetAlert = alert;
-          patientId = entry.key;
-          break;
-        }
-      }
+        targetAlert = alert;
+        patientId = entry.key;
+        break;
+            }
 
       if (targetAlert == null) {
         return Result.error('Alert not found');

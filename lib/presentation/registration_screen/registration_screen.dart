@@ -5,7 +5,7 @@ import '../../core/app_export.dart';
 import '../../services/auth_service.dart';
 
 class RegistrationScreen extends StatefulWidget {
-  const RegistrationScreen({Key? key}) : super(key: key);
+  const RegistrationScreen({super.key});
 
   @override
   _RegistrationScreenState createState() => _RegistrationScreenState();
@@ -32,14 +32,14 @@ class _RegistrationScreenState extends State<RegistrationScreen> with TickerProv
   // State variables
   int _currentStep = 0;
   bool _isLoading = false;
-  bool _obscurePassword = true;
-  bool _obscureConfirmPassword = true;
+  final bool _obscurePassword = true;
+  final bool _obscureConfirmPassword = true;
   bool _acceptTerms = false;
   bool _acceptPrivacy = false;
   String _selectedRole = 'Doctor';
   String _selectedSpecialty = 'General Medicine';
   String? _errorMessage;
-  bool _isVerificationSent = false;
+  final bool _isVerificationSent = false;
 
   final List<String> _roles = [
     'Doctor',

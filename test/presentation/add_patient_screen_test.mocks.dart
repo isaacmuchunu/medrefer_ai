@@ -5,24 +5,8 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'dart:async' as _i3;
 
-import 'package:medrefer_ai/database/database.dart' as _i2;
-import 'package:medrefer_ai/database/models/appointment.dart' as _i4;
-import 'package:medrefer_ai/database/models/condition.dart' as _i5;
-import 'package:medrefer_ai/database/models/document.dart' as _i6;
-import 'package:medrefer_ai/database/models/emergency_contact.dart' as _i7;
-import 'package:medrefer_ai/database/models/feedback.dart' as _i8;
-import 'package:medrefer_ai/database/models/insurance.dart' as _i9;
-import 'package:medrefer_ai/database/models/lab_result.dart' as _i10;
 import 'package:medrefer_ai/database/models/medical_history.dart' as _i11;
-import 'package:medrefer_ai/database/models/medication.dart' as _i12;
-import 'package:medrefer_ai/database/models/message.dart' as _i13;
 import 'package:medrefer_ai/database/models/patient.dart' as _i14;
-import 'package:medrefer_ai/database/models/payment.dart' as _i15;
-import 'package:medrefer_ai/database/models/prescription.dart' as _i16;
-import 'package:medrefer_ai/database/models/referral.dart' as _i17;
-import 'package:medrefer_ai/database/models/specialist.dart' as _i18;
-import 'package:medrefer_ai/database/models/user.dart' as _i19;
-import 'package:medrefer_ai/database/models/vital_statistics.dart' as _i20;
 import 'package:medrefer_ai/database/services/data_service.dart' as _i21;
 import 'package:mockito/mockito.dart' as _i1;
 import 'package:sqflite/sqflite.dart' as _i22;

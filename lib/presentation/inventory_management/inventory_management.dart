@@ -4,7 +4,7 @@ import '../../database/models/inventory_item.dart';
 import '../../theme/app_theme.dart';
 
 class InventoryManagement extends StatefulWidget {
-  const InventoryManagement({Key? key}) : super(key: key);
+  const InventoryManagement({super.key});
 
   @override
   State<InventoryManagement> createState() => _InventoryManagementState();
@@ -56,7 +56,7 @@ class _InventoryManagementState extends State<InventoryManagement>
   }
 
   List<InventoryItem> get _filteredItems {
-    List<InventoryItem> filtered = _items;
+    var filtered = _items;
 
     if (_searchQuery.isNotEmpty) {
       filtered = filtered.where((item) =>
@@ -378,7 +378,7 @@ class _InventoryManagementState extends State<InventoryManagement>
                 ),
               )
             else
-              ...items.take(5).map((item) => _buildItemItem(item)),
+              ...items.take(5).map(_buildItemItem),
           ],
         ),
       ),
@@ -405,7 +405,7 @@ class _InventoryManagementState extends State<InventoryManagement>
                 ),
               )
             else
-              ...items.take(5).map((item) => _buildItemItem(item)),
+              ...items.take(5).map(_buildItemItem),
           ],
         ),
       ),

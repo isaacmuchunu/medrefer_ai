@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../../lib/presentation/help_support_screen/help_support_screen.dart';
+import 'package:medrefer_ai/presentation/help_support_screen/help_support_screen.dart';
 
 void main() {
   group('HelpSupportScreen Tests', () {

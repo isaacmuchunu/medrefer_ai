@@ -1,5 +1,3 @@
-import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:fl_chart/fl_chart.dart';
 import '../../core/app_export.dart';
 import '../../services/business_intelligence_service.dart';
@@ -7,7 +5,7 @@ import '../../services/advanced_ml_analytics_service.dart';
 import '../../widgets/custom_app_bar.dart';
 
 class DataAnalyticsHubScreen extends StatefulWidget {
-  const DataAnalyticsHubScreen({Key? key}) : super(key: key);
+  const DataAnalyticsHubScreen({super.key});
 
   @override
   State<DataAnalyticsHubScreen> createState() => _DataAnalyticsHubScreenState();

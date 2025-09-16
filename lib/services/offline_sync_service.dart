@@ -214,8 +214,8 @@ class OfflineSyncService extends ChangeNotifier {
     notifyListeners();
     
     final startTime = DateTime.now();
-    int successCount = 0;
-    int failureCount = 0;
+    var successCount = 0;
+    var failureCount = 0;
     final errors = <String>[];
     
     try {
@@ -226,7 +226,7 @@ class OfflineSyncService extends ChangeNotifier {
         final batch = <SyncOperation>[];
         
         // Create batch
-        for (int i = 0; i < _batchSize && _syncQueue.isNotEmpty; i++) {
+        for (var i = 0; i < _batchSize && _syncQueue.isNotEmpty; i++) {
           batch.add(_syncQueue.removeFirst());
         }
         

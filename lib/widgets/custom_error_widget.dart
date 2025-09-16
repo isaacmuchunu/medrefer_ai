@@ -9,10 +9,10 @@ class CustomErrorWidget extends StatelessWidget {
   final String? errorMessage;
 
   const CustomErrorWidget({
-    Key? key,
+    super.key,
     this.errorDetails,
     this.errorMessage,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -54,7 +54,7 @@ class CustomErrorWidget extends StatelessWidget {
               const SizedBox(height: 24),
               ElevatedButton.icon(
                 onPressed: () {
-                  bool canBeBack = Navigator.canPop(context);
+                  final canBeBack = Navigator.canPop(context);
                   if (canBeBack) {
                     Navigator.of(context).pop();
                   } else {
