@@ -18,7 +18,7 @@ export '../widgets/custom_error_widget.dart';
 export '../database/database_helper.dart';
 export '../database/services/data_service.dart';
 export '../database/services/migration_service.dart';
-export '../database/models/user.dart' show UserRole, UserStatus, UserAuth;
+export '../database/models/user.dart';
 export '../database/models/patient.dart';
 export '../database/models/specialist.dart';
 export '../database/models/referral.dart';

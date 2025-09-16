@@ -1,4 +1,3 @@
- application
 import '../../../core/app_export.dart';
 
 class ActivityItemWidget extends StatelessWidget {

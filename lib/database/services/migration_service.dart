@@ -5,7 +5,8 @@ import '../dao/condition_dao.dart';
 import '../dao/medication_dao.dart';
 import '../dao/document_dao.dart';
 import '../dao/emergency_contact_dao.dart';
-import '../dao/vital_statistics_dao.dart';\nimport '../database_helper.dart';
+import '../dao/vital_statistics_dao.dart';
+import '../database_helper.dart';
 
 class MigrationService {
   static final MigrationService _instance = MigrationService._internal();

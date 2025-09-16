@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:sqflite/sqflite.dart';
 import 'dart:convert';
 import 'dart:async';
+import 'dart:math';
 import '../core/app_export.dart';
 
 /// Comprehensive Error Handling Service

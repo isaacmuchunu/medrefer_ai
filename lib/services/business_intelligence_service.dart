@@ -440,7 +440,7 @@ class BusinessIntelligenceService extends ChangeNotifier {
   Future<DashboardResult> createDashboard({
     required String dashboardId,
     required String name,
-    required List<Widget> widgets,
+    required List<DashboardWidget> widgets,
     Map<String, dynamic>? parameters,
   }) async {
     try {
@@ -1263,7 +1263,7 @@ class AnalyticsModel {
 class Dashboard {
   final String dashboardId;
   final String name;
-  final List<Widget> widgets;
+  final List<DashboardWidget> widgets;
   final Map<String, dynamic> parameters;
   bool isPublished;
   final DateTime createdAt;
@@ -1280,14 +1280,14 @@ class Dashboard {
   });
 }
 
-class Widget {
+class DashboardWidget {
   final String widgetId;
   final String type;
   final String title;
   final Map<String, dynamic> configuration;
   final Map<String, dynamic> position;
 
-  Widget({
+  DashboardWidget({
     required this.widgetId,
     required this.type,
     required this.title,

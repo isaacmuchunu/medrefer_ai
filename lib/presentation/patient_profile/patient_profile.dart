@@ -87,12 +87,6 @@ class _PatientProfileState extends State<PatientProfile>
   }
 
   @override
-  void dispose() {
-    _tabController.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     if (_isLoading) {
       return Scaffold(

@@ -773,7 +773,6 @@ class APIGatewayService extends ChangeNotifier {
         final response = await _dio.get(
           'http://${instance.host}:${instance.port}/health',
           options: Options(
-            connectTimeout: const Duration(seconds: 5),
             receiveTimeout: const Duration(seconds: 5),
           ),
         );
@@ -993,7 +992,6 @@ class APIGatewayService extends ChangeNotifier {
         options: Options(
           method: method,
           headers: headers,
-          connectTimeout: const Duration(seconds: 30),
           receiveTimeout: const Duration(seconds: 60),
         ),
         queryParameters: queryParameters,
