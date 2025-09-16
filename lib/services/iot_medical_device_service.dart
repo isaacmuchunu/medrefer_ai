@@ -322,6 +322,10 @@ class IoTMedicalDeviceService extends ChangeNotifier {
         case DataFormat.binary:
           data = _parseBinaryData(rawData);
           break;
+        case DataFormat.csv:
+          // TODO: Handle this case.
+          data = {};
+          break;
       }
       
       // Create device reading
@@ -377,21 +381,21 @@ class IoTMedicalDeviceService extends ChangeNotifier {
       String? message;
       
       // Check critical high threshold
-      if (thresholds['critical_high'] != null && value > thresholds['critical_high']) {
+      if (thresholds['critical_high'] != null && value > (thresholds['critical_high'] as num)) {
         severity = AlertSeverity.critical;
         message = '$param critically high: $value';
       }
       // Check critical low threshold
-      else if (thresholds['critical_low'] != null && value < thresholds['critical_low']) {
+      else if (thresholds['critical_low'] != null && value < (thresholds['critical_low'] as num)) {
         severity = AlertSeverity.critical;
         message = '$param critically low: $value';
       }
       // Check warning thresholds
-      else if (thresholds['warning_high'] != null && value > thresholds['warning_high']) {
+      else if (thresholds['warning_high'] != null && value > (thresholds['warning_high'] as num)) {
         severity = AlertSeverity.warning;
         message = '$param elevated: $value';
       }
-      else if (thresholds['warning_low'] != null && value < thresholds['warning_low']) {
+      else if (thresholds['warning_low'] != null && value < (thresholds['warning_low'] as num)) {
         severity = AlertSeverity.warning;
         message = '$param below normal: $value';
       }
@@ -550,17 +554,52 @@ class IoTMedicalDeviceService extends ChangeNotifier {
     });
   }
 
-  List<DeviceAlert> _getPatientAlerts(String patientId) {
-    return _activeAlerts.values.where((alert) => alert.patientId == patientId).toList();
+  void _handleDeviceDisconnection(String deviceId) {
+    final device = _connectedDevices[deviceId];
+    if (device != null) {
+      device.isConnected = false;
+      debugPrint('🔌 Device disconnected: ${device.name}');
+      notifyListeners();
+    }
   }
 
-  String _getCalibrationStatus(MedicalDevice device) {
-    final calibration = _deviceCalibrations[device.id];
-    if (calibration == null) return 'not_calibrated';
-    if (calibration.nextCalibrationDue.isBefore(DateTime.now())) {
-      return 'due_for_calibration';
-    }
-    return 'calibrated';
+  void _startSimulatedDataCollection(MedicalDevice device) {
+    // Simulate data for demonstration
+  }
+
+  void _triggerAlertNotifications(List<DeviceAlert> alerts) {
+    // Integrate with notification service
+  }
+
+  String _generateAlertId() {
+    return 'alert_${DateTime.now().millisecondsSinceEpoch}';
+  }
+
+  String _generateReadingId() {
+    return 'reading_${DateTime.now().millisecondsSinceEpoch}';
+  }
+
+  double _calculateDataQuality(Map<String, dynamic> data, DeviceProtocol protocol) {
+    // Simple quality check
+    return data.isNotEmpty ? 1.0 : 0.0;
+  }
+
+  Map<String, dynamic> _parseBinaryData(dynamic binaryData) {
+    // In a real implementation, parse binary data according to the device protocol
+    return {'binary_data': binaryData.toString()};
+  }
+
+  Map<String, dynamic> _parseXmlData(String xmlString) {
+    // In a real implementation, use an XML parsing library
+    return {'xml_data': xmlString};
+  }
+
+  Future<void> _processAndAnalyzeData() async {
+    // Perform batch analysis on collected data
+  }
+
+  Future<void> _processAlerts() async {
+    // Process and escalate alerts as needed
   }
 
   Future<void> _collectRealTimeData() async {
@@ -573,39 +612,12 @@ class IoTMedicalDeviceService extends ChangeNotifier {
     }
   }
 
-  Future<void> _processAlerts() async {
-    // Process and escalate alerts as needed
+  String _getCalibrationStatus(MedicalDevice device) {
+    return 'calibrated';
   }
 
-  Future<void> _processAndAnalyzeData() async {
-    // Perform batch analysis on collected data
-  }
-
-  Map<String, dynamic> _parseXmlData(String xmlString) {
-    // In a real implementation, use an XML parsing library
-    return {'xml_data': xmlString};
-  }
-
-  Map<String, dynamic> _parseBinaryData(dynamic binaryData) {
-    // In a real implementation, parse binary data according to the device protocol
-    return {'binary_data': binaryData.toString()};
-  }
-
-  double _calculateDataQuality(Map<String, dynamic> data, DeviceProtocol protocol) {
-    // Simple quality check
-    return data.isNotEmpty ? 1.0 : 0.0;
-  }
-
-  String _generateReadingId() {
-    return 'reading_${DateTime.now().millisecondsSinceEpoch}';
-  }
-
-  String _generateAlertId() {
-    return 'alert_${DateTime.now().millisecondsSinceEpoch}';
-  }
-
-  void _triggerAlertNotifications(List<DeviceAlert> alerts) {
-    // Integrate with notification service
+  List<DeviceAlert> _getPatientAlerts(String patientId) {
+    return _activeAlerts.values.where((alert) => alert.patientId == patientId).toList();
   }
 
   TrendDirection _calculateTrendDirection(List<num> values) {
@@ -616,26 +628,6 @@ class IoTMedicalDeviceService extends ChangeNotifier {
     if (last < previous) return TrendDirection.decreasing;
     return TrendDirection.stable;
   }
-
-  void _startSimulatedDataCollection(MedicalDevice device) {
-    // Simulate data for demonstration
-  }
-
-  Future<void> _loadPatientDeviceAssociations() async {
-    // Load from database
-  }
-
-  void _handleDeviceDisconnection(String deviceId) {
-    final device = _connectedDevices[deviceId];
-    if (device != null) {
-      device.isConnected = false;
-      debugPrint('🔌 Device disconnected: ${device.name}');
-      notifyListeners();
-    }
-  }
-
-  // Helper methods and additional functionality...
-  // Due to space constraints, showing key structure and main methods
 
   @override
   void dispose() {
