@@ -63,7 +63,7 @@ class InternationalizationService {
       _currentCountry = prefs.getString('i18n_country') ?? 'US';
       _currentLocale = Locale(_currentLanguage, _currentCountry);
     } catch (e) {
-      _loggingService.warning('Failed to load user i18n preferences', context: 'I18n', error: e);
+      _loggingService.error('Failed to load user i18n preferences', context: 'I18n', error: e);
     }
   }
 
