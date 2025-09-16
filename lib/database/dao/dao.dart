@@ -1,4 +1,5 @@
 // Data Access Objects export file
+export 'base_dao.dart';
 export 'patient_dao.dart';
 export 'specialist_dao.dart';
 export 'referral_dao.dart';

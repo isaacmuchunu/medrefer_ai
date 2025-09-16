@@ -32,7 +32,7 @@ class AdvancedReportingService extends ChangeNotifier {
   // Dashboard Management
   final Map<String, Dashboard> _dashboards = {};
   final Map<String, DashboardLayout> _dashboardLayouts = {};
-  final Map<String, Widget> _widgets = {};
+  final Map<String, DashboardWidget> _widgets = {};
   
   // Report Management
   final Map<String, ReportDefinition> _reportDefinitions = {};
@@ -1129,12 +1129,12 @@ class AdvancedReportingService extends ChangeNotifier {
             case AggregationType.min:
               aggregatedRow['${grouping.field}_min'] = groupData
                   .map((row) => row[grouping.field] as num? ?? 0)
-                  .reduce(math.min);
+                  .reduce(min);
               break;
             case AggregationType.max:
               aggregatedRow['${grouping.field}_max'] = groupData
                   .map((row) => row[grouping.field] as num? ?? 0)
-                  .reduce(math.max);
+                  .reduce(max);
               break;
           }
         }

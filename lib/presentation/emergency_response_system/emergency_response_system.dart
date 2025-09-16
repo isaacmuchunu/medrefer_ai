@@ -123,7 +123,7 @@ class _EmergencyResponseSystemState extends State<EmergencyResponseSystem>
               children: [
                 _buildDashboard(),
                 _buildProtocolsList(),
-                _buildCriticalProtocols(),
+                _buildCriticalProtocolsWidget(),
                 _buildAlertsView(),
               ],
             ),
@@ -502,7 +502,7 @@ class _EmergencyResponseSystemState extends State<EmergencyResponseSystem>
     );
   }
 
-  Widget _buildCriticalProtocols() {
+  Widget _buildCriticalProtocolsWidget() {
     return FutureBuilder<List<EmergencyProtocol>>(
       future: _emergencyService.getCriticalProtocols(),
       builder: (context, snapshot) {

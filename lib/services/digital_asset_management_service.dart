@@ -1344,7 +1344,7 @@ class DigitalAssetManagementService extends ChangeNotifier {
     return {
       'totalAccesses': assets.fold<int>(0, (sum, asset) => sum + asset.accessCount),
       'averageAccesses': assets.isEmpty ? 0 : (assets.fold<int>(0, (sum, asset) => sum + asset.accessCount) / assets.length).round(),
-      'mostAccessedCount': assets.isEmpty ? 0 : assets.map((asset) => asset.accessCount).reduce(math.max),
+      'mostAccessedCount': assets.isEmpty ? 0 : assets.map((asset) => asset.accessCount).reduce(max),
     };
   }
 

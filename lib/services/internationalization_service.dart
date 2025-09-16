@@ -36,7 +36,6 @@ class InternationalizationService {
   String get currentLanguage => _currentLanguage;
   String get currentCountry => _currentCountry;
   Locale get currentLocale => _currentLocale;
-  Map<String, String> get supportedLanguages => InternationalizationService.supportedLanguages;
 
   /// Initialize the internationalization service
   Future<void> initialize() async {

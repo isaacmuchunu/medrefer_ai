@@ -415,7 +415,7 @@ class ValidationService {
   String sanitizeInput(String input) {
     return input
         .replaceAll(RegExp(r'<[^>]*>'), '') // Remove HTML tags
-        .replaceAll(RegExp(r'[<>"\']'), '') // Remove potentially dangerous characters
+        .replaceAll(RegExp(r'[<>"\'']'), '') // Remove potentially dangerous characters
         .replaceAll(RegExp(r'javascript:', caseSensitive: false), '') // Remove javascript: protocol
         .replaceAll(RegExp(r'on\w+\s*=', caseSensitive: false), '') // Remove event handlers
         .trim();

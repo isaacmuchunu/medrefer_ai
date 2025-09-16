@@ -275,7 +275,7 @@ class EnhancedSecurityService {
   /// Sanitize input to prevent injection attacks
   String sanitizeInput(String input) {
     return input
-        .replaceAll(RegExp(r'[<>"\']'), '') // Remove potentially dangerous characters
+        .replaceAll(RegExp(r'[<>"\'']'), '') // Remove potentially dangerous characters
         .trim()
         .substring(0, input.length > 1000 ? 1000 : input.length); // Limit length
   }

@@ -30,7 +30,7 @@ class DataService extends ChangeNotifier {
   final LabResultDao _labResultDao = LabResultDao();
   final PrescriptionDao _prescriptionDao = PrescriptionDao();
   final FeedbackDao _feedbackDao = FeedbackDao();
-  final PharmacyDao _pharmacyDao = PharmacyDao();
+  final PharmacyDAO _pharmacyDao = PharmacyDAO();
   final ConsentDao _consentDao = ConsentDao();
   final CarePlanDao _carePlanDao = CarePlanDao();
 
@@ -51,7 +51,7 @@ class DataService extends ChangeNotifier {
   MedicationDao get medicationDAO => _medicationDao;
   DocumentDao get documentDAO => _documentDao;
   EmergencyContactDao get emergencyContactDAO => _emergencyContactDao;
-  PharmacyDao get pharmacyDAO => _pharmacyDao;
+  PharmacyDAO get pharmacyDAO => _pharmacyDao;
   ConsentDao get consentDAO => _consentDao;
   CarePlanDao get carePlanDAO => _carePlanDao;
 
