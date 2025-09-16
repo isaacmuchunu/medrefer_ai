@@ -29,7 +29,6 @@ class AuthService extends ChangeNotifier {
   int _failedLoginAttempts = 0;
   DateTime? _lastFailedAttempt;
   DateTime? _accountLockedUntil;
-  // final List<String> _activeSessions = [];
 
   // Getters
   User? get currentUser => _currentUser;
@@ -131,7 +130,6 @@ class AuthService extends ChangeNotifier {
         // Log successful login
         await _logAuthEvent('login_success', email);
         
-        final loggingService = LoggingService();
         loggingService.userAction('login_success', userId: email, metadata: {
           'userRole': _currentUser!.role.name,
           'sessionId': _authToken,
@@ -143,7 +141,6 @@ class AuthService extends ChangeNotifier {
         _handleFailedLogin();
         await _logAuthEvent('login_failed', email);
         
-        final loggingService = LoggingService();
         loggingService.warning('Login failed', context: 'Authentication', metadata: {
           'email': email,
           'failedAttempts': _failedLoginAttempts,
