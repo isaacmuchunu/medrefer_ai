@@ -248,7 +248,7 @@ class RealtimeUpdateService extends ChangeNotifier {
         'timestamp': DateTime.now().toIso8601String(),
       }));
     } catch (e) {
-      _loggingService.warning('Failed to send heartbeat', context: 'Realtime', error: e);
+      _loggingService.error('Failed to send heartbeat', context: 'Realtime', error: e);
     }
   }
 
