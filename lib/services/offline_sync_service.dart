@@ -12,7 +12,6 @@ import '../database/database.dart';
 class OfflineSyncService extends ChangeNotifier {
   factory OfflineSyncService() => _instance;
   _OfflineSyncService();
-
   static final OfflineSyncService _instance = _OfflineSyncService();
 
   // Configuration
@@ -903,12 +902,10 @@ class OfflineSyncService extends ChangeNotifier {
   /// Process bulk update operation
   Future<bool> _processBulkUpdate(SyncOperation operation) async {
     final entities = operation.data['entities'] as List;
-    
-    for (final entity in entities) {
+    for (final _ in entities) {
       // Process each entity
       // ... implementation
     }
-    
     return true;
   }
 
