@@ -256,11 +256,10 @@ class PharmacyService extends ChangeNotifier {
         return;
       }
       
-      // In production, implement API calls here:
-      // final apiDrugs = await _fetchDrugsFromAPI();
-      // for (final drug in apiDrugs) {
-      //   await _pharmacyDAO.insertDrug(drug);
-      // }
+     final apiDrugs = await _fetchDrugsFromAPI();
+      for (final drug in apiDrugs) {
+        await _pharmacyDAO.insertDrug(drug);
+      }
       
       debugPrint('Drug inventory loading completed');
     } catch (e) {
