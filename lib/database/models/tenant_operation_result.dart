@@ -14,7 +14,52 @@ class TenantOperationResult {
     required this.timestamp,
     this.details,
   });
+class TenantOperationResult {
+  TenantOperationResult({
+    required this.success,
+    required this.tenantId,
+    this.operation,
+    this.error,
+  });
+  final bool success;
+  final String tenantId;
+  final String? operation;
+  final String? error;
 
+  Map<String, dynamic> toMap() {
+    return {
+      'success': success,
+      'tenantId': tenantId,
+      'operation': operation,
+      'error': error,
+    };
+  }
+
+  factory TenantOperationResult.success(String tenantId, String operation) {
+    return TenantOperationResult(
+      success: true,
+      tenantId: tenantId,
+      operation: operation,
+    );
+  }
+
+  factory TenantOperationResult.failure(String tenantId, String error) {
+    return TenantOperationResult(
+      success: false,
+      tenantId: tenantId,
+      error: error,
+    );
+  }
+
+  factory TenantOperationResult.fromMap(Map<String, dynamic> map) {
+    return TenantOperationResult(
+      success: map['success'],
+      tenantId: map['tenantId'],
+      operation: map['operation'],
+      error: map['error'],
+    );
+  }
+}
   Map<String, dynamic> toMap() {
     return {
       'success': success,

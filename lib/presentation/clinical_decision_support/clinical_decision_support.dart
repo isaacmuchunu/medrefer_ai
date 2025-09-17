@@ -7,7 +7,7 @@ class ClinicalDecisionSupport extends StatefulWidget {
   const ClinicalDecisionSupport({super.key});
 
   @override
-  State&lt;ClinicalDecisionSupport&gt; createState() =&gt; _ClinicalDecisionSupportState();
+  State<ClinicalDecisionSupport> createState() => _ClinicalDecisionSupportState();
 }
 
 class _ClinicalDecisionSupportState extends State<ClinicalDecisionSupport>

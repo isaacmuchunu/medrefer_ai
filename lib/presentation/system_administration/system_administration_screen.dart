@@ -9,7 +9,7 @@ class SystemAdministrationScreen extends StatefulWidget {
   State<SystemAdministrationScreen> createState() => _SystemAdministrationScreenState();
 }
 
-class _SystemAdministrationScreenState extends State&lt;SystemAdministrationScreen&gt; with ProviderStateMixin {\
+class _SystemAdministrationScreenState extends State<SystemAdministrationScreen> with TickerProviderStateMixin {
   late TabController _tabController;
   bool _isLoading = true;
   

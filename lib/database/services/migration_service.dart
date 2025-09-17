@@ -1,4 +1,7 @@
 import 'package:flutter/foundation.dart';
+import 'dart:math';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 import '../models/models.dart';
 import '../dao/dao.dart';
 import '../database_helper.dart';
@@ -18,6 +21,73 @@ class MigrationService {
   final DocumentDao _documentDao = DocumentDao();
   final EmergencyContactDao _emergencyContactDao = EmergencyContactDao();
   final VitalStatisticsDao _vitalStatisticsDao = VitalStatisticsDao();
+
+  final Random _random = Random();
+
+  // Dynamic data generation lists
+  final List<String> _firstNames = [
+    'James', 'Mary', 'John', 'Patricia', 'Robert', 'Jennifer', 'Michael', 'Linda',
+    'William', 'Elizabeth', 'David', 'Barbara', 'Richard', 'Susan', 'Joseph', 'Jessica',
+    'Thomas', 'Sarah', 'Charles', 'Karen', 'Christopher', 'Nancy', 'Daniel', 'Lisa',
+    'Matthew', 'Betty', 'Anthony', 'Helen', 'Mark', 'Sandra', 'Donald', 'Donna',
+    'Steven', 'Carol', 'Paul', 'Ruth', 'Andrew', 'Sharon', 'Kenneth', 'Michelle',
+    'Joshua', 'Laura', 'Kevin', 'Sarah', 'Brian', 'Kimberly', 'George', 'Deborah',
+  ];
+
+  final List<String> _lastNames = [
+    'Smith', 'Johnson', 'Williams', 'Brown', 'Jones', 'Garcia', 'Miller', 'Davis',
+    'Rodriguez', 'Martinez', 'Hernandez', 'Lopez', 'Gonzalez', 'Wilson', 'Anderson', 'Thomas',
+    'Taylor', 'Moore', 'Jackson', 'Martin', 'Lee', 'Perez', 'Thompson', 'White',
+    'Harris', 'Sanchez', 'Clark', 'Ramirez', 'Lewis', 'Robinson', 'Walker', 'Young',
+    'Allen', 'King', 'Wright', 'Scott', 'Torres', 'Nguyen', 'Hill', 'Flores',
+    'Green', 'Adams', 'Nelson', 'Baker', 'Hall', 'Rivera', 'Campbell', 'Mitchell',
+  ];
+
+  final List<String> _bloodTypes = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'];
+  
+  final List<String> _genders = ['Male', 'Female'];
+  
+  final List<String> _specialties = [
+    'Cardiology', 'Dermatology', 'Endocrinology', 'Gastroenterology', 'Hematology',
+    'Infectious Disease', 'Nephrology', 'Neurology', 'Oncology', 'Pulmonology',
+    'Rheumatology', 'Psychiatry', 'Orthopedics', 'Pediatrics', 'Gynecology',
+    'Ophthalmology', 'ENT', 'Urology', 'Anesthesiology', 'Radiology'
+  ];
+
+  final List<String> _hospitals = [
+    'General Hospital', 'Medical Center', 'Regional Healthcare', 'University Hospital',
+    'Community Medical Center', 'St. Mary\'s Hospital', 'Central Hospital',
+    'Metropolitan Medical Center', 'City General Hospital', 'Memorial Hospital'
+  ];
+
+  final List<String> _conditions = [
+    'Hypertension', 'Diabetes Type 2', 'Asthma', 'Arthritis', 'Depression',
+    'Anxiety Disorder', 'High Cholesterol', 'COPD', 'Heart Disease', 'Migraine',
+    'Fibromyalgia', 'Sleep Apnea', 'Allergies', 'Chronic Pain', 'Thyroid Disorder'
+  ];
+
+  final List<String> _medications = [
+    'Lisinopril', 'Metformin', 'Amlodipine', 'Metoprolol', 'Omeprazole',
+    'Simvastatin', 'Losartan', 'Albuterol', 'Gabapentin', 'Sertraline',
+    'Ibuprofen', 'Hydrochlorothiazide', 'Atorvastatin', 'Furosemide', 'Prednisone'
+  ];
+
+  final List<String> _streets = [
+    'Main St', 'Oak Ave', 'Pine St', 'Elm St', 'Cedar Ave', 'Maple Dr',
+    'First St', 'Second Ave', 'Park Blvd', 'Washington St', 'Lincoln Ave',
+    'Jefferson Dr', 'Madison St', 'Franklin Ave', 'Roosevelt Blvd'
+  ];
+
+  final List<String> _cities = [
+    'Springfield', 'Franklin', 'Georgetown', 'Madison', 'Arlington',
+    'Centerville', 'Lebanon', 'Kingston', 'Fairview', 'Salem',
+    'Bristol', 'Clinton', 'Jackson', 'Marion', 'Troy'
+  ];
+
+  final List<String> _states = [
+    'CA', 'TX', 'FL', 'NY', 'PA', 'IL', 'OH', 'GA', 'NC', 'MI',
+    'VA', 'WA', 'AZ', 'MA', 'TN', 'IN', 'MO', 'MD', 'WI', 'CO'
+  ];
 
   Future<void> seedComprehensiveData() async {
     try {
@@ -62,234 +132,145 @@ class MigrationService {
     }
   }
 
+  /// Dynamically generate and seed patient data
   Future<void> _seedPatients() async {
-    final patients = [
-      Patient(
-        name: 'John Smith',
-        age: 45,
-        medicalRecordNumber: 'MRN001',
-        dateOfBirth: DateTime(1979, 3, 15),
-        gender: 'Male',
-        bloodType: 'O+',
-        phone: '+1-555-0123',
-        email: 'john.smith@email.com',
-        address: '123 Main St, City, State 12345',
-      ),
-      Patient(
-        name: 'Sarah Johnson',
-        age: 32,
-        medicalRecordNumber: 'MRN002',
-        dateOfBirth: DateTime(1992, 7, 22),
-        gender: 'Female',
-        bloodType: 'A+',
-        phone: '+1-555-0124',
-        email: 'sarah.johnson@email.com',
-        address: '456 Oak Ave, City, State 12345',
-      ),
-      Patient(
-        name: 'Michael Brown',
-        age: 67,
-        medicalRecordNumber: 'MRN003',
-        dateOfBirth: DateTime(1957, 11, 8),
-        gender: 'Male',
-        bloodType: 'B+',
-        phone: '+1-555-0125',
-        email: 'michael.brown@email.com',
-        address: '789 Pine St, City, State 12345',
-      ),
-      Patient(
-        name: 'Emily Davis',
-        age: 28,
-        medicalRecordNumber: 'MRN004',
-        dateOfBirth: DateTime(1996, 2, 14),
-        gender: 'Female',
-        bloodType: 'AB+',
-        phone: '+1-555-0126',
-        email: 'emily.davis@email.com',
-        address: '321 Elm St, City, State 12345',
-      ),
-      Patient(
-        name: 'Robert Wilson',
-        age: 54,
-        medicalRecordNumber: 'MRN005',
-        dateOfBirth: DateTime(1970, 9, 3),
-        gender: 'Male',
-        bloodType: 'O-',
-        phone: '+1-555-0127',
-        email: 'robert.wilson@email.com',
-        address: '654 Maple Ave, City, State 12345',
-      ),
-      Patient(
-        name: 'Lisa Rodriguez',
-        age: 39,
-        medicalRecordNumber: 'MRN006',
-        dateOfBirth: DateTime(1985, 12, 18),
-        gender: 'Female',
-        bloodType: 'A-',
-        phone: '+1-555-0128',
-        email: 'lisa.rodriguez@email.com',
-        address: '987 Cedar St, City, State 12345',
-      ),
-      Patient(
-        name: 'David Thompson',
-        age: 61,
-        medicalRecordNumber: 'MRN007',
-        dateOfBirth: DateTime(1963, 5, 27),
-        gender: 'Male',
-        bloodType: 'B-',
-        phone: '+1-555-0129',
-        email: 'david.thompson@email.com',
-        address: '147 Birch Ln, City, State 12345',
-      ),
-      Patient(
-        name: 'Jennifer Lee',
-        age: 26,
-        medicalRecordNumber: 'MRN008',
-        dateOfBirth: DateTime(1998, 8, 11),
-        gender: 'Female',
-        bloodType: 'AB-',
-        phone: '+1-555-0130',
-        email: 'jennifer.lee@email.com',
-        address: '258 Spruce St, City, State 12345',
-      ),
-      Patient(
-        name: 'Christopher Garcia',
-        age: 42,
-        medicalRecordNumber: 'MRN009',
-        dateOfBirth: DateTime(1982, 1, 9),
-        gender: 'Male',
-        bloodType: 'O+',
-        phone: '+1-555-0131',
-        email: 'christopher.garcia@email.com',
-        address: '369 Willow Dr, City, State 12345',
-      ),
-      Patient(
-        name: 'Amanda Martinez',
-        age: 35,
-        medicalRecordNumber: 'MRN010',
-        dateOfBirth: DateTime(1989, 4, 6),
-        gender: 'Female',
-        bloodType: 'A+',
-        phone: '+1-555-0132',
-        email: 'amanda.martinez@email.com',
-        address: '741 Poplar Ave, City, State 12345',
-      ),
-    ];
+    try {
+      // Generate dynamic patient data instead of using hardcoded data
+      final patients = <Patient>[];
+      const patientCount = 50; // Generate more realistic number of patients
+      
+      for (int i = 1; i <= patientCount; i++) {
+        final firstName = _firstNames[_random.nextInt(_firstNames.length)];
+        final lastName = _lastNames[_random.nextInt(_lastNames.length)];
+        final fullName = '$firstName $lastName';
+        
+        final age = 18 + _random.nextInt(65); // Age between 18-82
+        final birthYear = DateTime.now().year - age;
+        final birthMonth = 1 + _random.nextInt(12);
+        final birthDay = 1 + _random.nextInt(28); // Keep it simple for valid dates
+        
+        final gender = _genders[_random.nextInt(_genders.length)];
+        final bloodType = _bloodTypes[_random.nextInt(_bloodTypes.length)];
+        
+        final streetNumber = 100 + _random.nextInt(9900);
+        final street = _streets[_random.nextInt(_streets.length)];
+        final city = _cities[_random.nextInt(_cities.length)];
+        final state = _states[_random.nextInt(_states.length)];
+        final zipCode = 10000 + _random.nextInt(89999);
+        
+        // Generate dynamic email and phone
+        final emailName = '${firstName.toLowerCase()}.${lastName.toLowerCase()}';
+        final domains = ['gmail.com', 'yahoo.com', 'hotmail.com', 'outlook.com'];
+        final email = '$emailName@${domains[_random.nextInt(domains.length)]}';
+        
+        final areaCode = 200 + _random.nextInt(799);
+        final phoneMiddle = 100 + _random.nextInt(899);
+        final phoneLast = 1000 + _random.nextInt(8999);
+        final phone = '+1-$areaCode-$phoneMiddle-$phoneLast';
+        
+        final patient = Patient(
+          name: fullName,
+          age: age,
+          medicalRecordNumber: 'MRN${i.toString().padLeft(6, '0')}',
+          dateOfBirth: DateTime(birthYear, birthMonth, birthDay),
+          gender: gender,
+          bloodType: bloodType,
+          phone: phone,
+          email: email,
+          address: '$streetNumber $street, $city, $state $zipCode',
+        );
+        
+        patients.add(patient);
+      }
 
-    await _patientDao.createMultiplePatients(patients);
-    debugPrint('Seeded ${patients.length} patients');
+      await _patientDao.createMultiplePatients(patients);
+      debugPrint('✅ Dynamically generated and seeded ${patients.length} patients');
+    } catch (e) {
+      debugPrint('❌ Failed to seed patients: $e');
+      rethrow;
+    }
   }
 
+  /// Dynamically generate and seed specialist data
   Future<void> _seedSpecialists() async {
-    final specialists = [
-      Specialist(
-        name: 'Dr. Emily Chen',
-        credentials: 'MD, PhD',
-        specialty: 'Cardiology',
-        hospital: 'City General Hospital',
-        rating: 4.8,
-        successRate: 0.92,
-        languages: ['English', 'Mandarin'],
-        insurance: ['Blue Cross', 'Aetna', 'Medicare'],
-        hospitalNetwork: 'City Health Network',
-        latitude: 40.7128,
-        longitude: -74.0060,
-      ),
-      Specialist(
-        name: 'Dr. Robert Wilson',
-        credentials: 'MD',
-        specialty: 'Neurology',
-        hospital: 'Metropolitan Medical Center',
-        rating: 4.6,
-        successRate: 0.89,
-        languages: ['English', 'Spanish'],
-        insurance: ['United Healthcare', 'Cigna', 'Medicare'],
-        hospitalNetwork: 'Metro Health System',
-        latitude: 40.7589,
-        longitude: -73.9851,
-      ),
-      Specialist(
-        name: 'Dr. Lisa Rodriguez',
-        credentials: 'MD, FACP',
-        specialty: 'Internal Medicine',
-        hospital: 'University Hospital',
-        rating: 4.9,
-        successRate: 0.95,
-        languages: ['English', 'Spanish', 'Portuguese'],
-        insurance: ['All Major Insurance', 'Medicare', 'Medicaid'],
-        hospitalNetwork: 'University Health System',
-        latitude: 40.7505,
-        longitude: -73.9934,
-      ),
-      Specialist(
-        name: 'Dr. James Anderson',
-        credentials: 'MD, PhD',
-        specialty: 'Orthopedics',
-        hospital: 'Sports Medicine Institute',
-        rating: 4.7,
-        successRate: 0.88,
-        languages: ['English'],
-        insurance: ['Blue Cross', 'United Healthcare', 'Aetna'],
-        hospitalNetwork: 'Sports Health Network',
-        latitude: 40.7282,
-        longitude: -74.0776,
-      ),
-      Specialist(
-        name: 'Dr. Maria Gonzalez',
-        credentials: 'MD, FACOG',
-        specialty: 'Gynecology',
-        hospital: "Women's Health Center",
-        rating: 4.9,
-        successRate: 0.94,
-        languages: ['English', 'Spanish'],
-        insurance: ['All Major Insurance', 'Medicare'],
-        hospitalNetwork: 'Women\'s Health Network',
-        latitude: 40.7614,
-        longitude: -73.9776,
-      ),
-      Specialist(
-        name: 'Dr. Kevin Park',
-        credentials: 'MD, FACS',
-        specialty: 'Surgery',
-        hospital: 'Central Surgical Center',
-        rating: 4.8,
-        successRate: 0.91,
-        languages: ['English', 'Korean'],
-        insurance: ['Blue Cross', 'Cigna', 'Medicare'],
-        hospitalNetwork: 'Surgical Excellence Network',
-        latitude: 40.7411,
-        longitude: -74.0023,
-      ),
-      Specialist(
-        name: 'Dr. Rachel Green',
-        credentials: 'MD, FAAD',
-        specialty: 'Dermatology',
-        hospital: 'Skin Health Clinic',
-        rating: 4.6,
-        successRate: 0.87,
-        languages: ['English', 'French'],
-        insurance: ['United Healthcare', 'Aetna', 'Medicare'],
-        hospitalNetwork: 'Dermatology Associates',
-        latitude: 40.7831,
-        longitude: -73.9712,
-      ),
-      Specialist(
-        name: 'Dr. Thomas Kim',
-        credentials: 'MD, FACE',
-        specialty: 'Endocrinology',
-        hospital: 'Diabetes & Endocrine Center',
-        rating: 4.7,
-        successRate: 0.90,
-        languages: ['English', 'Korean'],
-        insurance: ['All Major Insurance', 'Medicare', 'Medicaid'],
-        hospitalNetwork: 'Endocrine Health Network',
-        latitude: 40.7549,
-        longitude: -73.9840,
-      ),
-    ];
+    try {
+      // Generate dynamic specialist data instead of using hardcoded data
+      final specialists = <Specialist>[];
+      const specialistCount = 30; // Generate realistic number of specialists
+      
+      final credentials = ['MD', 'MD, PhD', 'MD, FACP', 'MD, FACS', 'MD, FACOG'];
+      final languages = [
+        ['English'],
+        ['English', 'Spanish'],
+        ['English', 'French'],
+        ['English', 'Mandarin'],
+        ['English', 'Portuguese'],
+        ['English', 'German'],
+        ['English', 'Italian'],
+        ['English', 'Korean'],
+        ['English', 'Arabic'],
+        ['English', 'Russian'],
+      ];
+      
+      final insuranceOptions = [
+        ['Blue Cross', 'Aetna', 'Medicare'],
+        ['United Healthcare', 'Cigna', 'Medicare'],
+        ['All Major Insurance', 'Medicare', 'Medicaid'],
+        ['Kaiser Permanente', 'Medicare'],
+        ['Humana', 'Medicare', 'Medicaid'],
+      ];
+      
+      final networks = [
+        'City Health Network',
+        'Metro Health System',
+        'University Health System',
+        'Regional Medical Network',
+        'Community Health Alliance',
+      ];
+      
+      for (int i = 0; i < specialistCount; i++) {
+        final firstName = _firstNames[_random.nextInt(_firstNames.length)];
+        final lastName = _lastNames[_random.nextInt(_lastNames.length)];
+        final fullName = 'Dr. $firstName $lastName';
+        
+        final specialty = _specialties[_random.nextInt(_specialties.length)];
+        final hospital = _hospitals[_random.nextInt(_hospitals.length)];
+        final credential = credentials[_random.nextInt(credentials.length)];
+        final languageList = languages[_random.nextInt(languages.length)];
+        final insuranceList = insuranceOptions[_random.nextInt(insuranceOptions.length)];
+        final network = networks[_random.nextInt(networks.length)];
+        
+        // Generate realistic ratings and success rates
+        final rating = 4.0 + (_random.nextDouble() * 1.0); // 4.0 - 5.0
+        final successRate = 0.80 + (_random.nextDouble() * 0.18); // 0.80 - 0.98
+        
+        // Generate coordinates for different locations (simulating different cities)
+        final baseLatitude = 40.7128 + (_random.nextDouble() - 0.5) * 0.5; // NYC area variation
+        final baseLongitude = -74.0060 + (_random.nextDouble() - 0.5) * 0.5;
+        
+        final specialist = Specialist(
+          name: fullName,
+          credentials: credential,
+          specialty: specialty,
+          hospital: hospital,
+          rating: double.parse(rating.toStringAsFixed(1)),
+          successRate: double.parse(successRate.toStringAsFixed(2)),
+          languages: languageList,
+          insurance: insuranceList,
+          hospitalNetwork: network,
+          latitude: double.parse(baseLatitude.toStringAsFixed(4)),
+          longitude: double.parse(baseLongitude.toStringAsFixed(4)),
+        );
+        
+        specialists.add(specialist);
+      }
 
-    await _specialistDao.createMultipleSpecialists(specialists);
-    debugPrint('Seeded ${specialists.length} specialists');
+      await _specialistDao.createMultipleSpecialists(specialists);
+      debugPrint('✅ Dynamically generated and seeded ${specialists.length} specialists');
+    } catch (e) {
+      debugPrint('❌ Failed to seed specialists: $e');
+      rethrow;
+    }
   }
 
   Future<void> _seedReferrals() async {

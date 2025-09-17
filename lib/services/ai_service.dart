@@ -8,7 +8,7 @@ import '../database/database.dart';
 /// Advanced AI/ML Service for Medical Intelligence
 /// Provides diagnostic suggestions, predictive analytics, and smart recommendations
 class AIService extends ChangeNotifier {
-  _AIService();
+  AIService();
 
   static final AIService _instance = AIService._internal();
   factory AIService() => _instance;
@@ -1057,7 +1057,7 @@ class AIService extends ChangeNotifier {
       // Check for sudden changes
       if (i > 0) {
         final prevVital = vitalHistory[i - 1];
-        final prevHeartRate = double.tryParse(prevVital.heartRate ?? '0') ?? 0;
+        final prevHeartRate = double.tryParse(prevVital.heartRate?.toString() ?? '0') ?? 0;
         final hrChange = (heartRate - prevHeartRate).abs();
         
         if (hrChange > 30) {
@@ -1121,8 +1121,8 @@ class AIService extends ChangeNotifier {
     if (vitalHistory.length >= 3) {
       var deteriorating = true;
       for (var i = 2; i < vitalHistory.length && i < 5; i++) {
-        final currentSystolic = double.tryParse(vitalHistory[i].bloodPressureSystolic ?? '0') ?? 0;
-        final prevSystolic = double.tryParse(vitalHistory[i - 1].bloodPressureSystolic ?? '0') ?? 0;
+        final currentSystolic = double.tryParse(vitalHistory[i].bloodPressureSystolic?.toString() ?? '0') ?? 0;
+        final prevSystolic = double.tryParse(vitalHistory[i - 1].bloodPressureSystolic?.toString() ?? '0') ?? 0;
         
         if (currentSystolic <= prevSystolic) {
           deteriorating = false;

@@ -5,9 +5,9 @@ import 'package:permission_handler/permission_handler.dart';
 
 /// WebRTC service for handling video/audio calls in the MedRefer AI app
 class WebRTCService extends ChangeNotifier {
-  static final WebRTCService _instance = _WebRTCService();
+  static final WebRTCService _instance = WebRTCService._internal();
   factory WebRTCService() => _instance;
-  _WebRTCService();
+  WebRTCService._internal();
 
   // WebRTC components
   RTCPeerConnection? _peerConnection;

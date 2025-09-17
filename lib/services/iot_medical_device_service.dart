@@ -6,9 +6,14 @@ import '../database/services/data_service.dart';
 
 /// IoT Medical Device Integration Service for real-time patient monitoring
 class IoTMedicalDeviceService extends ChangeNotifier {
-  factory IoTMedicalDeviceService() => _instance;
-  _IoTMedicalDeviceService();
-  static final IoTMedicalDeviceService _instance = _IoTMedicalDeviceService();
+  static IoTMedicalDeviceService? _instance;
+  
+  factory IoTMedicalDeviceService() {
+    _instance ??= IoTMedicalDeviceService._internal();
+    return _instance!;
+  }
+  
+  IoTMedicalDeviceService._internal();
 
   bool _isInitialized = false;
   
@@ -233,6 +238,32 @@ class IoTMedicalDeviceService extends ChangeNotifier {
         macAddress: '00:11:22:33:44:58',
       ),
     ];
+  }
+
+  /// Load patient-device associations from the database
+  Future<void> _loadPatientDeviceAssociations() async {
+    try {
+      // TODO: Load patient-device associations from database
+      // This would typically involve querying the database for which devices
+      // are assigned to which patients
+      
+      // For now, create some mock associations
+      final patients = await DataService().getPatients();
+      
+      int deviceIndex = 0;
+      for (final patient in patients) {
+        if (deviceIndex < _connectedDevices.length) {
+          final device = _connectedDevices.values.elementAt(deviceIndex);
+          device.assignedPatientId = patient.id;
+          debugPrint('✅ Associated device ${device.name} with patient ${patient.name}');
+          deviceIndex++;
+        }
+      }
+      
+      debugPrint('✅ Loaded ${patients.length} patient-device associations');
+    } catch (e) {
+      debugPrint('❌ Failed to load patient-device associations: $e');
+    }
   }
 
   /// Connect to a medical device

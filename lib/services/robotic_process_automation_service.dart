@@ -19,9 +19,9 @@ import '../core/app_export.dart';
 /// - Exception handling and error recovery
 /// - Performance monitoring and optimization
 class RoboticProcessAutomationService extends ChangeNotifier {
-  static final RoboticProcessAutomationService _instance = _RoboticProcessAutomationService();
+  static final RoboticProcessAutomationService _instance = RoboticProcessAutomationService._internal();
   factory RoboticProcessAutomationService() => _instance;
-  _RoboticProcessAutomationService();
+  RoboticProcessAutomationService._internal();
 
   Database? _rpaDb;
   bool _isInitialized = false;

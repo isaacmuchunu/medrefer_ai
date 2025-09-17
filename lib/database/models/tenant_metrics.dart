@@ -26,7 +26,44 @@ class TenantMetrics {
     required this.customMetrics,
     required this.lastUpdated,
   });
+class TenantMetrics {
+  TenantMetrics({
+    required this.tenantId,
+    required this.activeUsers,
+    required this.totalRequests,
+    required this.storageUsed,
+    required this.bandwidthUsed,
+    required this.lastUpdated,
+  });
+  final String tenantId;
+  int activeUsers;
+  int totalRequests;
+  int storageUsed;
+  int bandwidthUsed;
+  DateTime lastUpdated;
 
+  Map<String, dynamic> toMap() {
+    return {
+      'tenantId': tenantId,
+      'activeUsers': activeUsers,
+      'totalRequests': totalRequests,
+      'storageUsed': storageUsed,
+      'bandwidthUsed': bandwidthUsed,
+      'lastUpdated': lastUpdated.toIso8601String(),
+    };
+  }
+
+  factory TenantMetrics.fromMap(Map<String, dynamic> map) {
+    return TenantMetrics(
+      tenantId: map['tenantId'],
+      activeUsers: map['activeUsers'],
+      totalRequests: map['totalRequests'],
+      storageUsed: map['storageUsed'],
+      bandwidthUsed: map['bandwidthUsed'],
+      lastUpdated: DateTime.parse(map['lastUpdated']),
+    );
+  }
+}
   Map<String, dynamic> toMap() {
     return {
       'tenantId': tenantId,

@@ -5,10 +5,9 @@ import 'package:flutter/services.dart';
 
 /// Service for managing notifications and alerts in the MedRefer AI app
 class NotificationService extends ChangeNotifier {
+  static final NotificationService _instance = NotificationService._internal();
   factory NotificationService() => _instance;
-  _NotificationService();
-
-  static final NotificationService _instance = _NotificationService();
+  NotificationService._internal();
 
   // Notification state
   List<AppNotification> _notifications = [];

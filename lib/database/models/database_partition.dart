@@ -14,7 +14,47 @@ class DatabasePartition {
   final String status; // active, suspended, maintenance
   final DateTime createdAt;
   final DateTime updatedAt;
+class DatabasePartition {
+  DatabasePartition({
+    required this.tenantId,
+    required this.partitionName,
+    required this.strategy,
+    required this.connectionString,
+    required this.isActive,
+    required this.createdAt,
+  });
+  final String tenantId;
+  final String partitionName;
+  final PartitionStrategy strategy;
+  final String connectionString;
+  bool isActive;
+  final DateTime createdAt;
 
+  Map<String, dynamic> toMap() {
+    return {
+      'tenantId': tenantId,
+      'partitionName': partitionName,
+      'strategy': strategy.toString(),
+      'connectionString': connectionString,
+      'isActive': isActive,
+      'createdAt': createdAt.toIso8601String(),
+    };
+  }
+
+  factory DatabasePartition.fromMap(Map<String, dynamic> map) {
+    return DatabasePartition(
+      tenantId: map['tenantId'],
+      partitionName: map['partitionName'],
+      strategy: PartitionStrategy.values.firstWhere(
+          (e) => e.toString() == map['strategy']),
+      connectionString: map['connectionString'],
+      isActive: map['isActive'],
+      createdAt: DateTime.parse(map['createdAt']),
+    );
+  }
+}
+
+enum PartitionStrategy { schema, table, database }
   DatabasePartition({
     required this.id,
     required this.tenantId,

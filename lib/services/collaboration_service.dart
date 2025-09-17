@@ -7,8 +7,6 @@ import 'package:web_socket_channel/status.dart' as status;
 /// Advanced Real-time Collaboration Service
 /// Provides WebSocket-based live updates, collaborative editing, and presence tracking
 class CollaborationService extends ChangeNotifier {
-  _CollaborationService();
-
   static final CollaborationService _instance = CollaborationService._internal();
   factory CollaborationService() => _instance;
   CollaborationService._internal();

@@ -5,7 +5,8 @@ import '../../core/app_export.dart';
 class ProfileEdit extends StatefulWidget {
   const ProfileEdit({super.key});
 
-  @override State&lt;ProfileEdit&gt; createState() =&gt; _ProfileEditState();
+  @override
+  State<ProfileEdit> createState() => _ProfileEditState();
 }
 
 class _ProfileEditState extends State<ProfileEdit> {

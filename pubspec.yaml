@@ -44,12 +44,12 @@ dependencies:
   flutter_secure_storage: ^10.0.0-beta.4
   crypto: ^3.0.3
   encrypt: ^5.0.3
-  email_validator: ^2.1.17
+  email_validator: ^3.0.0
   flutter_webrtc: ^1.2.0
   http: ^1.1.0
   web_socket_channel: ^3.0.3
   flutter_barcode_scanner: ^2.0.0
-  just_audio: ^0.9.36
+  just_audio: ^0.10.5
   qr_flutter: ^4.1.0
   shimmer: ^3.0.0
   xml: ^6.4.2                    # For XML processing and SOAP integrations
@@ -57,7 +57,7 @@ dependencies:
   pdf: ^3.10.7                   # For PDF report generation
   excel: ^4.0.6                  # For Excel report generation
   archive: ^3.4.10               # For file compression and archiving
-  mime: ^1.0.4                   # For MIME type detection
+  mime: ^2.0.0                   # For MIME type detection
   cron: ^0.6.0                   # For cron-based scheduling
   queue: ^3.1.0+2                # For task queue management
   retry: ^3.1.2                  # For retry mechanisms
@@ -65,7 +65,6 @@ dependencies:
   collection: ^1.18.0            # For advanced collection operations
   meta: ^1.12.0                  # For metadata annotations
 
-  path: any
 dev_dependencies:
   flutter_test:    # CRITICAL: Required for Flutter project testing - DO NOT REMOVE
     sdk: flutter   # CRITICAL: Required for Flutter project testing - DO NOT REMOVE

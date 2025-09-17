@@ -141,6 +141,11 @@ class DataService extends ChangeNotifier {
     return await _patientDao.getPatientById(id);
   }
 
+  // Alias for getPatientById for compatibility
+  Future<Patient?> getPatient(String id) async {
+    return await getPatientById(id);
+  }
+
   Future<Patient?> getPatientByMrn(String mrn) async {
     return await _patientDao.getPatientByMrn(mrn);
   }

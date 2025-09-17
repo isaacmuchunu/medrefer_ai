@@ -26,7 +26,58 @@ class Subscription {
     required this.createdAt,
     required this.updatedAt,
   });
+enum SubscriptionStatus { active, expired, cancelled, suspended }
 
+class Subscription {
+  Subscription({
+    required this.tenantId,
+    required this.subscriptionId,
+    required this.plan,
+    required this.status,
+    required this.startDate,
+    required this.endDate,
+    required this.autoRenew,
+    required this.features,
+  });
+  final String tenantId;
+  final String subscriptionId;
+  TenantPlan plan;
+  SubscriptionStatus status;
+  final DateTime startDate;
+  DateTime endDate;
+  bool autoRenew;
+  List<String> features;
+
+  Map<String, dynamic> toMap() {
+    return {
+      'tenantId': tenantId,
+      'subscriptionId': subscriptionId,
+      'plan': plan.toString(),
+      'status': status.toString(),
+      'startDate': startDate.toIso8601String(),
+      'endDate': endDate.toIso8601String(),
+      'autoRenew': autoRenew,
+      'features': features,
+    };
+  }
+
+  factory Subscription.fromMap(Map<String, dynamic> map) {
+    return Subscription(
+      tenantId: map['tenantId'],
+      subscriptionId: map['subscriptionId'],
+      plan: TenantPlan.values.firstWhere(
+          (e) => e.toString() == map['plan']),
+      status: SubscriptionStatus.values.firstWhere(
+          (e) => e.toString() == map['status']),
+      startDate: DateTime.parse(map['startDate']),
+      endDate: DateTime.parse(map['endDate']),
+      autoRenew: map['autoRenew'],
+      features: List<String>.from(map['features']),
+    );
+  }
+}
+
+enum TenantPlan { basic, professional, enterprise }
   Map<String, dynamic> toMap() {
     return {
       'id': id,

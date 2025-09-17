@@ -3,6 +3,21 @@ import 'package:sqflite/sqflite.dart';
 import 'dart:convert';
 import 'dart:async';
 import '../core/app_export.dart';
+import '../database/models/subscription.dart';
+import '../database/models/billing_account.dart';
+import '../database/models/tenant_security.dart';
+import '../database/models/tenant_user.dart';
+import '../database/models/database_partition.dart';
+import '../database/models/tenant_metrics.dart';
+import '../database/models/tenant_creation_result.dart';
+import '../database/models/tenant_switch_result.dart';
+import '../database/models/tenant_config_result.dart';
+import '../database/models/tenant_customization_result.dart';
+import '../database/models/resource_quota_result.dart';
+import '../database/models/resource_limit_check_result.dart';
+import '../database/models/subscription_result.dart';
+import '../database/models/tenant_operation_result.dart';
+import '../database/models/tenant_analytics_result.dart';
 
 /// Multi-Tenant Architecture Service
 /// 
@@ -18,10 +33,9 @@ import '../core/app_export.dart';
 /// - Database partitioning strategies
 /// - Tenant monitoring and analytics
 class MultiTenantService extends ChangeNotifier {
+  static final MultiTenantService _instance = MultiTenantService._internal();
   factory MultiTenantService() => _instance;
-  _MultiTenantService();
-
-  static final MultiTenantService _instance = _MultiTenantService();
+  MultiTenantService._internal();
 
   Database? _tenantDb;
   bool _isInitialized = false;

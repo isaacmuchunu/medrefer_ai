@@ -4,7 +4,7 @@ import 'package:fl_chart/fl_chart.dart';
 import '../../core/app_export.dart';
 import '../../services/iot_medical_device_service.dart';
 import '../../services/ai_service.dart';
-import '../../services/blockchain_medical_records_service.dart';
+import '../../services/blockchain_medical_records_service.dart' hide Patient, Referral;
 import '../../services/realtime_update_service.dart';
 import '../../services/notification_service.dart';
 import '../../database/models/patient.dart';

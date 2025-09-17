@@ -867,7 +867,7 @@ class Referral {
     return Referral(
       id: referral.id,
       patientId: referral.patientId,
-      specialistId: referral.specialistId,
+      specialistId: referral.specialistId ?? 'unassigned', // Handle nullable specialistId
       reason: '', // Placeholder
       urgency: referral.urgency,
       status: referral.status,

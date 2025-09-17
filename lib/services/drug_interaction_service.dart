@@ -4,7 +4,7 @@ import '../database/models/patient.dart';
 import '../database/services/data_service.dart';
 import '../core/result.dart';
 import 'ai_service.dart';
-import 'blockchain_medical_records_service.dart';
+import 'blockchain_medical_records_service.dart' hide Patient, Referral;
 import 'notification_service.dart';
 import 'logging_service.dart';
 

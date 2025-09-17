@@ -3,9 +3,9 @@ import '../database/dao/quality_metric_dao.dart';
 import '../database/models/quality_metric.dart';
 
 class QualityAssuranceService {
+  static final QualityAssuranceService _instance = QualityAssuranceService._internal();
   factory QualityAssuranceService() => _instance;
-  _QualityAssuranceService();
-  static final QualityAssuranceService _instance = _QualityAssuranceService();
+  QualityAssuranceService._internal();
 
   final QualityMetricDao _dao = QualityMetricDao();
   final StreamController<List<QualityMetric>> _metricsController = 

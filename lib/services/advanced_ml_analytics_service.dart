@@ -8,9 +8,9 @@ import '../database/models/appointment.dart';
 
 /// Enterprise-grade ML Analytics Service with predictive modeling and real-time insights
 class AdvancedMLAnalyticsService extends ChangeNotifier {
-  static final AdvancedMLAnalyticsService _instance = _AdvancedMLAnalyticsService();
+  static final AdvancedMLAnalyticsService _instance = AdvancedMLAnalyticsService._internal();
   factory AdvancedMLAnalyticsService() => _instance;
-  _AdvancedMLAnalyticsService();
+  AdvancedMLAnalyticsService._internal();
 
   final DataService _dataService = DataService();
   Timer? _analyticsTimer;
@@ -367,7 +367,7 @@ class AdvancedMLAnalyticsService extends ChangeNotifier {
       'risk_score': riskScore,
       'risk_category': _categorizeRisk(riskScore),
       'risk_factors': _identifyRiskFactors(features, riskModel),
-      'recommendations': await _generateRiskRecommendations(riskScore, features),
+      'recommendations': _generateRiskRecommendations(_identifyRiskFactors(features, riskModel)),
       'confidence': _calculateRiskConfidence(features, riskModel),
     };
   }
@@ -377,14 +377,14 @@ class AdvancedMLAnalyticsService extends ChangeNotifier {
     final demandModel = _modelCache['demand_forecasting'];
     final historicalData = await _gatherHistoricalDemandData();
     
-    final forecast = _generateDemandForecast(historicalData, demandModel, days);
+    final forecast = _generateDemandForecast(historicalData);
     
     return {
       'forecast_period': days,
       'predicted_demand': forecast,
       'confidence_intervals': _calculateForecastConfidence(forecast),
       'seasonal_adjustments': _applySeasonalAdjustments(forecast),
-      'capacity_recommendations': await _generateCapacityRecommendations(forecast),
+      'capacity_recommendations': _generateCapacityRecommendations(forecast),
     };
   }
 
@@ -396,8 +396,7 @@ class AdvancedMLAnalyticsService extends ChangeNotifier {
     
     final optimization = _runOptimizationAlgorithm(
       currentUtilization,
-      demandForecast,
-      resourceModel,
+      _defineOptimizationConstraints(),
     );
     
     return {
@@ -421,46 +420,48 @@ class AdvancedMLAnalyticsService extends ChangeNotifier {
         'priority': 'high',
         'title': 'High-Risk Patients Identified',
         'description': '${highRiskPatients.length} patients require immediate attention',
-        'action_items': await _generateRiskActionItems(highRiskPatients),
+        'action_items': _generateRiskActionItems({'high_risk_count': highRiskPatients.length}),
         'impact': 'patient_safety',
       });
     }
     
     // Capacity insights
-    final capacityIssues = await _identifyCapacityIssues();
+    final utilizationData = await _gatherCurrentResourceUtilization();
+    final capacityIssues = _identifyCapacityIssues(utilizationData);
     if (capacityIssues.isNotEmpty) {
       insights.add({
         'type': 'capacity_warning',
         'priority': 'medium',
         'title': 'Capacity Constraints Detected',
         'description': 'Resource bottlenecks predicted in ${capacityIssues.length} areas',
-        'action_items': await _generateCapacityActionItems(capacityIssues),
+        'action_items': _generateCapacityActionItems(capacityIssues),
         'impact': 'operational_efficiency',
       });
     }
     
     // Quality insights
-    final qualityTrends = await _analyzeQualityTrends();
-    if (qualityTrends['declining_areas'].isNotEmpty) {
+    final qualityData = await _calculateQualityScores();
+    final qualityTrends = _analyzeQualityTrends(qualityData);
+    if (qualityTrends['improvement_areas'].isNotEmpty) {
       insights.add({
         'type': 'quality_trend',
         'priority': 'medium',
         'title': 'Quality Metrics Declining',
         'description': 'Quality scores trending downward in key areas',
-        'action_items': await _generateQualityActionItems(qualityTrends),
+        'action_items': _generateQualityActionItems(qualityTrends),
         'impact': 'care_quality',
       });
     }
     
     // Cost optimization insights
-    final costOpportunities = await _identifyCostOptimizationOpportunities();
+    final costOpportunities = _identifyCostOptimizationOpportunities();
     if (costOpportunities.isNotEmpty) {
       insights.add({
         'type': 'cost_optimization',
         'priority': 'low',
         'title': 'Cost Optimization Opportunities',
-        'description': 'Potential savings of \$${costOpportunities['total_savings']} identified',
-        'action_items': costOpportunities['recommendations'],
+        'description': 'Cost optimization opportunities identified',
+        'action_items': costOpportunities.map((opp) => opp['area']).toList(),
         'impact': 'financial_performance',
       });
     }
@@ -472,7 +473,7 @@ class AdvancedMLAnalyticsService extends ChangeNotifier {
 
   Map<String, dynamic> _extractPatientFeatures(Patient patient, List<Referral> referrals) {
     return {
-      'age': DateTime.now().year - (patient.dateOfBirth.year ?? 1990),
+      'age': DateTime.now().year - patient.dateOfBirth.year,
       'chronic_conditions': patient.medicalHistory?.split(',').length ?? 0,
       'emergency_visits': referrals.where((r) => r.urgency == 'emergency').length,
       'referral_frequency': referrals.length,
@@ -525,9 +526,9 @@ class AdvancedMLAnalyticsService extends ChangeNotifier {
       'hourly_pattern': hourlyPattern,
       'daily_pattern': dailyPattern,
       'monthly_pattern': monthlyPattern,
-      'peak_hours': _identifyPeakHours(hourlyPattern),
-      'peak_days': _identifyPeakDays(dailyPattern),
-      'seasonal_trends': _identifySeasonalTrends(monthlyPattern),
+      'peak_hours': _identifyPeakHours(),
+      'peak_days': _identifyPeakDays(),
+      'seasonal_trends': _identifySeasonalTrends(),
     };
   }
 
@@ -576,7 +577,7 @@ class AdvancedMLAnalyticsService extends ChangeNotifier {
       'trend_slope': trendSlope,
       'trend_direction': trendSlope > 0 ? 'increasing' : 'decreasing',
       'volatility': _calculateVolatility(sortedData.map((e) => e.value.toDouble()).toList()),
-      'cyclical_patterns': _identifyCyclicalPatterns(sortedData),
+      'cyclical_patterns': _identifyCyclicalPatterns(sortedData.map((e) => e.value.toDouble()).toList()),
     };
   }
 
@@ -693,8 +694,422 @@ class AdvancedMLAnalyticsService extends ChangeNotifier {
     debugPrint('✅ Real-time analytics initialized');
   }
 
-  // Additional helper methods would continue here...
-  // Due to length constraints, I'm showing the key structure and main methods
+  // Missing private methods implementation
+
+  Map<String, dynamic> _calculateConfidenceIntervals(Map<String, dynamic> demandPatterns) {
+    // TODO: Implement confidence interval calculations
+    return {
+      'lower_bound': 0.85,
+      'upper_bound': 0.95,
+      'confidence_level': 0.90,
+    };
+  }
+
+  Future<Map<String, dynamic>> _gatherResourceUtilizationData() async {
+    // TODO: Implement resource utilization data gathering
+    return {
+      'cpu_utilization': 0.75,
+      'memory_utilization': 0.68,
+      'staff_utilization': 0.82,
+      'equipment_utilization': 0.71,
+    };
+  }
+
+  Map<String, dynamic> _defineOptimizationConstraints() {
+    // TODO: Define optimization constraints
+    return {
+      'max_capacity': 100,
+      'min_staff': 10,
+      'budget_limit': 50000,
+      'quality_threshold': 0.8,
+    };
+  }
+
+  Future<Map<String, dynamic>> _gatherHistoricalMetrics() async {
+    // TODO: Gather historical metrics
+    return {
+      'patient_volumes': List.generate(30, (i) => 50 + Random().nextInt(50)),
+      'response_times': List.generate(30, (i) => 5.0 + Random().nextDouble() * 10),
+      'quality_scores': List.generate(30, (i) => 0.7 + Random().nextDouble() * 0.3),
+    };
+  }
+
+  Map<String, dynamic> _establishBaselinePatterns(Map<String, dynamic> historicalData) {
+    // TODO: Establish baseline patterns from historical data
+    return {
+      'mean_patient_volume': 75.0,
+      'mean_response_time': 10.0,
+      'mean_quality_score': 0.85,
+      'baseline_established_at': DateTime.now().toIso8601String(),
+    };
+  }
+
+  Map<String, List<String>> _defineOutcomeFeatureSets() {
+    // TODO: Define feature sets for outcome prediction
+    return {
+      'recovery_time': ['age', 'severity', 'comorbidities', 'treatment_type'],
+      'treatment_success': ['diagnosis_accuracy', 'treatment_compliance', 'follow_up'],
+      'readmission_risk': ['discharge_planning', 'social_support', 'medication_adherence'],
+      'complications': ['surgical_complexity', 'patient_risk_factors', 'facility_experience'],
+    };
+  }
+
+  Map<String, double> _identifyCostDrivers() {
+    // TODO: Identify main cost drivers
+    return {
+      'staff_costs': 0.45,
+      'equipment_costs': 0.20,
+      'medication_costs': 0.15,
+      'facility_costs': 0.10,
+      'administrative_costs': 0.10,
+    };
+  }
+
+  List<Map<String, dynamic>> _identifyOptimizationOpportunities() {
+    // TODO: Identify optimization opportunities
+    return [
+      {'area': 'scheduling', 'potential_savings': 0.15, 'difficulty': 'medium'},
+      {'area': 'inventory_management', 'potential_savings': 0.08, 'difficulty': 'low'},
+      {'area': 'workflow_automation', 'potential_savings': 0.12, 'difficulty': 'high'},
+    ];
+  }
+
+  Future<Map<String, dynamic>> _forecastDemand() async {
+    // TODO: Implement demand forecasting
+    final Random random = Random();
+    return {
+      'next_7_days': List.generate(7, (i) => 60 + random.nextInt(40)),
+      'next_30_days': List.generate(30, (i) => 65 + random.nextInt(35)),
+      'peak_hours': [9, 10, 11, 14, 15, 16],
+      'forecast_confidence': 0.87,
+    };
+  }
+
+  Future<Map<String, dynamic>> _predictResourceNeeds() async {
+    // TODO: Predict resource requirements
+    return {
+      'staff_needed': {'doctors': 12, 'nurses': 25, 'admin': 8},
+      'equipment_needed': {'beds': 50, 'ventilators': 8, 'monitors': 15},
+      'supplies_needed': {'masks': 500, 'gloves': 1000, 'sanitizer': 50},
+    };
+  }
+
+  Future<List<Map<String, dynamic>>> _identifyHighRiskPatients() async {
+    // TODO: Identify high-risk patients using ML models
+    final patients = await _dataService.getAllPatients();
+    final highRiskPatients = <Map<String, dynamic>>[];
+    
+    for (final patient in patients.take(5)) {
+      highRiskPatients.add({
+        'patient_id': patient.id,
+        'name': patient.name,
+        'risk_score': 0.75 + Random().nextDouble() * 0.25,
+        'risk_factors': ['age', 'comorbidities', 'previous_admissions'],
+      });
+    }
+    
+    return highRiskPatients;
+  }
+
+  Future<Map<String, dynamic>> _predictQualityTrends() async {
+    // TODO: Predict quality trends
+    return {
+      'overall_trend': 'improving',
+      'predicted_scores': List.generate(7, (i) => 0.80 + Random().nextDouble() * 0.15),
+      'risk_areas': ['patient_satisfaction', 'readmission_rates'],
+      'improvement_opportunities': ['staff_training', 'process_optimization'],
+    };
+  }
+
+  Future<Map<String, dynamic>> _projectCosts() async {
+    // TODO: Project future costs
+    return {
+      'next_month': 75000 + Random().nextInt(25000),
+      'next_quarter': 225000 + Random().nextInt(75000),
+      'cost_breakdown': {
+        'personnel': 0.60,
+        'supplies': 0.25,
+        'infrastructure': 0.15,
+      },
+    };
+  }
+
+  double _calculatePredictionConfidence(Map<String, dynamic> predictions) {
+    // TODO: Calculate confidence in predictions
+    return 0.85 + Random().nextDouble() * 0.10;
+  }
+
+  Future<double> _calculateAnomalyScore(String metric, dynamic value) async {
+    // TODO: Calculate anomaly score for a metric
+    final Random random = Random();
+    return random.nextDouble() * 4.0; // 0-4 scale
+  }
+
+  String _classifyAnomalySeverity(double anomalyScore) {
+    if (anomalyScore > 3.5) return 'critical';
+    if (anomalyScore > 2.5) return 'high';
+    if (anomalyScore > 1.5) return 'medium';
+    return 'low';
+  }
+
+  Future<void> _triggerAnomalyAlerts(List<Map<String, dynamic>> anomalies) async {
+    // TODO: Trigger alerts for detected anomalies
+    for (final anomaly in anomalies) {
+      debugPrint('🚨 Anomaly Alert: ${anomaly['metric']} - ${anomaly['severity']}');
+    }
+  }
+
+  Future<Map<String, dynamic>> _getModelPerformanceMetrics() async {
+    // TODO: Get performance metrics for all ML models
+    return {
+      'risk_stratification': {'accuracy': 0.89, 'precision': 0.87, 'recall': 0.91},
+      'demand_forecasting': {'mae': 5.2, 'rmse': 7.8, 'mape': 0.12},
+      'anomaly_detection': {'precision': 0.85, 'recall': 0.78, 'f1_score': 0.81},
+      'cost_prediction': {'r2_score': 0.84, 'mae': 2500, 'rmse': 3200},
+    };
+  }
+
+  Future<List<Map<String, dynamic>>> _generateActionableInsights() async {
+    // TODO: Generate actionable insights from analytics
+    return [
+      {
+        'title': 'High Patient Volume Expected',
+        'description': 'Expect 25% increase in patient volume next week',
+        'priority': 'high',
+        'recommended_actions': ['Increase staffing', 'Prepare additional resources'],
+      },
+      {
+        'title': 'Cost Optimization Opportunity',
+        'description': 'Inventory optimization could reduce costs by 8%',
+        'priority': 'medium',
+        'recommended_actions': ['Review inventory levels', 'Implement just-in-time ordering'],
+      },
+    ];
+  }
+
+  Future<List<Map<String, dynamic>>> _getActiveAlerts() async {
+    // TODO: Get currently active alerts
+    return [
+      {
+        'id': 'alert_001',
+        'type': 'capacity_warning',
+        'message': 'ICU capacity approaching limit',
+        'severity': 'high',
+        'created_at': DateTime.now().subtract(Duration(hours: 2)).toIso8601String(),
+      }
+    ];
+  }
+
+  double _calculateRiskScore(Map<String, dynamic> features, Map<String, dynamic>? riskModel) {
+    // TODO: Calculate risk score using ML model
+    if (riskModel == null) return 0.5;
+    
+    double score = 0.0;
+    final riskFactors = riskModel['risk_factors'] as Map<String, dynamic>? ?? {};
+    
+    for (final factor in riskFactors.keys) {
+      if (features.containsKey(factor)) {
+        final weight = riskFactors[factor]['weight'] ?? 0.1;
+        final value = features[factor] ?? 0;
+        score += weight * (value is num ? value.toDouble() : 0.5);
+      }
+    }
+    
+    return (score).clamp(0.0, 1.0);
+  }
+
+  String _categorizeRisk(double riskScore) {
+    if (riskScore >= 0.8) return 'very_high';
+    if (riskScore >= 0.6) return 'high';
+    if (riskScore >= 0.4) return 'medium';
+    if (riskScore >= 0.2) return 'low';
+    return 'very_low';
+  }
+
+  List<String> _identifyRiskFactors(Map<String, dynamic> features, Map<String, dynamic>? riskModel) {
+    // TODO: Identify main risk factors for the patient
+    final factors = <String>[];
+    if (features['age'] != null && features['age'] > 65) factors.add('Advanced age');
+    if (features['chronic_conditions'] != null && features['chronic_conditions'] > 2) factors.add('Multiple chronic conditions');
+    if (features['emergency_visits'] != null && features['emergency_visits'] > 3) factors.add('Frequent emergency visits');
+    return factors;
+  }
+
+  List<String> _generateRiskRecommendations(List<String> riskFactors) {
+    // TODO: Generate recommendations based on risk factors
+    final recommendations = <String>[];
+    if (riskFactors.contains('Advanced age')) recommendations.add('Consider geriatric consultation');
+    if (riskFactors.contains('Multiple chronic conditions')) recommendations.add('Care coordination needed');
+    if (riskFactors.contains('Frequent emergency visits')) recommendations.add('Preventive care plan required');
+    return recommendations;
+  }
+
+  double _calculateRiskConfidence(Map<String, dynamic> features, Map<String, dynamic>? riskModel) {
+    // TODO: Calculate confidence in risk assessment
+    return 0.85 + Random().nextDouble() * 0.10;
+  }
+
+  Future<List<Map<String, dynamic>>> _gatherHistoricalDemandData() async {
+    // TODO: Gather historical demand data
+    final Random random = Random();
+    return List.generate(90, (i) => {
+      'date': DateTime.now().subtract(Duration(days: 90 - i)).toIso8601String(),
+      'demand': 50 + random.nextInt(50),
+      'weekday': DateTime.now().subtract(Duration(days: 90 - i)).weekday,
+    });
+  }
+
+  Map<String, dynamic> _generateDemandForecast(List<Map<String, dynamic>> historicalData) {
+    // TODO: Generate demand forecast from historical data
+    final Random random = Random();
+    return {
+      'forecast': List.generate(30, (i) => 55 + random.nextInt(40)),
+      'trend': 'increasing',
+      'seasonality': 'moderate',
+    };
+  }
+
+  double _calculateForecastConfidence(Map<String, dynamic> forecast) {
+    // TODO: Calculate forecast confidence
+    return 0.87 + Random().nextDouble() * 0.08;
+  }
+
+  Map<String, dynamic> _applySeasonalAdjustments(Map<String, dynamic> forecast) {
+    // TODO: Apply seasonal adjustments to forecast
+    final adjustedForecast = Map<String, dynamic>.from(forecast);
+    adjustedForecast['seasonal_adjustment'] = 1.15; // 15% seasonal increase
+    return adjustedForecast;
+  }
+
+  List<String> _generateCapacityRecommendations(Map<String, dynamic> forecast) {
+    // TODO: Generate capacity recommendations
+    return [
+      'Increase staff by 20% during peak hours',
+      'Prepare additional bed capacity',
+      'Stock up on essential supplies',
+    ];
+  }
+
+  Future<Map<String, dynamic>> _gatherCurrentResourceUtilization() async {
+    // TODO: Gather current resource utilization data
+    return {
+      'beds': {'used': 45, 'total': 60, 'utilization': 0.75},
+      'staff': {'present': 28, 'total': 35, 'utilization': 0.80},
+      'equipment': {'used': 18, 'total': 25, 'utilization': 0.72},
+    };
+  }
+
+  Map<String, dynamic> _runOptimizationAlgorithm(Map<String, dynamic> currentUtilization, Map<String, dynamic> constraints) {
+    // TODO: Run optimization algorithm
+    return {
+      'optimal_allocation': {
+        'beds': 52,
+        'staff': 32,
+        'equipment': 22,
+      },
+      'efficiency_gain': 0.18,
+      'cost_savings': 0.12,
+    };
+  }
+
+  List<String> _generateRiskActionItems(Map<String, dynamic> riskAssessment) {
+    // TODO: Generate action items for risk management
+    return [
+      'Schedule follow-up appointment within 7 days',
+      'Coordinate with primary care physician',
+      'Monitor vital signs closely',
+    ];
+  }
+
+  List<String> _identifyCapacityIssues(Map<String, dynamic> utilizationData) {
+    // TODO: Identify capacity issues
+    final issues = <String>[];
+    if (utilizationData['beds']?['utilization'] > 0.90) issues.add('Bed capacity critical');
+    if (utilizationData['staff']?['utilization'] > 0.95) issues.add('Staff overutilization');
+    return issues;
+  }
+
+  List<String> _generateCapacityActionItems(List<String> capacityIssues) {
+    // TODO: Generate action items for capacity issues
+    final actions = <String>[];
+    if (capacityIssues.contains('Bed capacity critical')) actions.add('Activate overflow protocols');
+    if (capacityIssues.contains('Staff overutilization')) actions.add('Call in additional staff');
+    return actions;
+  }
+
+  Map<String, dynamic> _analyzeQualityTrends(Map<String, dynamic> qualityData) {
+    // TODO: Analyze quality trends
+    return {
+      'overall_trend': 'stable',
+      'improvement_areas': ['patient_satisfaction', 'wait_times'],
+      'strong_areas': ['clinical_outcomes', 'safety_metrics'],
+    };
+  }
+
+  List<String> _generateQualityActionItems(Map<String, dynamic> qualityTrends) {
+    // TODO: Generate quality improvement action items
+    return [
+      'Implement patient satisfaction improvement plan',
+      'Review and optimize wait time processes',
+      'Continue best practices in clinical outcomes',
+    ];
+  }
+
+  List<Map<String, dynamic>> _identifyCostOptimizationOpportunities() {
+    // TODO: Identify cost optimization opportunities
+    return [
+      {'area': 'Supply chain', 'savings_potential': 0.12, 'effort': 'medium'},
+      {'area': 'Energy efficiency', 'savings_potential': 0.08, 'effort': 'low'},
+      {'area': 'Process automation', 'savings_potential': 0.15, 'effort': 'high'},
+    ];
+  }
+
+  List<int> _identifyPeakHours() {
+    // TODO: Identify peak usage hours
+    return [8, 9, 10, 11, 14, 15, 16, 17];
+  }
+
+  List<int> _identifyPeakDays() {
+    // TODO: Identify peak days of week (1=Monday, 7=Sunday)
+    return [2, 3, 4]; // Tuesday, Wednesday, Thursday
+  }
+
+  Map<String, double> _identifySeasonalTrends() {
+    // TODO: Identify seasonal trends
+    return {
+      'spring': 1.05,
+      'summer': 0.95,
+      'fall': 1.10,
+      'winter': 1.20,
+    };
+  }
+
+  double _calculateVolatility(List<double> data) {
+    if (data.isEmpty) return 0.0;
+    final mean = data.reduce((a, b) => a + b) / data.length;
+    final variance = data.map((x) => pow(x - mean, 2)).reduce((a, b) => a + b) / data.length;
+    return sqrt(variance);
+  }
+
+  Map<String, dynamic> _identifyCyclicalPatterns(List<double> data) {
+    // TODO: Identify cyclical patterns in data
+    return {
+      'cycle_length': 7, // Weekly cycles
+      'cycle_strength': 0.65,
+      'pattern_type': 'weekly',
+    };
+  }
+
+  // Additional helper methods
+
+  Future<Map<String, dynamic>> _gatherBenchmarkData() async {
+    // TODO: Gather industry benchmark data
+    return {
+      'industry_average_satisfaction': 0.82,
+      'industry_average_efficiency': 0.75,
+      'industry_average_outcomes': 0.88,
+    };
+  }
 
   @override
   void dispose() {

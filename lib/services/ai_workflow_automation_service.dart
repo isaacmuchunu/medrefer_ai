@@ -5,9 +5,9 @@ import '../database/services/data_service.dart';
 
 /// AI-Powered Workflow Automation Service for healthcare administrative tasks
 class AIWorkflowAutomationService extends ChangeNotifier {
-  static final AIWorkflowAutomationService _instance = _AIWorkflowAutomationService();
+  static final AIWorkflowAutomationService _instance = AIWorkflowAutomationService._internal();
   factory AIWorkflowAutomationService() => _instance;
-  _AIWorkflowAutomationService();
+  AIWorkflowAutomationService._internal();
 
   final DataService _dataService = DataService();
   bool _isInitialized = false;
@@ -16,6 +16,7 @@ class AIWorkflowAutomationService extends ChangeNotifier {
   final Map<String, WorkflowDefinition> _workflows = {};
   final Map<String, WorkflowInstance> _activeWorkflows = {};
   final Map<String, List<WorkflowExecution>> _workflowHistory = {};
+  final Map<String, WorkflowExecution> _workflowExecutions = {};
   
   // AI agents and automation
   final Map<String, AIAgent> _aiAgents = {};
@@ -519,6 +520,66 @@ class AIWorkflowAutomationService extends ChangeNotifier {
     debugPrint('✅ Optimization engine started');
   }
 
+  /// Process automation rules
+  Future<void> _processAutomationRules() async {
+    // TODO: Implement comprehensive automation rules processing
+    try {
+      for (final rule in _automationRules.values.where((r) => r.isActive)) {
+        if (await _evaluateRuleConditions(rule)) {
+          await _executeRuleActions(rule);
+        }
+      }
+    } catch (e) {
+      debugPrint('Error processing automation rules: $e');
+    }
+  }
+
+  /// Execute scheduled tasks
+  Future<void> _executeScheduledTasks() async {
+    // TODO: Implement comprehensive scheduled tasks execution
+    try {
+      final currentTime = DateTime.now();
+      final dueTasks = _scheduledTasks.where((task) => 
+        task.isActive && 
+        task.scheduledTime.isBefore(currentTime) &&
+        task.status == TaskStatus.pending
+      );
+
+      for (final task in dueTasks) {
+        await _executeTask(task);
+      }
+    } catch (e) {
+      debugPrint('Error executing scheduled tasks: $e');
+    }
+  }
+
+  /// Monitor workflow performance
+  Future<void> _monitorWorkflowPerformance() async {
+    // TODO: Implement comprehensive workflow performance monitoring
+    try {
+      for (final workflowId in _workflows.keys) {
+        await _updateWorkflowMetrics(workflowId, Duration.zero, true);
+      }
+    } catch (e) {
+      debugPrint('Error monitoring workflow performance: $e');
+    }
+  }
+
+  /// Optimize resource allocation
+  Future<void> _optimizeResourceAllocation() async {
+    // TODO: Implement dynamic resource allocation optimization
+    try {
+      for (final pool in _resourcePools.values) {
+        final optimalUtilization = await _calculateOptimalUtilization(pool);
+        if (pool.currentUtilization != optimalUtilization) {
+          await _adjustResourceAllocation(pool, optimalUtilization);
+        }
+      }
+    } catch (e) {
+      debugPrint('Error optimizing resource allocation: $e');
+    }
+  }
+
   /// Execute a workflow
   Future<String> executeWorkflow({
     required String workflowId,
@@ -756,7 +817,546 @@ class AIWorkflowAutomationService extends ChangeNotifier {
   }
 
   // Helper methods and additional functionality...
-  // Due to space constraints, showing key structure and main methods
+  
+  /// Generate staff schedule for resource pool
+  Map<String, dynamic> _generateStaffSchedule() {
+    // TODO: Implement dynamic staff schedule generation from database
+    return {
+      'monday': {'start': '08:00', 'end': '17:00', 'capacity': 25},
+      'tuesday': {'start': '08:00', 'end': '17:00', 'capacity': 25},
+      'wednesday': {'start': '08:00', 'end': '17:00', 'capacity': 25},
+      'thursday': {'start': '08:00', 'end': '17:00', 'capacity': 25},
+      'friday': {'start': '08:00', 'end': '17:00', 'capacity': 25},
+      'saturday': {'start': '09:00', 'end': '15:00', 'capacity': 15},
+      'sunday': {'start': '10:00', 'end': '14:00', 'capacity': 10},
+    };
+  }
+
+  /// Generate equipment schedule for resource pool
+  Map<String, dynamic> _generateEquipmentSchedule() {
+    // TODO: Implement dynamic equipment schedule generation from database
+    return {
+      'available_24_7': true,
+      'maintenance_windows': [
+        {'day': 'sunday', 'start': '02:00', 'end': '06:00'},
+      ],
+      'utilization_target': 0.85,
+    };
+  }
+
+  /// Generate room schedule for resource pool
+  Map<String, dynamic> _generateRoomSchedule() {
+    // TODO: Implement dynamic room schedule generation from database
+    return {
+      'operating_hours': {'start': '07:00', 'end': '20:00'},
+      'cleaning_slots': [
+        {'start': '12:00', 'duration': 30},
+        {'start': '17:00', 'duration': 45},
+      ],
+      'emergency_reserve': 3,
+    };
+  }
+
+  /// Optimize scheduling
+  Future<void> _optimizeScheduling() async {
+    // TODO: Implement dynamic scheduling optimization
+    try {
+      final upcomingAppointments = await _dataService.appointmentDAO.getUpcomingAppointments();
+      final optimizedSchedule = await _generateOptimizedSchedule(upcomingAppointments);
+      await _applyScheduleOptimizations(optimizedSchedule);
+    } catch (e) {
+      debugPrint('Error optimizing scheduling: $e');
+    }
+  }
+
+  /// Optimize workflow performance
+  Future<void> _optimizeWorkflowPerformance() async {
+    // TODO: Implement dynamic workflow performance optimization
+    try {
+      for (final workflowId in _workflows.keys) {
+        final metrics = _performanceMetrics[workflowId];
+        if (metrics != null && metrics.averageExecutionTime > 600000) { // 10 minutes in milliseconds
+          await _optimizeWorkflowDefinition(workflowId, metrics);
+        }
+      }
+    } catch (e) {
+      debugPrint('Error optimizing workflow performance: $e');
+    }
+  }
+
+  /// Generate workflow instance ID
+  String _generateWorkflowInstanceId() {
+    // TODO: Implement more sophisticated ID generation
+    final timestamp = DateTime.now().millisecondsSinceEpoch;
+    final random = Random().nextInt(10000);
+    return 'wf_${timestamp}_$random';
+  }
+
+  /// Handle step failure
+  Future<void> _handleStepFailure(WorkflowInstance instance, WorkflowStep step, dynamic error) async {
+    // TODO: Implement comprehensive step failure handling
+    try {
+      instance.failureCount++;
+      
+      if (instance.failureCount >= 3) {
+        instance.status = WorkflowStatus.failed;
+        await _notifyWorkflowFailure(instance, error);
+      } else {
+        // Retry logic
+        await Future.delayed(Duration(seconds: instance.failureCount * 5));
+        // Retry step execution would go here
+      }
+    } catch (e) {
+      debugPrint('Error handling step failure: $e');
+    }
+  }
+
+  /// Complete workflow
+  Future<void> _completeWorkflow(WorkflowInstance instance) async {
+    // TODO: Implement comprehensive workflow completion
+    try {
+      // Update metrics
+      final duration = instance.endTime!.difference(instance.startTime);
+      await _updateWorkflowMetrics(instance.workflowId, duration, true);
+      
+      // Trigger completion actions
+      await _executeCompletionActions(instance);
+      
+      // Archive the instance
+      await _archiveWorkflowInstance(instance);
+      
+      // Remove from active workflows
+      _activeWorkflows.remove(instance.id);
+    } catch (e) {
+      debugPrint('Error completing workflow: $e');
+    }
+  }
+
+  /// Execute automated step
+  Future<Map<String, dynamic>> _executeAutomatedStep(WorkflowStep step, Map<String, dynamic> context) async {
+    // TODO: Implement comprehensive automated step execution
+    try {
+      await Future.delayed(Duration(milliseconds: 300 + Random().nextInt(700)));
+      
+      final result = await _processAutomatedAction(step.parameters, context);
+      
+      return {
+        'success': true,
+        'output': {
+          'automated_result': result,
+          'execution_time': DateTime.now().millisecondsSinceEpoch,
+          'step_type': 'automated',
+        }
+      };
+    } catch (e) {
+      return {'success': false, 'error': e.toString()};
+    }
+  }
+
+  /// Execute conditional step
+  Future<Map<String, dynamic>> _executeConditionalStep(WorkflowStep step, Map<String, dynamic> context) async {
+    // TODO: Implement comprehensive conditional step execution
+    try {
+      await Future.delayed(Duration(milliseconds: 200 + Random().nextInt(300)));
+      
+      final condition = step.parameters['condition'] ?? 'default';
+      final conditionMet = await _evaluateCondition(condition, context);
+      
+      return {
+        'success': true,
+        'output': {
+          'condition_met': conditionMet,
+          'condition': condition,
+          'next_action': conditionMet ? step.parameters['if_true'] : step.parameters['if_false'],
+        }
+      };
+    } catch (e) {
+      return {'success': false, 'error': e.toString()};
+    }
+  }
+
+  /// Execute automated step
+  Future<Map<String, dynamic>> _executeAutomatedStep(WorkflowStep step, Map<String, dynamic> context) async {
+    // TODO: Implement comprehensive automated step execution
+    try {
+      // Simulate automated action processing
+      await Future.delayed(Duration(milliseconds: 200 + Random().nextInt(300)));
+      
+      final result = await _processAutomatedAction(step.parameters, context);
+      
+      return {
+        'success': true,
+        'result': result,
+        'timestamp': DateTime.now().toIso8601String(),
+      };
+    } catch (e) {
+      return {
+        'success': false,
+        'error': e.toString(),
+      };
+    }
+  }
+
+  /// Execute conditional step
+  Future<Map<String, dynamic>> _executeConditionalStep(WorkflowStep step, Map<String, dynamic> context) async {
+    // TODO: Implement comprehensive conditional step execution
+    try {
+      // Evaluate condition
+      final condition = step.parameters['condition'] as String?;
+      if (condition != null) {
+        final conditionResult = await _evaluateCondition(condition, context);
+        
+        return {
+          'success': true,
+          'condition_met': conditionResult,
+          'next_step': conditionResult ? step.parameters['true_step'] : step.parameters['false_step'],
+          'timestamp': DateTime.now().toIso8601String(),
+        };
+      }
+      
+      return {
+        'success': false,
+        'error': 'No condition specified',
+      };
+    } catch (e) {
+      return {
+        'success': false,
+        'error': e.toString(),
+      };
+    }
+  }
+
+  /// Execute manual step
+  Future<Map<String, dynamic>> _executeManualStep(WorkflowStep step, Map<String, dynamic> context) async {
+    // TODO: Implement comprehensive manual step execution
+    try {
+      // Manual steps require human intervention
+      // For now, simulate immediate completion
+      return {
+        'success': true,
+        'output': {
+          'status': 'pending_manual_review',
+          'assigned_to': step.parameters['assignee'] ?? 'unassigned',
+          'instructions': step.parameters['instructions'] ?? 'Manual review required',
+        }
+      };
+    } catch (e) {
+      return {'success': false, 'error': e.toString()};
+    }
+  }
+
+  /// Make AI decision
+  Future<Map<String, dynamic>> _makeAIDecision(AIAgent agent, Map<String, dynamic> context, Map<String, dynamic> parameters) async {
+    // TODO: Implement comprehensive AI decision making
+    try {
+      // Simulate AI decision processing
+      await Future.delayed(Duration(milliseconds: 500 + Random().nextInt(1000)));
+      
+      final decision = await _processAIDecision(agent, context, parameters);
+      
+      return {
+        'decision_type': parameters['decision_type'] ?? 'classification',
+        'result': decision,
+        'confidence': 0.8 + Random().nextDouble() * 0.15,
+        'agent_id': agent.id,
+      };
+    } catch (e) {
+      throw Exception('AI decision failed: $e');
+    }
+  }
+
+  /// Process data with AI
+  Future<Map<String, dynamic>> _processDataWithAI(AIAgent agent, Map<String, dynamic> context, Map<String, dynamic> parameters) async {
+    // TODO: Implement comprehensive AI data processing
+    try {
+      // Simulate AI data processing
+      await Future.delayed(Duration(milliseconds: 600 + Random().nextInt(800)));
+      
+      final processedData = await _performAIProcessing(agent, context, parameters);
+      
+      return {
+        'processed_data': processedData,
+        'confidence': 0.88 + (Random().nextDouble() * 0.12),
+        'processing_time': Duration(milliseconds: 600 + Random().nextInt(800)).inMilliseconds,
+        'agent_id': agent.id,
+      };
+    } catch (e) {
+      return {
+        'processed_data': {},
+        'confidence': 0.0,
+        'error': e.toString(),
+      };
+    }
+  }
+
+  /// Optimize with AI
+  Future<Map<String, dynamic>> _optimizeWithAI(AIAgent agent, Map<String, dynamic> context, Map<String, dynamic> parameters) async {
+    // TODO: Implement comprehensive AI optimization
+    try {
+      await Future.delayed(Duration(milliseconds: 1200 + Random().nextInt(1800)));
+      
+      final optimization = await _performAIOptimization(agent, context, parameters);
+      
+      return {
+        'optimization_result': optimization,
+        'algorithm_used': parameters['algorithm'] ?? 'genetic',
+        'improvement_score': 0.15 + Random().nextDouble() * 0.25,
+        'agent_id': agent.id,
+      };
+    } catch (e) {
+      throw Exception('AI optimization failed: $e');
+    }
+  }
+
+  /// Calculate resource utilization
+  double _calculateResourceUtilization() {
+    // TODO: Implement dynamic resource utilization calculation
+    try {
+      if (_resourcePools.isEmpty) return 0.0;
+      
+      final totalUtilization = _resourcePools.values.fold<double>(
+        0.0, 
+        (sum, pool) => sum + pool.currentUtilization,
+      );
+      
+      return totalUtilization / _resourcePools.length;
+    } catch (e) {
+      debugPrint('Error calculating resource utilization: $e');
+      return 0.0;
+    }
+  }
+
+  /// Calculate cost savings
+  double _calculateCostSavings() {
+    // TODO: Implement dynamic cost savings calculation
+    try {
+      // Simulate cost savings calculation based on automation
+      final automationCount = _activeWorkflows.length;
+      final avgSavingsPerWorkflow = 150.0; // USD per automated workflow
+      
+      return automationCount * avgSavingsPerWorkflow;
+    } catch (e) {
+      debugPrint('Error calculating cost savings: $e');
+      return 0.0;
+    }
+  }
+
+  /// Get agent task count
+  int _getAgentTaskCount(String agentId) {
+    // TODO: Implement dynamic agent task count from database
+    try {
+      // Count tasks processed by this agent across all workflows
+      int count = 0;
+      for (final executions in _workflowHistory.values) {
+        for (final execution in executions) {
+          for (final stepExecution in execution.stepExecutions) {
+            if (stepExecution.stepId.contains(agentId)) {
+              count++;
+            }
+          }
+        }
+      }
+      return count;
+    } catch (e) {
+      debugPrint('Error getting agent task count: $e');
+      return 0;
+    }
+  }
+
+  /// Get agent average time
+  double _getAgentAverageTime(String agentId) {
+    // TODO: Implement dynamic agent average time calculation
+    try {
+      final times = <int>[];
+      for (final executions in _workflowHistory.values) {
+        for (final execution in executions) {
+          for (final stepExecution in execution.stepExecutions) {
+            if (stepExecution.stepId.contains(agentId) && 
+                stepExecution.endTime != null && 
+                stepExecution.startTime != null) {
+              times.add(stepExecution.endTime!.difference(stepExecution.startTime!).inMilliseconds);
+            }
+          }
+        }
+      }
+      
+      if (times.isEmpty) return 0.0;
+      return times.reduce((a, b) => a + b) / times.length;
+    } catch (e) {
+      debugPrint('Error getting agent average time: $e');
+      return 0.0;
+    }
+  }
+
+  /// Get agent success rate
+  double _getAgentSuccessRate(String agentId) {
+    // TODO: Implement dynamic agent success rate calculation
+    try {
+      int total = 0;
+      int successful = 0;
+      
+      for (final executions in _workflowHistory.values) {
+        for (final execution in executions) {
+          for (final stepExecution in execution.stepExecutions) {
+            if (stepExecution.stepId.contains(agentId)) {
+              total++;
+              if (stepExecution.result?['success'] == true) {
+                successful++;
+              }
+            }
+          }
+        }
+      }
+      
+      if (total == 0) return 0.0;
+      return successful / total;
+    } catch (e) {
+      debugPrint('Error getting agent success rate: $e');
+      return 0.0;
+    }
+  }
+
+  // Additional helper methods for the above implementations
+
+  Future<bool> _evaluateRuleConditions(AutomationRule rule) async {
+    // TODO: Implement comprehensive rule condition evaluation
+    return Random().nextBool();
+  }
+
+  Future<void> _executeRuleActions(AutomationRule rule) async {
+    // TODO: Implement comprehensive rule action execution
+    for (final action in rule.actions) {
+      await _executeAction(action);
+    }
+  }
+
+  Future<void> _executeAction(AutomationAction action) async {
+    // TODO: Implement comprehensive action execution
+    await Future.delayed(Duration(milliseconds: 100));
+  }
+
+  Future<void> _executeTask(ScheduledTask task) async {
+    // TODO: Implement comprehensive task execution
+    task.status = TaskStatus.executing;
+    await Future.delayed(Duration(milliseconds: 500));
+    task.status = TaskStatus.completed;
+  }
+
+  Duration _calculateExpectedDuration(String workflowId) {
+    // TODO: Implement dynamic expected duration calculation
+    return Duration(minutes: 15); // Default expected duration
+  }
+
+  Future<void> _handleDelayedWorkflow(WorkflowInstance instance) async {
+    // TODO: Implement comprehensive delayed workflow handling
+    debugPrint('Workflow delayed: ${instance.id}');
+  }
+
+  Future<double> _calculateOptimalUtilization(ResourcePool pool) async {
+    // TODO: Implement sophisticated optimal utilization calculation
+    return 0.8; // Target 80% utilization
+  }
+
+  Future<void> _adjustResourceAllocation(ResourcePool pool, double optimalUtilization) async {
+    // TODO: Implement comprehensive resource allocation adjustment
+    pool.currentUtilization = optimalUtilization;
+  }
+
+  Future<List<Map<String, dynamic>>> _generateOptimizedSchedule(List<dynamic> appointments) async {
+    // TODO: Implement comprehensive schedule optimization
+    return [];
+  }
+
+  Future<void> _applyScheduleOptimizations(List<Map<String, dynamic>> optimizations) async {
+    // TODO: Implement comprehensive schedule optimization application
+  }
+
+  Future<void> _optimizeWorkflowDefinition(String workflowId, WorkflowMetrics metrics) async {
+    // TODO: Implement comprehensive workflow definition optimization
+  }
+
+  Future<void> _notifyWorkflowFailure(WorkflowInstance instance, dynamic error) async {
+    // TODO: Implement comprehensive workflow failure notification
+    debugPrint('Workflow failed: ${instance.id} - $error');
+  }
+
+  Future<void> _updateWorkflowMetrics(String workflowId, Duration duration, bool success) async {
+    // TODO: Implement comprehensive workflow metrics update
+  }
+
+  Future<void> _executeCompletionActions(WorkflowInstance instance) async {
+    // TODO: Implement comprehensive completion actions
+  }
+
+  Future<void> _archiveWorkflowInstance(WorkflowInstance instance) async {
+    // TODO: Implement comprehensive workflow instance archiving
+  }
+
+  Future<Map<String, dynamic>> _processAutomatedAction(Map<String, dynamic> parameters, Map<String, dynamic> context) async {
+    // TODO: Implement comprehensive automated action processing
+    return {'result': 'automated_action_completed'};
+  }
+
+  Future<bool> _evaluateCondition(String condition, Map<String, dynamic> context) async {
+    // TODO: Implement comprehensive condition evaluation
+    return Random().nextBool();
+  }
+
+  Future<Map<String, dynamic>> _processAIDecision(AIAgent agent, Map<String, dynamic> context, Map<String, dynamic> parameters) async {
+    // TODO: Implement comprehensive AI decision processing
+    return {'decision': 'ai_decision_result'};
+  }
+
+  Future<Map<String, dynamic>> _performAIProcessing(AIAgent agent, Map<String, dynamic> context, Map<String, dynamic> parameters) async {
+    // TODO: Implement comprehensive AI processing
+    return {'processed': 'ai_processing_result'};
+  }
+
+  Future<Map<String, dynamic>> _performAIOptimization(AIAgent agent, Map<String, dynamic> context, Map<String, dynamic> parameters) async {
+    // TODO: Implement comprehensive AI optimization
+    return {'optimized': 'ai_optimization_result'};
+  }
+
+  /// Complete workflow
+  Future<void> _completeWorkflow(WorkflowInstance instance) async {
+    // TODO: Implement comprehensive workflow completion
+    try {
+      instance.status = WorkflowStatus.completed;
+      instance.endTime = DateTime.now();
+      
+      // Update metrics
+      await _updateWorkflowMetrics(
+        instance.workflowId,
+        instance.endTime!.difference(instance.startTime),
+        true,
+      );
+      
+      // Clean up active workflows
+      _activeWorkflows.remove(instance.id);
+      
+      // Store execution record
+      _workflowExecutions[instance.id] = WorkflowExecution(
+        instanceId: instance.id,
+        workflowId: instance.workflowId,
+        status: instance.status,
+        startTime: instance.startTime,
+        endTime: instance.endTime,
+        executionTime: instance.endTime!.difference(instance.startTime),
+        metrics: {
+          'steps_completed': instance.stepExecutions.length,
+          'success_rate': 1.0,
+          'priority': instance.priority.toString(),
+        },
+        stepExecutions: instance.stepExecutions,
+      );
+      
+      notifyListeners();
+      debugPrint('✅ Workflow completed: ${instance.workflowId}');
+    } catch (e) {
+      debugPrint('Error completing workflow: $e');
+      rethrow;
+    }
+  }
 
   @override
   void dispose() {
@@ -819,6 +1419,7 @@ class WorkflowInstance {
   WorkflowPriority priority;
   List<WorkflowStepExecution> stepExecutions;
   String? error;
+  int failureCount;
 
   WorkflowInstance({
     required this.id,
@@ -831,6 +1432,7 @@ class WorkflowInstance {
     required this.priority,
     List<WorkflowStepExecution>? stepExecutions,
     this.error,
+    this.failureCount = 0,
   }) : stepExecutions = stepExecutions ?? [];
 }
 
@@ -964,6 +1566,7 @@ class WorkflowExecution {
   DateTime? endTime;
   Duration? executionTime;
   Map<String, dynamic> metrics;
+  List<WorkflowStepExecution> stepExecutions;
 
   WorkflowExecution({
     required this.instanceId,
@@ -973,7 +1576,8 @@ class WorkflowExecution {
     this.endTime,
     this.executionTime,
     required this.metrics,
-  });
+    List<WorkflowStepExecution>? stepExecutions,
+  }) : stepExecutions = stepExecutions ?? [];
 }
 
 class WorkflowMetrics {
@@ -1003,6 +1607,7 @@ class ScheduledTask {
   bool isRecurring;
   bool isActive;
   Map<String, dynamic> context;
+  TaskStatus status;
 
   ScheduledTask({
     required this.id,
@@ -1013,6 +1618,7 @@ class ScheduledTask {
     required this.isRecurring,
     required this.isActive,
     required this.context,
+    this.status = TaskStatus.pending,
   });
 }
 
@@ -1064,3 +1670,4 @@ enum ActionType { triggerWorkflow, sendNotification, sendAlert, updateRecord, sc
 enum DecisionEngineType { classification, regression, optimization, clustering }
 enum ResourceType { human, equipment, facility, virtual }
 enum OptimizationType { costMinimization, timeMinimization, qualityMaximization, utilizationMaximization }
+enum TaskStatus { pending, executing, completed, failed, cancelled }
