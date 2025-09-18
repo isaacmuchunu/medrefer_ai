@@ -5,8 +5,8 @@ import '../database/services/data_service.dart';
 
 /// AI-Powered Workflow Automation Service for healthcare administrative tasks
 class AIWorkflowAutomationService extends ChangeNotifier {
-  static final AIWorkflowAutomationService _instance = AIWorkflowAutomationService._internal();
-  factory AIWorkflowAutomationService() => _instance;
+  static AIWorkflowAutomationService? _instance;
+  factory AIWorkflowAutomationService() => _instance ??= AIWorkflowAutomationService._internal();
   AIWorkflowAutomationService._internal();
 
   final DataService _dataService = DataService();
@@ -911,27 +911,6 @@ class AIWorkflowAutomationService extends ChangeNotifier {
     }
   }
 
-  /// Complete workflow
-  Future<void> _completeWorkflow(WorkflowInstance instance) async {
-    // TODO: Implement comprehensive workflow completion
-    try {
-      // Update metrics
-      final duration = instance.endTime!.difference(instance.startTime);
-      await _updateWorkflowMetrics(instance.workflowId, duration, true);
-      
-      // Trigger completion actions
-      await _executeCompletionActions(instance);
-      
-      // Archive the instance
-      await _archiveWorkflowInstance(instance);
-      
-      // Remove from active workflows
-      _activeWorkflows.remove(instance.id);
-    } catch (e) {
-      debugPrint('Error completing workflow: $e');
-    }
-  }
-
   /// Execute automated step
   Future<Map<String, dynamic>> _executeAutomatedStep(WorkflowStep step, Map<String, dynamic> context) async {
     // TODO: Implement comprehensive automated step execution
@@ -972,28 +951,6 @@ class AIWorkflowAutomationService extends ChangeNotifier {
       };
     } catch (e) {
       return {'success': false, 'error': e.toString()};
-    }
-  }
-
-  /// Execute automated step
-  Future<Map<String, dynamic>> _executeAutomatedStep(WorkflowStep step, Map<String, dynamic> context) async {
-    // TODO: Implement comprehensive automated step execution
-    try {
-      // Simulate automated action processing
-      await Future.delayed(Duration(milliseconds: 200 + Random().nextInt(300)));
-      
-      final result = await _processAutomatedAction(step.parameters, context);
-      
-      return {
-        'success': true,
-        'result': result,
-        'timestamp': DateTime.now().toIso8601String(),
-      };
-    } catch (e) {
-      return {
-        'success': false,
-        'error': e.toString(),
-      };
     }
   }
 

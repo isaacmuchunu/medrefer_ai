@@ -18,9 +18,10 @@ import '../database/models/resource_limit_check_result.dart';
 import '../database/models/subscription_result.dart';
 import '../database/models/tenant_operation_result.dart';
 import '../database/models/tenant_analytics_result.dart';
+import '../database/models/tenant.dart';
 
 /// Multi-Tenant Architecture Service
-/// 
+///
 /// Provides comprehensive multi-tenancy capabilities including:
 /// - Tenant isolation and data segregation
 /// - Tenant-specific customization and branding
@@ -33,8 +34,15 @@ import '../database/models/tenant_analytics_result.dart';
 /// - Database partitioning strategies
 /// - Tenant monitoring and analytics
 class MultiTenantService extends ChangeNotifier {
-  static final MultiTenantService _instance = MultiTenantService._internal();
-  factory MultiTenantService() => _instance;
+  static MultiTenantService? _instance;
+
+  static MultiTenantService get instance {
+    _instance ??= MultiTenantService._internal();
+    return _instance!;
+  }
+
+  factory MultiTenantService() => instance;
+
   MultiTenantService._internal();
 
   Database? _tenantDb;
@@ -47,22 +55,22 @@ class MultiTenantService extends ChangeNotifier {
   final Map<String, Tenant> _tenants = {};
   final Map<String, TenantConfiguration> _tenantConfigs = {};
   final Map<String, TenantCustomization> _tenantCustomizations = {};
-  
+
   // Resource Management
   final Map<String, ResourceQuota> _resourceQuotas = {};
   final Map<String, ResourceUsage> _resourceUsage = {};
-  
+
   // Billing and Subscriptions
   final Map<String, Subscription> _subscriptions = {};
   final Map<String, BillingAccount> _billingAccounts = {};
-  
+
   // Security and Access Control
   final Map<String, TenantSecurity> _tenantSecurity = {};
   final Map<String, List<TenantUser>> _tenantUsers = {};
-  
+
   // Database Partitioning
   final Map<String, DatabasePartition> _databasePartitions = {};
-  
+
   // Monitoring and Analytics
   final Map<String, TenantMetrics> _tenantMetrics = {};
 
@@ -98,7 +106,7 @@ class MultiTenantService extends ChangeNotifier {
 
       _isInitialized = true;
       debugPrint('✅ Multi-Tenant Service initialized successfully');
-      
+
       notifyListeners();
     } catch (e) {
       debugPrint('❌ Failed to initialize Multi-Tenant Service: $e');
@@ -562,7 +570,7 @@ class MultiTenantService extends ChangeNotifier {
       if (newPlan != null && newPlan != subscription.plan) {
         subscription.plan = newPlan;
         subscription.features = _getPlanFeatures(newPlan);
-        
+
         // Update resource quota for new plan
         _resourceQuotas[tenantId] = _createResourceQuota(tenantId, newPlan);
       }
@@ -715,7 +723,7 @@ class MultiTenantService extends ChangeNotifier {
     try {
       final metrics = _tenantMetrics[tenantId];
       final usage = _resourceUsage[tenantId];
-      
+
       if (metrics == null || usage == null) {
         return TenantAnalyticsResult(
           success: false,
@@ -848,7 +856,7 @@ class MultiTenantService extends ChangeNotifier {
     if (_tenantDb == null) return;
 
     final List<Map<String, dynamic>> maps = await _tenantDb!.query('tenants');
-    
+
     for (final map in maps) {
       final tenant = Tenant(
         tenantId: map['tenant_id'],
@@ -861,7 +869,7 @@ class MultiTenantService extends ChangeNotifier {
         suspensionReason: map['suspension_reason'],
         settings: map['settings'] != null ? jsonDecode(map['settings']) : {},
       );
-      
+
       _tenants[tenant.tenantId] = tenant;
     }
 
@@ -872,7 +880,7 @@ class MultiTenantService extends ChangeNotifier {
     if (_tenantDb == null) return;
 
     final List<Map<String, dynamic>> maps = await _tenantDb!.query('tenant_configurations');
-    
+
     for (final map in maps) {
       final config = TenantConfiguration(
         tenantId: map['tenant_id'],
@@ -882,7 +890,7 @@ class MultiTenantService extends ChangeNotifier {
         integrationSettings: map['integration_settings'] != null ? jsonDecode(map['integration_settings']) : {},
         customSettings: map['custom_settings'] != null ? jsonDecode(map['custom_settings']) : {},
       );
-      
+
       _tenantConfigs[config.tenantId] = config;
     }
 
@@ -893,7 +901,7 @@ class MultiTenantService extends ChangeNotifier {
     if (_tenantDb == null) return;
 
     final List<Map<String, dynamic>> maps = await _tenantDb!.query('resource_quotas');
-    
+
     for (final map in maps) {
       final quota = ResourceQuota(
         tenantId: map['tenant_id'],
@@ -905,7 +913,7 @@ class MultiTenantService extends ChangeNotifier {
         createdAt: DateTime.parse(map['created_at']),
         updatedAt: DateTime.parse(map['updated_at']),
       );
-      
+
       _resourceQuotas[quota.tenantId] = quota;
     }
 
@@ -916,7 +924,7 @@ class MultiTenantService extends ChangeNotifier {
     if (_tenantDb == null) return;
 
     final List<Map<String, dynamic>> maps = await _tenantDb!.query('subscriptions');
-    
+
     for (final map in maps) {
       final subscription = Subscription(
         tenantId: map['tenant_id'],
@@ -928,7 +936,7 @@ class MultiTenantService extends ChangeNotifier {
         autoRenew: map['auto_renew'] == 1,
         features: map['features'] != null ? List<String>.from(jsonDecode(map['features'])) : [],
       );
-      
+
       _subscriptions[subscription.tenantId] = subscription;
     }
 
@@ -991,7 +999,7 @@ class MultiTenantService extends ChangeNotifier {
 
   Future<void> _processBilling() async {
     final now = DateTime.now();
-    
+
     for (final billingAccount in _billingAccounts.values) {
       if (billingAccount.nextBillingDate.isBefore(now)) {
         // Process billing for this tenant
@@ -1003,7 +1011,7 @@ class MultiTenantService extends ChangeNotifier {
   Future<void> _processTenantBilling(BillingAccount billingAccount) async {
     // Process billing for a specific tenant
     debugPrint('💳 Processing billing for tenant: ${billingAccount.tenantId}');
-    
+
     // Update next billing date
     switch (billingAccount.billingCycle) {
       case BillingCycle.monthly:
@@ -1200,894 +1208,4 @@ class MultiTenantService extends ChangeNotifier {
     _tenantDb?.close();
     super.dispose();
   }
-}
-
-// Data Models and Enums
-
-enum TenantStatus { active, suspended, inactive, deleted }
-enum TenantPlan { basic, professional, enterprise }
-enum SubscriptionStatus { active, expired, cancelled, suspended }
-enum BillingCycle { monthly, yearly }
-enum PartitionStrategy { schema, table, database }
-enum ResourceType { users, storage, bandwidth, connections, requests }
-enum ViolationSeverity { low, medium, high, critical }
-
-class Tenant {
-  factory Tenant({
-    required String tenantId,
-    required String name,
-    required String adminEmail,
-    required TenantPlan plan,
-    required TenantStatus status,
-    required DateTime createdAt,
-    DateTime? lastActiveAt,
-    String? suspensionReason,
-    required Map<String, dynamic> settings,
-  }) {
-    return Tenant._internal(
-      tenantId: tenantId,
-      name: name,
-      adminEmail: adminEmail,
-      plan: plan,
-      status: status,
-      createdAt: createdAt,
-      lastActiveAt: lastActiveAt,
-      suspensionReason: suspensionReason,
-      settings: settings,
-    );
-  }
-  Tenant._internal({
-    required this.tenantId,
-    required this.name,
-    required this.adminEmail,
-    required this.plan,
-    required this.status,
-    required this.createdAt,
-    this.lastActiveAt,
-    this.suspensionReason,
-    required this.settings,
-  });
-  final String tenantId;
-  final String name;
-  final String adminEmail;
-  TenantPlan plan;
-  TenantStatus status;
-  final DateTime createdAt;
-  DateTime? lastActiveAt;
-  String? suspensionReason;
-  final Map<String, dynamic> settings;
-}
-
-class TenantConfiguration {
-  factory TenantConfiguration({
-    required String tenantId,
-    required Map<String, dynamic> databaseSettings,
-    required Map<String, dynamic> securitySettings,
-    required Map<String, bool> featureFlags,
-    required Map<String, dynamic> integrationSettings,
-    required Map<String, dynamic> customSettings,
-  }) {
-    return TenantConfiguration._internal(
-      tenantId: tenantId,
-      databaseSettings: databaseSettings,
-      securitySettings: securitySettings,
-      featureFlags: featureFlags,
-      integrationSettings: integrationSettings,
-      customSettings: customSettings,
-    );
-  }
-  TenantConfiguration._internal({
-    required this.tenantId,
-    required this.databaseSettings,
-    required this.securitySettings,
-    required this.featureFlags,
-    required this.integrationSettings,
-    required this.customSettings,
-  });
-  final String tenantId;
-  final Map<String, dynamic> databaseSettings;
-  final Map<String, dynamic> securitySettings;
-  final Map<String, bool> featureFlags;
-  final Map<String, dynamic> integrationSettings;
-  final Map<String, dynamic> customSettings;
-}
-
-class TenantCustomization {
-  factory TenantCustomization({
-    required String tenantId,
-    required TenantBranding branding,
-    required TenantLocalization localization,
-    required Map<String, dynamic> uiCustomizations,
-  }) {
-    return TenantCustomization._internal(
-      tenantId: tenantId,
-      branding: branding,
-      localization: localization,
-      uiCustomizations: uiCustomizations,
-    );
-  }
-  TenantCustomization._internal({
-    required this.tenantId,
-    required this.branding,
-    required this.localization,
-    required this.uiCustomizations,
-  });
-  final String tenantId;
-  TenantBranding branding;
-  TenantLocalization localization;
-  final Map<String, dynamic> uiCustomizations;
-}
-
-class TenantBranding {
-  factory TenantBranding({
-    required String primaryColor,
-    required String secondaryColor,
-    String? logo,
-    String? favicon,
-    String? customCss,
-  }) {
-    return TenantBranding._internal(
-      primaryColor: primaryColor,
-      secondaryColor: secondaryColor,
-      logo: logo,
-      favicon: favicon,
-      customCss: customCss,
-    );
-  }
-  TenantBranding._internal({
-    required this.primaryColor,
-    required this.secondaryColor,
-    this.logo,
-    this.favicon,
-    this.customCss,
-  });
-  String primaryColor;
-  String secondaryColor;
-  String? logo;
-  String? favicon;
-  String? customCss;
-}
-
-class TenantLocalization {
-  factory TenantLocalization({
-    required String defaultLanguage,
-    required List<String> supportedLanguages,
-    required Map<String, Map<String, String>> customTranslations,
-  }) {
-    return TenantLocalization._internal(
-      defaultLanguage: defaultLanguage,
-      supportedLanguages: supportedLanguages,
-      customTranslations: customTranslations,
-    );
-  }
-  TenantLocalization._internal({
-    required this.defaultLanguage,
-    required this.supportedLanguages,
-    required this.customTranslations,
-  });
-  String defaultLanguage;
-  List<String> supportedLanguages;
-  Map<String, Map<String, String>> customTranslations;
-}
-
-class ResourceQuota {
-  factory ResourceQuota({
-    required String tenantId,
-    required int maxUsers,
-    required int maxStorage,
-    required int maxBandwidth,
-    required int maxConnections,
-    required int maxRequests,
-    required DateTime createdAt,
-    required DateTime updatedAt,
-  }) {
-    return ResourceQuota._internal(
-      tenantId: tenantId,
-      maxUsers: maxUsers,
-      maxStorage: maxStorage,
-      maxBandwidth: maxBandwidth,
-      maxConnections: maxConnections,
-      maxRequests: maxRequests,
-      createdAt: createdAt,
-      updatedAt: updatedAt,
-    );
-  }
-  ResourceQuota._internal({
-    required this.tenantId,
-    required this.maxUsers,
-    required this.maxStorage,
-    required this.maxBandwidth,
-    required this.maxConnections,
-    required this.maxRequests,
-    required this.createdAt,
-    required this.updatedAt,
-  });
-  final String tenantId;
-  int maxUsers;
-  int maxStorage;
-  int maxBandwidth;
-  int maxConnections;
-  int maxRequests;
-  final DateTime createdAt;
-  DateTime updatedAt;
-}
-
-class ResourceUsage {
-  factory ResourceUsage({
-    required String tenantId,
-    required double cpuUsage,
-    required int memoryUsage,
-    required int storageUsage,
-    required int bandwidthUsage,
-    required int activeConnections,
-    int activeUsers = 0,
-    required DateTime lastUpdated,
-  }) {
-    return ResourceUsage._internal(
-      tenantId: tenantId,
-      cpuUsage: cpuUsage,
-      memoryUsage: memoryUsage,
-      storageUsage: storageUsage,
-      bandwidthUsage: bandwidthUsage,
-      activeConnections: activeConnections,
-      activeUsers: activeUsers,
-      lastUpdated: lastUpdated,
-    );
-class Subscription {
-  factory Subscription({
-    required String tenantId,
-    required String subscriptionId,
-    required TenantPlan plan,
-    required SubscriptionStatus status,
-    required DateTime startDate,
-    required DateTime endDate,
-    required bool autoRenew,
-    required List<String> features,
-  }) {
-    return Subscription._internal(
-      tenantId: tenantId,
-      subscriptionId: subscriptionId,
-      plan: plan,
-      status: status,
-      startDate: startDate,
-      endDate: endDate,
-      autoRenew: autoRenew,
-      features: features,
-    );
-class BillingAccount {
-  factory BillingAccount({
-    required String tenantId,
-    required String accountId,
-    required TenantPlan plan,
-    required BillingCycle billingCycle,
-    required DateTime nextBillingDate,
-    String? paymentMethod,
-    Map<String, dynamic>? billingAddress,
-  }) {
-    return BillingAccount._internal(
-      tenantId: tenantId,
-      accountId: accountId,
-      plan: plan,
-      billingCycle: billingCycle,
-      nextBillingDate: nextBillingDate,
-      paymentMethod: paymentMethod,
-      billingAddress: billingAddress,
-    );
-class TenantSecurity {
-  factory TenantSecurity({
-    required String tenantId,
-    required String encryptionKey,
-    required Map<String, dynamic> accessPolicies,
-    required Map<String, dynamic> auditSettings,
-    Map<String, dynamic>? ssoSettings,
-  }) {
-    return TenantSecurity._internal(
-      tenantId: tenantId,
-      encryptionKey: encryptionKey,
-      accessPolicies: accessPolicies,
-      auditSettings: auditSettings,
-      ssoSettings: ssoSettings,
-    );
-class TenantUser {
-  factory TenantUser({
-    required String userId,
-    required String tenantId,
-    required String email,
-    required String role,
-    required DateTime createdAt,
-    DateTime? lastLoginAt,
-    required bool isActive,
-  }) {
-    return TenantUser._internal(
-      userId: userId,
-      tenantId: tenantId,
-      email: email,
-      role: role,
-      createdAt: createdAt,
-      lastLoginAt: lastLoginAt,
-      isActive: isActive,
-    );
-class DatabasePartition {
-  factory DatabasePartition({
-    required String tenantId,
-    required String partitionName,
-    required PartitionStrategy strategy,
-    required String connectionString,
-    required bool isActive,
-    required DateTime createdAt,
-  }) {
-    return DatabasePartition._internal(
-      tenantId: tenantId,
-      partitionName: partitionName,
-      strategy: strategy,
-      connectionString: connectionString,
-      isActive: isActive,
-      createdAt: createdAt,
-    );
-class TenantMetrics {
-  factory TenantMetrics({
-    required String tenantId,
-    required int activeUsers,
-    required int totalRequests,
-    required int storageUsed,
-    required int bandwidthUsed,
-    required DateTime lastUpdated,
-  }) {
-    return TenantMetrics._internal(
-      tenantId: tenantId,
-      activeUsers: activeUsers,
-      totalRequests: totalRequests,
-      storageUsed: storageUsed,
-      bandwidthUsed: bandwidthUsed,
-      lastUpdated: lastUpdated,
-    );
-class ResourceViolation {
-  factory ResourceViolation({
-    required ResourceType type,
-    required int limit,
-    required int current,
-    required ViolationSeverity severity,
-  }) {
-    return ResourceViolation._internal(
-      type: type,
-      limit: limit,
-      current: current,
-      severity: severity,
-    );
-class TenantAnalytics {
-  factory TenantAnalytics({
-    required String tenantId,
-    required DateRange period,
-    required UserMetrics userMetrics,
-    required UsageMetrics usageMetrics,
-    required FinancialMetrics financialMetrics,
-    required PerformanceMetrics performanceMetrics,
-  }) {
-    return TenantAnalytics._internal(
-      tenantId: tenantId,
-      period: period,
-      userMetrics: userMetrics,
-      usageMetrics: usageMetrics,
-      financialMetrics: financialMetrics,
-      performanceMetrics: performanceMetrics,
-    );
-  }
-  TenantAnalytics._internal({
-    required this.tenantId,
-    required this.period,
-    required this.userMetrics,
-    required this.usageMetrics,
-    required this.financialMetrics,
-    required this.performanceMetrics,
-  });
-  final String tenantId;
-  final DateRange period;
-  final UserMetrics userMetrics;
-  final UsageMetrics usageMetrics;
-  final FinancialMetrics financialMetrics;
-  final PerformanceMetrics performanceMetrics;
-} DateTime? lastLoginAt;
-  bool isActive;
-} bool autoRenew;
-  List<String> features;
-}
-
-class Subscription {
-  Subscription({
-    required this.tenantId,
-    required this.subscriptionId,
-    required this.plan,
-    required this.status,
-    required this.startDate,
-    required this.endDate,
-    required this.autoRenew,
-    required this.features,
-  });
-  final String tenantId;
-  final String subscriptionId;
-  TenantPlan plan;
-  SubscriptionStatus status;
-  final DateTime startDate;
-  DateTime endDate;
-  bool autoRenew;
-  List<String> features;
-}
-
-class BillingAccount {
-  BillingAccount({
-    required this.tenantId,
-    required this.accountId,
-    required this.plan,
-    required this.billingCycle,
-    required this.nextBillingDate,
-    this.paymentMethod,
-    this.billingAddress,
-  });
-  final String tenantId;
-  final String accountId;
-  TenantPlan plan;
-  BillingCycle billingCycle;
-  DateTime nextBillingDate;
-  String? paymentMethod;
-  Map<String, dynamic>? billingAddress;
-}
-
-class TenantSecurity {
-  TenantSecurity({
-    required this.tenantId,
-    required this.encryptionKey,
-    required this.accessPolicies,
-    required this.auditSettings,
-    this.ssoSettings,
-  });
-  final String tenantId;
-  String encryptionKey;
-  Map<String, dynamic> accessPolicies;
-  Map<String, dynamic> auditSettings;
-  Map<String, dynamic>? ssoSettings;
-}
-
-class TenantUser {
-  TenantUser({
-    required this.userId,
-    required this.tenantId,
-    required this.email,
-    required this.role,
-    required this.createdAt,
-    this.lastLoginAt,
-    required this.isActive,
-  });
-  final String userId;
-  final String tenantId;
-  final String email;
-  final String role;
-  final DateTime createdAt;
-  DateTime? lastLoginAt;
-  bool isActive;
-}
-
-class DatabasePartition {
-  DatabasePartition({
-    required this.tenantId,
-    required this.partitionName,
-    required this.strategy,
-    required this.connectionString,
-    required this.isActive,
-    required this.createdAt,
-  });
-  final String tenantId;
-  final String partitionName;
-  final PartitionStrategy strategy;
-  final String connectionString;
-  bool isActive;
-  final DateTime createdAt;
-}
-
-class TenantMetrics {
-  TenantMetrics({
-    required this.tenantId,
-    required this.activeUsers,
-    required this.totalRequests,
-    required this.storageUsed,
-    required this.bandwidthUsed,
-    required this.lastUpdated,
-  });
-  final String tenantId;
-  int activeUsers;
-  int totalRequests;
-  int storageUsed;
-  int bandwidthUsed;
-  DateTime lastUpdated;
-}
-
-class ResourceViolation {
-  ResourceViolation({
-    required this.type,
-    required this.limit,
-    required this.current,
-    required this.severity,
-  });
-  final ResourceType type;
-  final int limit;
-  final int current;
-  final ViolationSeverity severity;
-}
-
-class TenantAnalytics {
-  TenantAnalytics({
-    required this.tenantId,
-    required this.period,
-    required this.userMetrics,
-    required this.usageMetrics,
-    required this.financialMetrics,
-    required this.performanceMetrics,
-  });
-  final String tenantId;
-  final DateRange period;
-  final UserMetrics userMetrics;
-  final UsageMetrics usageMetrics;
-  final FinancialMetrics financialMetrics;
-  final PerformanceMetrics performanceMetrics;
-}
-
-class DateRange {
-  factory DateRange({
-    required DateTime start,
-    required DateTime end,
-  }) {
-    return DateRange._internal(
-      start: start,
-      end: end,
-    );
-  }
-  DateRange._internal({
-    required this.start,
-    required this.end,
-  });
-  final DateTime start;
-  final DateTime end;
-}
-
-class UserMetrics {
-  factory UserMetrics({
-    required int totalUsers,
-    required int activeUsers,
-    required int newUsers,
-    required double userGrowthRate,
-  }) {
-    return UserMetrics._internal(
-      totalUsers: totalUsers,
-      activeUsers: activeUsers,
-      newUsers: newUsers,
-      userGrowthRate: userGrowthRate,
-    );
-class UsageMetrics {
-  factory UsageMetrics({
-    required int totalRequests,
-    required int storageUsed,
-    required int bandwidthUsed,
-    required double averageResponseTime,
-  }) {
-    return UsageMetrics._internal(
-      totalRequests: totalRequests,
-      storageUsed: storageUsed,
-      bandwidthUsed: bandwidthUsed,
-      averageResponseTime: averageResponseTime,
-    );
-class FinancialMetrics {
-  factory FinancialMetrics({
-    required double totalRevenue,
-    required double monthlyRecurringRevenue,
-    required double churnRate,
-    required double averageRevenuePerUser,
-  }) {
-    return FinancialMetrics._internal(
-      totalRevenue: totalRevenue,
-      monthlyRecurringRevenue: monthlyRecurringRevenue,
-      churnRate: churnRate,
-      averageRevenuePerUser: averageRevenuePerUser,
-    );
-class PerformanceMetrics {
-  factory PerformanceMetrics({
-    required double uptime,
-    required double errorRate,
-    required double averageLoadTime,
-    required double throughput,
-  }) {
-    return PerformanceMetrics._internal(
-      uptime: uptime,
-      errorRate: errorRate,
-      averageLoadTime: averageLoadTime,
-      throughput: throughput,
-    );
-  }
-  PerformanceMetrics._internal({
-class TenantCreationResult {
-  factory TenantCreationResult({
-    required bool success,
-    required String tenantId,
-    Tenant? tenant,
-    String? error,
-  }) {
-    return TenantCreationResult._internal(
-      success: success,
-      tenantId: tenantId,
-      tenant: tenant,
-      error: error,
-    );
-class TenantSwitchResult {
-  factory TenantSwitchResult({
-    required bool success,
-    required String tenantId,
-    Tenant? tenant,
-    String? error,
-  }) {
-    return TenantSwitchResult._internal(
-      success: success,
-      tenantId: tenantId,
-      tenant: tenant,
-      error: error,
-    );
-class TenantConfigResult {
-  factory TenantConfigResult({
-    required bool success,
-    required String tenantId,
-    TenantConfiguration? configuration,
-    String? error,
-  }) {
-    return TenantConfigResult._internal(
-      success: success,
-      tenantId: tenantId,
-      configuration: configuration,
-      error: error,
-    );
-class TenantCustomizationResult {
-  factory TenantCustomizationResult({
-    required bool success,
-    required String tenantId,
-    TenantCustomization? customization,
-    String? error,
-  }) {
-    return TenantCustomizationResult._internal(
-      success: success,
-      tenantId: tenantId,
-      customization: customization,
-      error: error,
-    );
-class ResourceQuotaResult {
-  factory ResourceQuotaResult({
-    required bool success,
-    required String tenantId,
-    ResourceQuota? quota,
-    String? error,
-  }) {
-    return ResourceQuotaResult._internal(
-      success: success,
-      tenantId: tenantId,
-      quota: quota,
-      error: error,
-    );
-class ResourceLimitCheckResult {
-  factory ResourceLimitCheckResult({
-    required bool success,
-    required String tenantId,
-    bool hasViolations = false,
-    List<ResourceViolation> violations = const [],
-    String? error,
-  }) {
-    return ResourceLimitCheckResult._internal(
-      success: success,
-      tenantId: tenantId,
-      hasViolations: hasViolations,
-      violations: violations,
-      error: error,
-    );
-class SubscriptionResult {
-  factory SubscriptionResult({
-    required bool success,
-    required String tenantId,
-    Subscription? subscription,
-    String? error,
-  }) {
-    return SubscriptionResult._internal(
-      success: success,
-      tenantId: tenantId,
-      subscription: subscription,
-      error: error,
-    );
-class TenantOperationResult {
-  factory TenantOperationResult({
-    required bool success,
-    required String tenantId,
-    String? operation,
-    String? error,
-  }) {
-    return TenantOperationResult._internal(
-      success: success,
-      tenantId: tenantId,
-      operation: operation,
-      error: error,
-    );
-class TenantAnalyticsResult {
-  factory TenantAnalyticsResult({
-    required bool success,
-    required String tenantId,
-    TenantAnalytics? analytics,
-    String? error,
-  }) {
-    return TenantAnalyticsResult._internal(
-      success: success,
-      tenantId: tenantId,
-      analytics: analytics,
-      error: error,
-    );
-  }
-  TenantAnalyticsResult._internal({
-    required this.success,
-    required this.tenantId,
-    this.analytics,
-    this.error,
-  });
-  final bool success;
-  final String tenantId;
-  final TenantAnalytics? analytics;
-  final String? error;
-} final List<ResourceViolation> violations;
-  final String? error;
-}   required this.totalRequests,
-    required this.storageUsed,
-    required this.bandwidthUsed,
-    required this.averageResponseTime,
-  });
-  final int totalRequests;
-  final int storageUsed;
-  final int bandwidthUsed;
-  final double averageResponseTime;
-}
-
-class FinancialMetrics {
-  FinancialMetrics({
-    required this.totalRevenue,
-    required this.monthlyRecurringRevenue,
-    required this.churnRate,
-    required this.averageRevenuePerUser,
-  });
-  final double totalRevenue;
-  final double monthlyRecurringRevenue;
-  final double churnRate;
-  final double averageRevenuePerUser;
-}
-
-class PerformanceMetrics {
-  PerformanceMetrics({
-    required this.uptime,
-    required this.errorRate,
-    required this.averageLoadTime,
-    required this.throughput,
-  });
-  final double uptime;
-  final double errorRate;
-  final double averageLoadTime;
-  final double throughput;
-}
-
-// Result Classes
-
-class TenantCreationResult {
-  TenantCreationResult({
-    required this.success,
-    required this.tenantId,
-    this.tenant,
-    this.error,
-  });
-  final bool success;
-  final String tenantId;
-  final Tenant? tenant;
-  final String? error;
-}
-
-class TenantSwitchResult {
-  TenantSwitchResult({
-    required this.success,
-    required this.tenantId,
-    this.tenant,
-    this.error,
-  });
-  final bool success;
-  final String tenantId;
-  final Tenant? tenant;
-  final String? error;
-}
-
-class TenantConfigResult {
-  TenantConfigResult({
-    required this.success,
-    required this.tenantId,
-    this.configuration,
-    this.error,
-  });
-  final bool success;
-  final String tenantId;
-  final TenantConfiguration? configuration;
-  final String? error;
-}
-
-class TenantCustomizationResult {
-  TenantCustomizationResult({
-    required this.success,
-    required this.tenantId,
-    this.customization,
-    this.error,
-  });
-  final bool success;
-  final String tenantId;
-  final TenantCustomization? customization;
-  final String? error;
-}
-
-class ResourceQuotaResult {
-  ResourceQuotaResult({
-    required this.success,
-    required this.tenantId,
-    this.quota,
-    this.error,
-  });
-  final bool success;
-  final String tenantId;
-  final ResourceQuota? quota;
-  final String? error;
-}
-
-class ResourceLimitCheckResult {
-  ResourceLimitCheckResult({
-    required this.success,
-    required this.tenantId,
-    this.hasViolations = false,
-    this.violations = const [],
-    this.error,
-  });
-  final bool success;
-  final String tenantId;
-  final bool hasViolations;
-  final List<ResourceViolation> violations;
-  final String? error;
-}
-
-class SubscriptionResult {
-  SubscriptionResult({
-    required this.success,
-    required this.tenantId,
-    this.subscription,
-    this.error,
-  });
-  final bool success;
-  final String tenantId;
-  final Subscription? subscription;
-  final String? error;
-}
-
-class TenantOperationResult {
-  TenantOperationResult({
-    required this.success,
-    required this.tenantId,
-    this.operation,
-    this.error,
-  });
-  final bool success;
-  final String tenantId;
-  final String? operation;
-  final String? error;
-}
-
-class TenantAnalyticsResult {
-  TenantAnalyticsResult({
-    required this.success,
-    required this.tenantId,
-    this.analytics,
-    this.error,
-  });
-  final bool success;
-  final String tenantId;
-  final TenantAnalytics? analytics;
-  final String? error;
 }
