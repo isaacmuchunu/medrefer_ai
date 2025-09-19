@@ -393,12 +393,12 @@ class BlockchainMedicalRecordsService extends ChangeNotifier {
   }
 
   /// Get blockchain statistics
-  Map<String, dynamic> getBlockchainStats() {
+  Future<Map<String, dynamic>> getBlockchainStats() async {
     final totalTransactions = _blockchain.fold<int>(
-      0, 
+      0,
       (sum, block) => sum + block.transactions.length,
     );
-    
+
     return {
       'total_blocks': _blockchain.length,
       'total_transactions': totalTransactions,
@@ -407,8 +407,8 @@ class BlockchainMedicalRecordsService extends ChangeNotifier {
       'network_nodes': _networkNodes.length,
       'active_permissions': _accessPermissions.values.where((p) => p.isActive).length,
       'blockchain_size_mb': _calculateBlockchainSize(),
-      'last_block_time': _blockchain.isNotEmpty 
-          ? _blockchain.last.timestamp.toIso8601String() 
+      'last_block_time': _blockchain.isNotEmpty
+          ? _blockchain.last.timestamp.toIso8601String()
           : null,
     };
   }
@@ -477,6 +477,100 @@ class BlockchainMedicalRecordsService extends ChangeNotifier {
 
   Future<void> storeWorkflowCompletion(String patientId, String workflowId, DateTime now) async {
     // Implement storing workflow completion in blockchain
+  }
+
+  Future<void> storeMedicalImageAnalysis(String patientId, Map<String, dynamic> analysisData) async {
+    // Implement storing medical image analysis in blockchain
+  }
+
+  Future<void> storeMedicalRadiologistReview(String patientId, String analysisId, Map<String, dynamic> reviewData) async {
+    // Implement storing radiologist review in blockchain
+  }
+
+  /// Store drug interaction alert in blockchain
+  Future<void> storeInteractionAlert(String patientId, Map<String, dynamic> alertData) async {
+    final recordData = {
+      'patient_id': patientId,
+      'alert_type': 'drug_interaction',
+      'alert_data': alertData,
+      'stored_at': DateTime.now().toIso8601String(),
+      'stored_by': _nodeId,
+    };
+
+    final encryptedData = await _encryptMedicalData(recordData, patientId);
+    final recordHash = _calculateRecordHash(encryptedData);
+
+    final medicalRecord = MedicalRecord(
+      id: _generateRecordId(),
+      patientId: patientId,
+      recordType: MedicalRecordType.patient,
+      encryptedData: encryptedData,
+      hash: recordHash,
+      previousHash: _getLatestRecordHash(patientId),
+      timestamp: DateTime.now(),
+      version: 1,
+      accessLevel: AccessLevel.restricted,
+    );
+
+    _medicalRecords[medicalRecord.id] = medicalRecord;
+    _addToPatientRecordChain(patientId, recordHash);
+
+    final transaction = Transaction(
+      id: _generateTransactionId(),
+      type: TransactionType.update,
+      patientId: patientId,
+      recordHash: recordHash,
+      previousRecordHash: medicalRecord.previousHash,
+      timestamp: DateTime.now(),
+      signature: await _signTransaction(recordHash),
+      publicKey: _nodeKeys.publicKey,
+    );
+
+    await _addTransaction(transaction);
+    debugPrint('✅ Drug interaction alert stored in blockchain for patient $patientId');
+  }
+
+  /// Store vital signs data in blockchain
+  Future<void> storeVitalSigns(String patientId, Map<String, dynamic> vitalData) async {
+    final recordData = {
+      'patient_id': patientId,
+      'vital_type': 'vital_signs',
+      'data': vitalData,
+      'recorded_at': DateTime.now().toIso8601String(),
+      'recorded_by': _nodeId,
+    };
+
+    final encryptedData = await _encryptMedicalData(recordData, patientId);
+    final recordHash = _calculateRecordHash(encryptedData);
+
+    final medicalRecord = MedicalRecord(
+      id: _generateRecordId(),
+      patientId: patientId,
+      recordType: MedicalRecordType.patient,
+      encryptedData: encryptedData,
+      hash: recordHash,
+      previousHash: _getLatestRecordHash(patientId),
+      timestamp: DateTime.now(),
+      version: 1,
+      accessLevel: AccessLevel.restricted,
+    );
+
+    _medicalRecords[medicalRecord.id] = medicalRecord;
+    _addToPatientRecordChain(patientId, recordHash);
+
+    final transaction = Transaction(
+      id: _generateTransactionId(),
+      type: TransactionType.update,
+      patientId: patientId,
+      recordHash: recordHash,
+      previousRecordHash: medicalRecord.previousHash,
+      timestamp: DateTime.now(),
+      signature: await _signTransaction(recordHash),
+      publicKey: _nodeKeys.publicKey,
+    );
+
+    await _addTransaction(transaction);
+    debugPrint('✅ Vital signs stored in blockchain for patient $patientId');
   }
 
   Future<void> _mineBlock(MedicalBlock block) async {

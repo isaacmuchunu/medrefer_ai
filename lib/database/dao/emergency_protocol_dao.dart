@@ -230,17 +230,28 @@ class EmergencyProtocolDao extends BaseDao<EmergencyProtocol> {
   // Get protocols summary
   Future<Map<String, dynamic>> getProtocolsSummary() async {
     final db = await database;
-    
+
     final totalProtocols = await db.rawQuery('SELECT COUNT(*) as count FROM $_tableName WHERE is_active = 1');
     final activeProtocols = await db.rawQuery('SELECT COUNT(*) as count FROM $_tableName WHERE status = ? AND is_active = 1', ['active']);
     final criticalProtocols = await db.rawQuery('SELECT COUNT(*) as count FROM $_tableName WHERE severity = ? AND is_active = 1', ['critical']);
     final needsReview = await db.rawQuery('SELECT COUNT(*) as count FROM $_tableName WHERE next_review < ? AND is_active = 1', [DateTime.now().toIso8601String()]);
-    
+
     return {
       'total_protocols': totalProtocols.first['count'],
       'active_protocols': activeProtocols.first['count'],
       'critical_protocols': criticalProtocols.first['count'],
       'needs_review': needsReview.first['count'],
     };
+  }
+
+  // Get all protocols
+  Future<List<EmergencyProtocol>> getAll() async {
+    final db = await database;
+    final maps = await db.query(
+      _tableName,
+      where: 'is_active = 1',
+      orderBy: 'severity DESC, title ASC',
+    );
+    return maps.map(fromMap).toList();
   }
 }

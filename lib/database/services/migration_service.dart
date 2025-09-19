@@ -531,15 +531,17 @@ class MigrationService {
 
     final vitals = [
       VitalStatistics(
+        id: DateTime.now().millisecondsSinceEpoch.toString(),
         patientId: patients[0].id,
-        bloodPressure: '120/80',
-        heartRate: '72',
-        temperature: '98.6',
-        oxygenSaturation: '98',
-        weight: '75.0',
-        height: '175.0',
-        bmi: '24.5',
-        recordedDate: DateTime.now(),
+        bloodPressureSystolic: 120.0,
+        bloodPressureDiastolic: 80.0,
+        heartRate: 72.0,
+        temperature: 98.6,
+        oxygenSaturation: 98.0,
+        weight: 75.0,
+        height: 175.0,
+        bmi: 24.5,
+        timestamp: DateTime.now(),
         recordedBy: 'Nurse Practitioner',
       ),
       // Add more sample vitals

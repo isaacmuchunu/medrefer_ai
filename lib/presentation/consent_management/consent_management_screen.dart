@@ -23,7 +23,7 @@ class _ConsentManagementScreenState extends State<ConsentManagementScreen> {
 
   Future<List<Consent>> _loadConsents({bool force = false}) async {
     final dataService = Provider.of<DataService>(context, listen: false);
-    return await dataService.getConsentsForPatient(widget.patientId, {"forceRefresh": force}["forceRefresh"] as bool);
+    return await dataService.getConsentsForPatient(widget.patientId, forceRefresh: force);
   }
 
   Future<void> _refresh() async {
@@ -186,4 +186,3 @@ class _ConsentManagementScreenState extends State<ConsentManagementScreen> {
     );
   }
 }
-

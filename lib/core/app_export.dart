@@ -8,6 +8,7 @@ export 'package:connectivity_plus/connectivity_plus.dart';
 export '../routes/app_routes.dart';
 export '../theme/app_theme.dart';
 export 'result.dart';
+export 'extensions.dart';
 
 // Widget exports
 export '../widgets/custom_icon_widget.dart';

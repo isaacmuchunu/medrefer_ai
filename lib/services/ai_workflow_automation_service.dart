@@ -757,32 +757,32 @@ class AIWorkflowAutomationService extends ChangeNotifier {
   }
 
   /// Get workflow performance metrics
-  Map<String, dynamic> getWorkflowMetrics() {
+  Future<Map<String, dynamic>> getWorkflowMetrics() async {
     final totalWorkflows = _workflowHistory.values.fold<int>(0, (sum, list) => sum + list.length);
     final activeWorkflows = _activeWorkflows.length;
-    
+
     final completionRates = <String, double>{};
     final averageExecutionTimes = <String, double>{};
-    
+
     for (final entry in _workflowHistory.entries) {
       final workflowId = entry.key;
       final executions = entry.value;
-      
+
       if (executions.isNotEmpty) {
         final completedCount = executions.where((e) => e.status == WorkflowStatus.completed).length;
         completionRates[workflowId] = completedCount / executions.length;
-        
+
         final completedExecutions = executions.where((e) => e.endTime != null);
         if (completedExecutions.isNotEmpty) {
           final totalTime = completedExecutions.fold<int>(
-            0, 
+            0,
             (sum, e) => sum + e.endTime!.difference(e.startTime).inMilliseconds,
           );
           averageExecutionTimes[workflowId] = totalTime / completedExecutions.length;
         }
       }
     }
-    
+
     return {
       'total_workflows_executed': totalWorkflows,
       'active_workflows': activeWorkflows,

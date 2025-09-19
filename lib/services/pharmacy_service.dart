@@ -248,23 +248,76 @@ class PharmacyService extends ChangeNotifier {
       // In production, this would fetch from real pharmacy APIs
       // Example: FDA Drug Database, RxNorm, etc.
       debugPrint('Loading drug inventory from external APIs...');
-      
+
       // For now, check if we have any existing drugs in the database
       final existingDrugs = await _pharmacyDAO.getAllDrugs();
       if (existingDrugs.isNotEmpty) {
         debugPrint('Drug inventory already loaded: ${existingDrugs.length} drugs');
         return;
       }
-      
+
      final apiDrugs = await _fetchDrugsFromAPI();
       for (final drug in apiDrugs) {
         await _pharmacyDAO.insertDrug(drug);
       }
-      
+
       debugPrint('Drug inventory loading completed');
     } catch (e) {
       debugPrint('Error loading drug inventory: $e');
     }
+  }
+
+  /// Fetch drugs from external API
+  Future<List<PharmacyDrug>> _fetchDrugsFromAPI() async {
+    // In a real implementation, this would make HTTP requests to pharmacy APIs
+    // For now, return mock data
+    return [
+      PharmacyDrug(
+        id: 'drug_001',
+        name: 'Aspirin',
+        genericName: 'Acetylsalicylic Acid',
+        description: 'Pain reliever and fever reducer',
+        category: 'Pain Relief',
+        dosage: '325mg',
+        manufacturer: 'Generic',
+        price: 5.99,
+        stockQuantity: 100,
+        requiresPrescription: false,
+        sideEffects: ['Stomach irritation', 'Heartburn'],
+        interactions: ['Warfarin', 'Other blood thinners'],
+        expiryDate: DateTime.now().add(const Duration(days: 365)),
+      ),
+      PharmacyDrug(
+        id: 'drug_002',
+        name: 'Lisinopril',
+        genericName: 'Lisinopril',
+        description: 'ACE inhibitor for blood pressure',
+        category: 'Cardiovascular',
+        dosage: '10mg',
+        manufacturer: 'Generic',
+        price: 12.50,
+        stockQuantity: 50,
+        requiresPrescription: true,
+        sideEffects: ['Cough', 'Dizziness'],
+        interactions: ['Potassium supplements', 'Diuretics'],
+        expiryDate: DateTime.now().add(const Duration(days: 365)),
+      ),
+      PharmacyDrug(
+        id: 'drug_003',
+        name: 'Metformin',
+        genericName: 'Metformin Hydrochloride',
+        description: 'Diabetes medication',
+        category: 'Endocrine',
+        dosage: '500mg',
+        manufacturer: 'Generic',
+        price: 8.75,
+        stockQuantity: 75,
+        requiresPrescription: true,
+        sideEffects: ['Nausea', 'Diarrhea'],
+        interactions: ['Certain contrast dyes'],
+        expiryDate: DateTime.now().add(const Duration(days: 365)),
+      ),
+    ];
   }
 
 }

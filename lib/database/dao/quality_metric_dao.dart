@@ -165,17 +165,28 @@ class QualityMetricDao extends BaseDao<QualityMetric> {
   // Get metrics summary
   Future<Map<String, dynamic>> getMetricsSummary() async {
     final db = await database;
-    
+
     final totalMetrics = await db.rawQuery('SELECT COUNT(*) as count FROM $_tableName WHERE is_active = 1');
     final targetMet = await db.rawQuery('SELECT COUNT(*) as count FROM $_tableName WHERE current_value >= target_value AND is_active = 1');
     final underperforming = await db.rawQuery('SELECT COUNT(*) as count FROM $_tableName WHERE current_value < target_value AND is_active = 1');
     final critical = await db.rawQuery('SELECT COUNT(*) as count FROM $_tableName WHERE status = ? AND is_active = 1', ['critical']);
-    
+
     return {
       'total_metrics': totalMetrics.first['count'],
       'target_met': targetMet.first['count'],
       'underperforming': underperforming.first['count'],
       'critical': critical.first['count'],
     };
+  }
+
+  // Get all metrics
+  Future<List<QualityMetric>> getAll() async {
+    final db = await database;
+    final maps = await db.query(
+      _tableName,
+      where: 'is_active = 1',
+      orderBy: 'measurement_date DESC',
+    );
+    return maps.map(fromMap).toList();
   }
 }

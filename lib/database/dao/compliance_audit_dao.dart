@@ -202,17 +202,28 @@ class ComplianceAuditDao extends BaseDao<ComplianceAudit> {
   // Get compliance summary
   Future<Map<String, dynamic>> getComplianceSummary() async {
     final db = await database;
-    
+
     final totalAudits = await db.rawQuery('SELECT COUNT(*) as count FROM $_tableName WHERE is_active = 1');
     final completedAudits = await db.rawQuery('SELECT COUNT(*) as count FROM $_tableName WHERE status = ? AND is_active = 1', ['completed']);
     final nonCompliantAudits = await db.rawQuery('SELECT COUNT(*) as count FROM $_tableName WHERE compliance_score < target_score AND is_active = 1');
     final overdueAudits = await db.rawQuery('SELECT COUNT(*) as count FROM $_tableName WHERE due_date < ? AND status != ? AND is_active = 1', [DateTime.now().toIso8601String(), 'completed']);
-    
+
     return {
       'total_audits': totalAudits.first['count'],
       'completed_audits': completedAudits.first['count'],
       'non_compliant_audits': nonCompliantAudits.first['count'],
       'overdue_audits': overdueAudits.first['count'],
     };
+  }
+
+  // Get all audits
+  Future<List<ComplianceAudit>> getAll() async {
+    final db = await database;
+    final maps = await db.query(
+      _tableName,
+      where: 'is_active = 1',
+      orderBy: 'scheduled_date DESC',
+    );
+    return maps.map(fromMap).toList();
   }
 }

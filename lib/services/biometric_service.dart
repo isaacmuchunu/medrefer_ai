@@ -68,7 +68,7 @@ class BiometricService {
             cancelButton: 'Cancel',
           ),
         ],
-        options: const AuthenticationOptions(
+        options: AuthenticationOptions(
           useErrorDialogs: useErrorDialogs,
           stickyAuth: stickyAuth,
           biometricOnly: false,

@@ -166,7 +166,8 @@ class VitalStatistics {
         notes.hashCode;
   }
 
-  get systolicBP => null;
+  double? get systolicBP => bloodPressureSystolic;
+  double? get diastolicBP => bloodPressureDiastolic;
 
   @override
   String toString() {

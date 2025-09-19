@@ -1018,7 +1018,7 @@ class RoboticProcessAutomationService extends ChangeNotifier {
 
   List<String> _getRequiredCapabilities(ProcessDefinition processDefinition) {
     final capabilities = <String>[];
-    
+
     for (final step in processDefinition.steps) {
       switch (step.actionType) {
         case ActionType.formFilling:
@@ -1042,9 +1042,15 @@ class RoboticProcessAutomationService extends ChangeNotifier {
         case ActionType.apiCall:
           capabilities.add('api_integration');
           break;
+        case ActionType.databaseQuery:
+          capabilities.add('database_operations');
+          break;
+        case ActionType.bulkEmailSending:
+          capabilities.add('email_sending');
+          break;
       }
     }
-    
+
     return capabilities.toSet().toList();
   }
 

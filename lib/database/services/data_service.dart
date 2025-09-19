@@ -56,7 +56,7 @@ class DataService extends ChangeNotifier {
   MedicationDao get medicationDAO => _medicationDao;
   DocumentDao get documentDAO => _documentDao;
   EmergencyContactDao get emergencyContactDAO => _emergencyContactDao;
-  PharmacyDAO get pharmacyDAO => _pharmacyDao;
+  Future<PharmacyDAO> get pharmacyDAO async => getPharmacyDao(await getDatabase());
   ConsentDao get consentDAO => _consentDao;
   CarePlanDao get carePlanDAO => _carePlanDao;
 

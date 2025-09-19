@@ -28,6 +28,7 @@ import '../presentation/pharmacy_screen/pharmacy_screen.dart';
 import '../presentation/drug_detail_screen/drug_detail_screen.dart';
 import '../presentation/cart_screen/cart_screen.dart';
 import '../presentation/mpesa_payment_screen/mpesa_payment_screen.dart';
+import '../presentation/payment_screen/payment_screen.dart';
 import '../presentation/appointment_history/appointment_history.dart';
 import '../presentation/billing_payment/billing_payment.dart';
 import '../presentation/admin_dashboard/admin_dashboard.dart';
@@ -49,6 +50,7 @@ import '../presentation/audio_call_screen/audio_call_screen.dart';
 import '../presentation/schedule_screen/schedule_screen.dart';
 import '../presentation/articles_screen/articles_screen.dart';
 import '../presentation/profile_screen/profile_screen.dart';
+import '../presentation/emergency_alerts_screen/emergency_alerts_screen.dart';
 
 // From develop branch
 import '../presentation/clinical_decision_support/clinical_decision_support.dart';

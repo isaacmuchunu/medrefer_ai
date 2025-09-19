@@ -290,7 +290,7 @@ class _ClinicalWorkflowScreenState extends State<ClinicalWorkflowScreen>
       children: [
         Text(
           'Workflow Information',
-          style: theme.textTheme.titleMedium?.copyWith(
+          style: Theme.of(context).textTheme.titleMedium?.copyWith(
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -332,7 +332,7 @@ class _ClinicalWorkflowScreenState extends State<ClinicalWorkflowScreen>
       children: [
         Text(
           'Tasks (${tasks.length})',
-          style: theme.textTheme.titleMedium?.copyWith(
+          style: Theme.of(context).textTheme.titleMedium?.copyWith(
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -572,12 +572,12 @@ class _ClinicalWorkflowScreenState extends State<ClinicalWorkflowScreen>
           children: [
             Text(
               title,
-              style: theme.textTheme.titleMedium?.copyWith(
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.bold,
               ),
             ),
             const SizedBox(height: 12),
-            content is List ? Column(children: content) : content,
+            content is List ? Column(children: content as List<Widget>) : content,
           ],
         ),
       ),
@@ -720,7 +720,7 @@ class _ClinicalWorkflowScreenState extends State<ClinicalWorkflowScreen>
       case TaskType.automated:
         return Icons.smart_toy;
       case TaskType.decision:
-        return Icons.decision_tree;
+        return Icons.call_split;
       case TaskType.notification:
         return Icons.notifications;
       case TaskType.documentation:

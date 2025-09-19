@@ -363,6 +363,8 @@ class _NotificationsScreenState extends State<NotificationsScreen> with TickerPr
     switch (type) {
       case ns.NotificationType.referral:
         return Icons.assignment_turned_in;
+      case ns.NotificationType.referralUpdate:
+        return Icons.assignment_outlined;
       case ns.NotificationType.message:
         return Icons.message;
       case ns.NotificationType.emergency:
@@ -387,6 +389,8 @@ class _NotificationsScreenState extends State<NotificationsScreen> with TickerPr
     switch (type) {
       case ns.NotificationType.referral:
         return theme.colorScheme.primary;
+      case ns.NotificationType.referralUpdate:
+        return theme.colorScheme.secondary;
       case ns.NotificationType.message:
         return Colors.blue;
       case ns.NotificationType.emergency:

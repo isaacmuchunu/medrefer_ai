@@ -239,9 +239,9 @@ class MedicalImageAnalysisService {
         where: 'status NOT IN (?, ?)',
         whereArgs: ['completed', 'failed'],
       );
-      
-      if (result.isSuccess) {
-        for (final analysisMap in result.data) {
+
+      if (result != null && result is List<Map<String, dynamic>>) {
+        for (final analysisMap in result) {
           final analysis = MedicalImageAnalysis.fromMap(analysisMap);
           _activeAnalyses[analysis.id] = analysis;
         }
@@ -473,29 +473,45 @@ class MedicalImageAnalysisService {
     String patientId,
   ) async {
     // Use AI service to analyze the image
-    switch (imageType) {
-      case ImageType.xray:
-        return await _aiService.analyzeMedicalImage(imageData, patientId);
-      case ImageType.ct:
-        return await _aiService.analyzeMedicalImage(imageData, patientId);
-      case ImageType.mri:
-        return await _aiService.analyzeMedicalImage(imageData, patientId);
-      case ImageType.ultrasound:
-        return await _aiService.analyzeMedicalImage(imageData, patientId);
-      case ImageType.mammography:
-        return await _aiService.analyzeMedicalImage(imageData, patientId);
-      case ImageType.dermatology:
-        return await _aiService.analyzeMedicalImage(imageData, patientId);
-      case ImageType.ophthalmology:
-        return await _aiService.analyzeMedicalImage(imageData, patientId);
-      case ImageType.pathology:
-        return await _aiService.analyzeMedicalImage(imageData, patientId);
-      case ImageType.endoscopy:
-        return await _aiService.analyzeMedicalImage(imageData, patientId);
-      case ImageType.ecg:
-        return await _aiService.analyzeMedicalImage(imageData, patientId);
-      default:
-        return await _aiService.analyzeGenericMedicalImage(imageData, patientId);
+    try {
+      switch (imageType) {
+        case ImageType.xray:
+          final result = await _aiService.analyzeMedicalImage(imageData, patientId);
+          return result.isSuccess ? result.data : {};
+        case ImageType.ct:
+          final result = await _aiService.analyzeMedicalImage(imageData, patientId);
+          return result.isSuccess ? result.data : {};
+        case ImageType.mri:
+          final result = await _aiService.analyzeMedicalImage(imageData, patientId);
+          return result.isSuccess ? result.data : {};
+        case ImageType.ultrasound:
+          final result = await _aiService.analyzeMedicalImage(imageData, patientId);
+          return result.isSuccess ? result.data : {};
+        case ImageType.mammography:
+          final result = await _aiService.analyzeMedicalImage(imageData, patientId);
+          return result.isSuccess ? result.data : {};
+        case ImageType.dermatology:
+          final result = await _aiService.analyzeMedicalImage(imageData, patientId);
+          return result.isSuccess ? result.data : {};
+        case ImageType.ophthalmology:
+          final result = await _aiService.analyzeMedicalImage(imageData, patientId);
+          return result.isSuccess ? result.data : {};
+        case ImageType.pathology:
+          final result = await _aiService.analyzeMedicalImage(imageData, patientId);
+          return result.isSuccess ? result.data : {};
+        case ImageType.endoscopy:
+          final result = await _aiService.analyzeMedicalImage(imageData, patientId);
+          return result.isSuccess ? result.data : {};
+        case ImageType.ecg:
+          final result = await _aiService.analyzeMedicalImage(imageData, patientId);
+          return result.isSuccess ? result.data : {};
+        default:
+          final result = await _aiService.analyzeGenericMedicalImage(imageData, patientId);
+          return result.isSuccess ? result.data : {};
+      }
+    } catch (e) {
+      // Return empty result if AI analysis fails
+      return {};
     }
   }
 
@@ -555,7 +571,12 @@ class MedicalImageAnalysisService {
     }
 
     // Use AI to generate a comprehensive diagnosis
-    return await _aiService.generateMedicalImageDiagnosis(findings, imageType);
+    try {
+      final result = await _aiService.generateMedicalImageDiagnosis(findings, imageType);
+      return result.isSuccess ? result.data : 'Unable to generate diagnosis';
+    } catch (e) {
+      return 'Diagnosis generation failed';
+    }
   }
 
   Future<String> _generateSummary(
@@ -563,7 +584,12 @@ class MedicalImageAnalysisService {
     String diagnosis,
   ) async {
     // Generate a summary of the analysis
-    return await _aiService.generateMedicalImageSummary(findings, diagnosis);
+    try {
+      final result = await _aiService.generateMedicalImageSummary(findings, diagnosis);
+      return result.isSuccess ? result.data : 'Unable to generate summary';
+    } catch (e) {
+      return 'Summary generation failed';
+    }
   }
 
   double _calculateOverallConfidence(List<MedicalImageFinding> findings) {
@@ -645,19 +671,24 @@ class MedicalImageAnalysisService {
   Future<Result<MedicalImageAnalysis?>> getAnalysis(String analysisId) async {
     try {
       if (!_isInitialized) await initialize();
-      
+
       final analysis = _activeAnalyses[analysisId];
       if (analysis != null) {
         return Result.success(analysis);
       }
-      
+
       // Try to load from database
-      final result = await _dataService.queryById('medical_image_analyses', analysisId);
-      if (result != null && result.isSuccess) {
-        final analysis = MedicalImageAnalysis.fromMap(result.data);
+      final result = await _dataService.query(
+        'medical_image_analyses',
+        where: 'id = ?',
+        whereArgs: [analysisId],
+      );
+
+      if (result != null && result is List<Map<String, dynamic>> && result.isNotEmpty) {
+        final analysis = MedicalImageAnalysis.fromMap(result.first);
         return Result.success(analysis);
       }
-      
+
       return Result.success(null);
     } catch (e) {
       return Result.error('Failed to get analysis: ${e.toString()}');
@@ -668,22 +699,22 @@ class MedicalImageAnalysisService {
   Future<Result<List<MedicalImageAnalysis>>> getPatientAnalyses(String patientId) async {
     try {
       if (!_isInitialized) await initialize();
-      
+
       final result = await _dataService.query(
         'medical_image_analyses',
         where: 'patientId = ?',
         whereArgs: [patientId],
         orderBy: 'createdAt DESC',
       );
-      
-      if (result.isSuccess) {
-        final analyses = result.data
+
+      if (result != null && result is List<Map<String, dynamic>>) {
+        final analyses = result
             .map((map) => MedicalImageAnalysis.fromMap(map))
             .toList();
         return Result.success(analyses);
       }
-      
-      return Result.error(result.errorMessage);
+
+      return Result.error('Failed to retrieve patient analyses');
     } catch (e) {
       return Result.error('Failed to get patient analyses: ${e.toString()}');
     }
@@ -766,78 +797,79 @@ class MedicalImageAnalysisService {
   Future<Result<Map<String, dynamic>>> getAnalysisStatistics() async {
     try {
       if (!_isInitialized) await initialize();
-      
+
       final result = await _dataService.query('medical_image_analyses');
-      if (result.isError) {
-        return Result.error(result.errorMessage);
-      }
-      
-      final analyses = result.data
-          .map((map) => MedicalImageAnalysis.fromMap(map))
-          .toList();
-      
-      final stats = <String, dynamic>{};
-      
-      // Total analyses
-      stats['totalAnalyses'] = analyses.length;
-      
-      // Analyses by status
-      final statusCounts = <String, int>{};
-      for (final status in AnalysisStatus.values) {
-        statusCounts[status.name] = analyses
-            .where((a) => a.status == status)
+
+      if (result != null && result is List<Map<String, dynamic>>) {
+        final analyses = result
+            .map((map) => MedicalImageAnalysis.fromMap(map))
+            .toList();
+
+        final stats = <String, dynamic>{};
+
+        // Total analyses
+        stats['totalAnalyses'] = analyses.length;
+
+        // Analyses by status
+        final statusCounts = <String, int>{};
+        for (final status in AnalysisStatus.values) {
+          statusCounts[status.name] = analyses
+              .where((a) => a.status == status)
+              .length;
+        }
+        stats['analysesByStatus'] = statusCounts;
+
+        // Analyses by image type
+        final typeCounts = <String, int>{};
+        for (final type in ImageType.values) {
+          typeCounts[type.name] = analyses
+              .where((a) => a.imageType == type)
+              .length;
+        }
+        stats['analysesByType'] = typeCounts;
+
+        // Critical findings
+        stats['criticalFindings'] = analyses
+            .where((a) => a.hasCriticalFindings)
             .length;
-      }
-      stats['analysesByStatus'] = statusCounts;
-      
-      // Analyses by image type
-      final typeCounts = <String, int>{};
-      for (final type in ImageType.values) {
-        typeCounts[type.name] = analyses
-            .where((a) => a.imageType == type)
+
+        // Pending review
+        stats['pendingReview'] = analyses
+            .where((a) => a.status == AnalysisStatus.completed && a.reviewedAt == null)
             .length;
+
+        // Average confidence
+        final completedAnalyses = analyses
+            .where((a) => a.status == AnalysisStatus.completed && a.overallConfidence != null)
+            .toList();
+
+        if (completedAnalyses.isNotEmpty) {
+          final totalConfidence = completedAnalyses
+              .map((a) => a.overallConfidence!)
+              .reduce((a, b) => a + b);
+          stats['averageConfidence'] = totalConfidence / completedAnalyses.length;
+        } else {
+          stats['averageConfidence'] = 0.0;
+        }
+
+        // Processing time
+        final processedAnalyses = analyses
+            .where((a) => a.completedAt != null)
+            .toList();
+
+        if (processedAnalyses.isNotEmpty) {
+          final totalTime = processedAnalyses
+              .map((a) => a.completedAt!.difference(a.createdAt).inMinutes)
+              .reduce((a, b) => a + b);
+          stats['averageProcessingTimeMinutes'] = totalTime / processedAnalyses.length;
+        } else {
+          stats['averageProcessingTimeMinutes'] = 0;
+        }
+
+        return Result.success(stats);
       }
-      stats['analysesByType'] = typeCounts;
-      
-      // Critical findings
-      stats['criticalFindings'] = analyses
-          .where((a) => a.hasCriticalFindings)
-          .length;
-      
-      // Pending review
-      stats['pendingReview'] = analyses
-          .where((a) => a.status == AnalysisStatus.completed && a.reviewedAt == null)
-          .length;
-      
-      // Average confidence
-      final completedAnalyses = analyses
-          .where((a) => a.status == AnalysisStatus.completed && a.overallConfidence != null)
-          .toList();
-      
-      if (completedAnalyses.isNotEmpty) {
-        final totalConfidence = completedAnalyses
-            .map((a) => a.overallConfidence!)
-            .reduce((a, b) => a + b);
-        stats['averageConfidence'] = totalConfidence / completedAnalyses.length;
-      } else {
-        stats['averageConfidence'] = 0.0;
-      }
-      
-      // Processing time
-      final processedAnalyses = analyses
-          .where((a) => a.completedAt != null)
-          .toList();
-      
-      if (processedAnalyses.isNotEmpty) {
-        final totalTime = processedAnalyses
-            .map((a) => a.completedAt!.difference(a.createdAt).inMinutes)
-            .reduce((a, b) => a + b);
-        stats['averageProcessingTimeMinutes'] = totalTime / processedAnalyses.length;
-      } else {
-        stats['averageProcessingTimeMinutes'] = 0;
-      }
-      
-      return Result.success(stats);
+
+      return Result.error('Failed to retrieve analysis data');
     } catch (e) {
       return Result.error('Failed to get analysis statistics: ${e.toString()}');
     }
@@ -892,22 +924,22 @@ class MedicalImageAnalysisService {
         limit: limit,
       );
       
-      if (result.isSuccess) {
-        var analyses = result.data
+      if (result != null && result is List<Map<String, dynamic>>) {
+        var analyses = result
             .map((map) => MedicalImageAnalysis.fromMap(map))
             .toList();
-        
+
         // Filter by severity if specified
         if (severity != null) {
           analyses = analyses
               .where((a) => a.findings.any((f) => f.severity == severity))
               .toList();
         }
-        
+
         return Result.success(analyses);
       }
-      
-      return Result.error(result.errorMessage);
+
+      return Result.error('Failed to retrieve search results');
     } catch (e) {
       return Result.error('Failed to search analyses: ${e.toString()}');
     }

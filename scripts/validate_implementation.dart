@@ -21,6 +21,12 @@ void main() async {
   // Check performance optimizations
   validationResults['Performance'] = await _validatePerformance();
   
+  // Check dependencies
+  validationResults['Dependencies'] = await _validateDependencies();
+
+  // Check assets
+  validationResults['Assets'] = await _validateAssets();
+
   // Check tests
   validationResults['Testing'] = await _validateTests();
 
@@ -55,7 +61,7 @@ Future<bool> _validateCoreScreens() async {
   var allExist = true;
   for (final screen in coreScreens) {
     final file = File(screen);
-    if (await file.exists()) {
+    if (file.existsSync()) {
       print('  ✅ ${screen.split('/').last}');
     } else {
       print('  ❌ ${screen.split('/').last} - Missing');
@@ -90,7 +96,7 @@ Future<bool> _validateDatabase() async {
   var allExist = true;
   for (final file in databaseFiles) {
     final fileObj = File(file);
-    if (await fileObj.exists()) {
+    if (fileObj.existsSync()) {
       print('  ✅ ${file.split('/').last}');
     } else {
       print('  ❌ ${file.split('/').last} - Missing');
@@ -106,12 +112,12 @@ Future<bool> _validateRoutes() async {
   print('\n🛣️  Validating Route Integration...');
   
   final routesFile = File('lib/routes/app_routes.dart');
-  if (!await routesFile.exists()) {
+  if (!routesFile.existsSync()) {
     print('  ❌ app_routes.dart - Missing');
     return false;
   }
 
-  final content = await routesFile.readAsString();
+  final content = routesFile.readAsStringSync();
   final requiredRoutes = [
     'dashboard',
     'login',
@@ -152,7 +158,7 @@ Future<bool> _validateNewScreens() async {
   var allExist = true;
   for (final screen in newScreens) {
     final file = File(screen);
-    if (await file.exists()) {
+    if (file.existsSync()) {
       print('  ✅ ${screen.split('/').last}');
     } else {
       print('  ❌ ${screen.split('/').last} - Missing');
@@ -176,7 +182,7 @@ Future<bool> _validatePerformance() async {
   var allExist = true;
   for (final file in performanceFiles) {
     final fileObj = File(file);
-    if (await fileObj.exists()) {
+    if (fileObj.existsSync()) {
       print('  ✅ ${file.split('/').last}');
     } else {
       print('  ❌ ${file.split('/').last} - Missing');
@@ -186,8 +192,8 @@ Future<bool> _validatePerformance() async {
 
   // Check if main.dart includes performance initialization
   final mainFile = File('lib/main.dart');
-  if (await mainFile.exists()) {
-    final content = await mainFile.readAsString();
+  if (mainFile.existsSync()) {
+    final content = mainFile.readAsStringSync();
     if (content.contains('PerformanceService.initialize')) {
       print('  ✅ Performance service initialized in main.dart');
     } else {
@@ -215,7 +221,7 @@ Future<bool> _validateTests() async {
   var allExist = true;
   for (final test in testFiles) {
     final file = File(test);
-    if (await file.exists()) {
+    if (file.existsSync()) {
       print('  ✅ ${test.split('/').last}');
     } else {
       print('  ❌ ${test.split('/').last} - Missing');
@@ -248,12 +254,12 @@ Future<bool> _validateDependencies() async {
   print('\n📦 Validating Dependencies...');
   
   final pubspecFile = File('pubspec.yaml');
-  if (!await pubspecFile.exists()) {
+  if (!pubspecFile.existsSync()) {
     print('  ❌ pubspec.yaml - Missing');
     return false;
   }
 
-  final content = await pubspecFile.readAsString();
+  final content = pubspecFile.readAsStringSync();
   final requiredDependencies = [
     'flutter',
     'provider',
@@ -279,7 +285,7 @@ Future<bool> _validateAssets() async {
   print('\n🖼️  Validating Assets...');
   
   final assetsDir = Directory('assets');
-  if (!await assetsDir.exists()) {
+  if (!assetsDir.existsSync()) {
     print('  ❌ assets directory - Missing');
     return false;
   }
@@ -292,7 +298,7 @@ Future<bool> _validateAssets() async {
   var allAssetsExist = true;
   for (final asset in requiredAssets) {
     final dir = Directory(asset);
-    if (await dir.exists()) {
+    if (dir.existsSync()) {
       print('  ✅ ${asset.split('/').last} directory');
     } else {
       print('  ❌ ${asset.split('/').last} directory - Missing');
@@ -302,4 +308,3 @@ Future<bool> _validateAssets() async {
 
   return allAssetsExist;
 }
-

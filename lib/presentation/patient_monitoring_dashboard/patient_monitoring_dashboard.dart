@@ -80,20 +80,11 @@ class _PatientMonitoringDashboardState extends State<PatientMonitoringDashboard>
     
     try {
       // Load patient information
-      final patientResult = await _dataService.getPatientById(widget.patientId);
-      if (patientResult.isSuccess) {
-        patient = patientResult.data;
-      }
+      patient = await _dataService.getPatientById(widget.patientId);
 
       // Load recent vital statistics
-      final vitalsResult = await _dataService.getVitalStatistics(
-        patientId: widget.patientId,
-        limit: 50,
-      );
-      if (vitalsResult.isSuccess) {
-        vitals = vitalsResult.data ?? [];
-        _processTrends();
-      }
+      vitals = await _dataService.getVitalStatisticsByPatientId(widget.patientId);
+      _processTrends();
 
       // Connect to patient's medical devices
       await _connectToMedicalDevices();

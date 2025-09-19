@@ -497,6 +497,53 @@ class IoTMedicalDeviceService extends ChangeNotifier {
     trends.lastUpdated = DateTime.now();
   }
 
+  /// Get devices assigned to a patient
+  Future<List<Map<String, dynamic>>> getPatientDevices(String patientId) async {
+    return _connectedDevices.values
+        .where((device) => device.assignedPatientId == patientId)
+        .map((device) => device.toJson())
+        .toList();
+  }
+
+  /// Connect to a specific device
+  Future<bool> connectToDevice(String deviceId) async {
+    final device = _connectedDevices[deviceId];
+    if (device == null) return false;
+
+    try {
+      await _connectToDevice(device);
+      return device.isConnected;
+    } catch (e) {
+      debugPrint('❌ Failed to connect to device $deviceId: $e');
+      return false;
+    }
+  }
+
+  /// Get real-time data stream for a patient
+  Stream<Map<String, dynamic>> getDeviceDataStream(String patientId) {
+    return Stream.periodic(const Duration(seconds: 5), (count) {
+      final devices = _connectedDevices.values
+          .where((device) => device.assignedPatientId == patientId)
+          .toList();
+
+      final data = <String, dynamic>{};
+      for (final device in devices) {
+        final readings = _deviceReadings[device.id];
+        if (readings != null && readings.isNotEmpty) {
+          final latestReading = readings.last;
+          data[device.id] = {
+            'device_id': device.id,
+            'device_name': device.name,
+            'timestamp': latestReading.timestamp.toIso8601String(),
+            'parameters': latestReading.parameters,
+          };
+        }
+      }
+
+      return data;
+    }).asBroadcastStream();
+  }
+
   /// Get real-time patient vitals
   Future<Map<String, dynamic>> getPatientVitals(String patientId) async {
     final devices = _connectedDevices.values

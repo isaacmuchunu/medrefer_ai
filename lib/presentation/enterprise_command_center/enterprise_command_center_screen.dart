@@ -48,11 +48,11 @@ class _EnterpriseCommandCenterScreenState extends State<EnterpriseCommandCenterS
 
       final futures = await Future.wait([
         mlService.getAnalyticsDashboard(),
-        blockchainService.getBlockchainStats(),
+        Future.value(blockchainService.getBlockchainStats()),
         _getIoTDashboardData(iotService),
         _getTelemedicineDashboardData(telemedicineService),
-        workflowService.getWorkflowMetrics(),
-        integrationService.getSystemHealth(),
+        Future.value(workflowService.getWorkflowMetrics()),
+        Future.value(integrationService.getSystemHealth()),
       ]);
 
       setState(() {
@@ -154,7 +154,7 @@ class _EnterpriseCommandCenterScreenState extends State<EnterpriseCommandCenterS
           // Key Metrics Cards
           Row(
             children: [
-              Expanded(child: _buildMetricCard('Prediction Accuracy', '94.2%', Icons.target, Colors.green)),
+              Expanded(child: _buildMetricCard('Prediction Accuracy', '94.2%', Icons.track_changes, Colors.green)),
               SizedBox(width: 12.h),
               Expanded(child: _buildMetricCard('Models Active', '12', Icons.psychology, Colors.blue)),
               SizedBox(width: 12.h),

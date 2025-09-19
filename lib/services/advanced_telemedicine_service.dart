@@ -177,9 +177,9 @@ class AdvancedTelemedicineService extends ChangeNotifier {
   Future<void> _initializeDiagnosticTools() async {
     // Load AI models for diagnostic tools
     for (final tool in _diagnosticTools.values) {
-      await _loadDiagnosticModel(tool);
+      await _loadDiagnosticModel();
     }
-    
+
     debugPrint('✅ Diagnostic tools initialized');
   }
 
@@ -682,24 +682,29 @@ class SessionParticipant {
 class ARSession {
   String id;
   String telemedicineSessionId;
+  String? participantId;
   DateTime startTime;
   DateTime? endTime;
   List<ARAnnotation> annotations;
   ARTrackingState trackingState;
+  bool isActive;
 
   ARSession({
     required this.id,
     required this.telemedicineSessionId,
+    this.participantId,
     required this.startTime,
     this.endTime,
     required this.annotations,
     required this.trackingState,
+    this.isActive = true,
   });
 }
 
 class VRSession {
   String id;
   String telemedicineSessionId;
+  String? participantId;
   String environmentId;
   DateTime startTime;
   DateTime? endTime;
@@ -709,6 +714,7 @@ class VRSession {
   VRSession({
     required this.id,
     required this.telemedicineSessionId,
+    this.participantId,
     required this.environmentId,
     required this.startTime,
     this.endTime,
