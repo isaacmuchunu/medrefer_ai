@@ -62,8 +62,7 @@ class _HealthAnalyticsState extends State<HealthAnalytics> {
                               lineBarsData: [
                                 LineChartBarData(
                                   spots: _vitalStats.asMap().entries.map((e) {
-                                    // Assuming heartRate is a string like '80 bpm', we parse it.
-                                    final heartRateValue = double.tryParse(e.value.heartRate?.split(' ').first ?? '0') ?? 0.0;
+                                    final heartRateValue = e.value.heartRate ?? 0.0;
                                     return FlSpot(e.key.toDouble(), heartRateValue);
                                   }).toList(),
                                   isCurved: true,

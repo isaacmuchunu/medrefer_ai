@@ -8,8 +8,6 @@ import '../database/database.dart';
 /// Advanced AI/ML Service for Medical Intelligence
 /// Provides diagnostic suggestions, predictive analytics, and smart recommendations
 class AIService extends ChangeNotifier {
-  AIService();
-
   static final AIService _instance = AIService._internal();
   factory AIService() => _instance;
   AIService._internal();

@@ -1,4 +1,5 @@
 import '../../core/app_export.dart';
+import '../../services/notification_service.dart' as ns;
 
 class NotificationsScreen extends StatefulWidget {
   const NotificationsScreen({super.key});
@@ -29,7 +30,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> with TickerPr
               id: n.id,
               title: n.title,
               message: n.message,
-              type: _mapType(n.type),
+              type: n.type,
               timestamp: n.timestamp,
               isRead: n.isRead,
               priority: _mapPriority(n.type),
@@ -358,34 +359,50 @@ class _NotificationsScreenState extends State<NotificationsScreen> with TickerPr
     );
   }
 
-  IconData _getNotificationIcon(NotificationType type) {
+  IconData _getNotificationIcon(ns.NotificationType type) {
     switch (type) {
-      case NotificationType.referralUpdate:
+      case ns.NotificationType.referral:
         return Icons.assignment_turned_in;
-      case NotificationType.message:
+      case ns.NotificationType.message:
         return Icons.message;
-      case NotificationType.emergency:
+      case ns.NotificationType.emergency:
         return Icons.emergency;
-      case NotificationType.appointment:
+      case ns.NotificationType.appointment:
         return Icons.event;
-      case NotificationType.system:
-        return Icons.system_update;
+      case ns.NotificationType.urgent:
+        return Icons.priority_high;
+      case ns.NotificationType.info:
+        return Icons.info;
+      case ns.NotificationType.success:
+        return Icons.check_circle;
+      case ns.NotificationType.warning:
+        return Icons.warning;
+      case ns.NotificationType.error:
+        return Icons.error;
     }
   }
 
-  Color _getNotificationColor(NotificationType type) {
+  Color _getNotificationColor(ns.NotificationType type) {
     final theme = Theme.of(context);
     switch (type) {
-      case NotificationType.referralUpdate:
+      case ns.NotificationType.referral:
         return theme.colorScheme.primary;
-      case NotificationType.message:
+      case ns.NotificationType.message:
         return Colors.blue;
-      case NotificationType.emergency:
+      case ns.NotificationType.emergency:
         return theme.colorScheme.error;
-      case NotificationType.appointment:
+      case ns.NotificationType.appointment:
         return Colors.orange;
-      case NotificationType.system:
-        return Colors.grey;
+      case ns.NotificationType.urgent:
+        return Colors.red;
+      case ns.NotificationType.info:
+        return Colors.blue;
+      case ns.NotificationType.success:
+        return Colors.green;
+      case ns.NotificationType.warning:
+        return Colors.orange;
+      case ns.NotificationType.error:
+        return theme.colorScheme.error;
     }
   }
 
@@ -426,31 +443,15 @@ class _NotificationsScreenState extends State<NotificationsScreen> with TickerPr
     ));
   }
 
-  NotificationType _mapType(NotificationType type) {
-    switch (type) {
-      case NotificationType.referral:
-        return NotificationType.referralUpdate;
-      case NotificationType.message:
-        return NotificationType.message;
-      case NotificationType.appointment:
-        return NotificationType.appointment;
-      case NotificationType.urgent:
-        return NotificationType.emergency;
-      case NotificationType.info:
-      case NotificationType.success:
-      case NotificationType.warning:
-      case NotificationType.error:
-        return NotificationType.system;
-    }
-  }
 
-  NotificationPriority _mapPriority(NotificationType type) {
+
+  NotificationPriority _mapPriority(ns.NotificationType type) {
     switch (type) {
-      case NotificationType.urgent:
+      case ns.NotificationType.urgent:
         return NotificationPriority.critical;
-      case NotificationType.error:
+      case ns.NotificationType.error:
         return NotificationPriority.high;
-      case NotificationType.warning:
+      case ns.NotificationType.warning:
         return NotificationPriority.medium;
       default:
         return NotificationPriority.low;
@@ -463,7 +464,7 @@ class NotificationItem {
   final String id;
   final String title;
   final String message;
-  final NotificationType type;
+  final ns.NotificationType type;
   final DateTime timestamp;
   bool isRead;
   final NotificationPriority priority;
@@ -479,13 +480,7 @@ class NotificationItem {
   });
 }
 
-enum NotificationType {
-  referralUpdate,
-  message,
-  emergency,
-  appointment,
-  system,
-}
+
 
 enum NotificationPriority {
   low,

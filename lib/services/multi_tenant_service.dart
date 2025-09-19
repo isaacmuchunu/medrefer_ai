@@ -179,25 +179,40 @@ class MultiTenantService extends ChangeNotifier {
 
       // Create billing account
       final billingAccount = BillingAccount(
+        id: _generateAccountId(),
         tenantId: tenantId,
-        accountId: _generateAccountId(),
-        plan: plan,
-        billingCycle: BillingCycle.monthly,
+        status: 'active',
+        billingName: 'Default',
+        billingEmail: 'billing@example.com',
+        billingAddress: 'Default Address',
+        billingCity: 'Default City',
+        billingState: 'Default State',
+        billingZip: '00000',
+        billingCountry: 'Default Country',
+        paymentMethod: 'credit_card',
+        paymentDetails: {},
+        balance: 0.0,
+        lastPaymentDate: DateTime.now(),
+        lastPaymentAmount: 0.0,
         nextBillingDate: DateTime.now().add(const Duration(days: 30)),
-        paymentMethod: null,
-        billingAddress: null,
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
       );
 
       // Create subscription
       final subscription = Subscription(
+        id: _generateSubscriptionId(),
         tenantId: tenantId,
-        subscriptionId: _generateSubscriptionId(),
-        plan: plan,
-        status: SubscriptionStatus.active,
+        planId: plan.toString(),
+        status: 'active',
         startDate: DateTime.now(),
         endDate: DateTime.now().add(const Duration(days: 365)),
+        amount: _getPlanAmount(plan),
+        billingCycle: 'monthly',
         autoRenew: true,
         features: _getPlanFeatures(plan),
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
       );
 
       // Create tenant security
@@ -226,9 +241,15 @@ class MultiTenantService extends ChangeNotifier {
       _tenantMetrics[tenantId] = TenantMetrics(
         tenantId: tenantId,
         activeUsers: 0,
-        totalRequests: 0,
-        storageUsed: 0,
-        bandwidthUsed: 0,
+        totalUsers: 0,
+        storageUsed: 0.0,
+        apiCallsThisMonth: 0,
+        averageResponseTime: 0.0,
+        uptime: 100.0,
+        errorCount: 0,
+        totalPatients: 0,
+        totalAppointments: 0,
+        customMetrics: {},
         lastUpdated: DateTime.now(),
       );
 
@@ -291,8 +312,20 @@ class MultiTenantService extends ChangeNotifier {
       // Update tenant metrics
       final metrics = _tenantMetrics[tenantId];
       if (metrics != null) {
-        metrics.activeUsers += 1;
-        metrics.lastUpdated = DateTime.now();
+        _tenantMetrics[tenantId] = TenantMetrics(
+          tenantId: metrics.tenantId,
+          activeUsers: metrics.activeUsers + 1,
+          totalUsers: metrics.totalUsers,
+          storageUsed: metrics.storageUsed,
+          apiCallsThisMonth: metrics.apiCallsThisMonth,
+          averageResponseTime: metrics.averageResponseTime,
+          uptime: metrics.uptime,
+          errorCount: metrics.errorCount,
+          totalPatients: metrics.totalPatients,
+          totalAppointments: metrics.totalAppointments,
+          customMetrics: metrics.customMetrics,
+          lastUpdated: DateTime.now(),
+        );
       }
 
       debugPrint('🔄 Switched to tenant: $tenantId');
@@ -567,16 +600,30 @@ class MultiTenantService extends ChangeNotifier {
       }
 
       // Update subscription
-      if (newPlan != null && newPlan != subscription.plan) {
-        subscription.plan = newPlan;
-        subscription.features = _getPlanFeatures(newPlan);
+      final updatedPlanId = newPlan?.toString() ?? subscription.planId;
+      final updatedAutoRenew = autoRenew ?? subscription.autoRenew;
+      final updatedEndDate = endDate ?? subscription.endDate;
+      final updatedFeatures = newPlan != null ? _getPlanFeatures(newPlan) : subscription.features;
 
-        // Update resource quota for new plan
+      _subscriptions[tenantId] = Subscription(
+        id: subscription.id,
+        tenantId: subscription.tenantId,
+        planId: updatedPlanId,
+        status: subscription.status,
+        startDate: subscription.startDate,
+        endDate: updatedEndDate,
+        amount: newPlan != null ? _getPlanAmount(newPlan) : subscription.amount,
+        billingCycle: subscription.billingCycle,
+        autoRenew: updatedAutoRenew,
+        features: updatedFeatures,
+        createdAt: subscription.createdAt,
+        updatedAt: DateTime.now(),
+      );
+
+      // Update resource quota for new plan
+      if (newPlan != null) {
         _resourceQuotas[tenantId] = _createResourceQuota(tenantId, newPlan);
       }
-
-      if (autoRenew != null) subscription.autoRenew = autoRenew;
-      if (endDate != null) subscription.endDate = endDate;
 
       debugPrint('✅ Subscription updated: $tenantId');
       notifyListeners();
@@ -584,7 +631,7 @@ class MultiTenantService extends ChangeNotifier {
       return SubscriptionResult(
         success: true,
         tenantId: tenantId,
-        subscription: subscription,
+        subscription: _subscriptions[tenantId]?.toMap(),
       );
     } catch (e) {
       debugPrint('❌ Failed to update subscription: $e');
@@ -604,6 +651,8 @@ class MultiTenantService extends ChangeNotifier {
         return TenantOperationResult(
           success: false,
           tenantId: tenantId,
+          operation: 'suspend',
+          timestamp: DateTime.now(),
           error: 'Tenant not found',
         );
       }
@@ -621,12 +670,15 @@ class MultiTenantService extends ChangeNotifier {
         success: true,
         tenantId: tenantId,
         operation: 'suspend',
+        timestamp: DateTime.now(),
       );
     } catch (e) {
       debugPrint('❌ Failed to suspend tenant: $e');
       return TenantOperationResult(
         success: false,
         tenantId: tenantId,
+        operation: 'suspend',
+        timestamp: DateTime.now(),
         error: e.toString(),
       );
     }
@@ -640,6 +692,8 @@ class MultiTenantService extends ChangeNotifier {
         return TenantOperationResult(
           success: false,
           tenantId: tenantId,
+          operation: 'reactivate',
+          timestamp: DateTime.now(),
           error: 'Tenant not found',
         );
       }
@@ -657,12 +711,15 @@ class MultiTenantService extends ChangeNotifier {
         success: true,
         tenantId: tenantId,
         operation: 'reactivate',
+        timestamp: DateTime.now(),
       );
     } catch (e) {
       debugPrint('❌ Failed to reactivate tenant: $e');
       return TenantOperationResult(
         success: false,
         tenantId: tenantId,
+        operation: 'reactivate',
+        timestamp: DateTime.now(),
         error: e.toString(),
       );
     }
@@ -676,6 +733,8 @@ class MultiTenantService extends ChangeNotifier {
         return TenantOperationResult(
           success: false,
           tenantId: tenantId,
+          operation: 'delete',
+          timestamp: DateTime.now(),
           error: 'Tenant not found',
         );
       }
@@ -704,12 +763,15 @@ class MultiTenantService extends ChangeNotifier {
         success: true,
         tenantId: tenantId,
         operation: 'delete',
+        timestamp: DateTime.now(),
       );
     } catch (e) {
       debugPrint('❌ Failed to delete tenant: $e');
       return TenantOperationResult(
         success: false,
         tenantId: tenantId,
+        operation: 'delete',
+        timestamp: DateTime.now(),
         error: e.toString(),
       );
     }
@@ -732,42 +794,42 @@ class MultiTenantService extends ChangeNotifier {
         );
       }
 
-      final analytics = TenantAnalytics(
-        tenantId: tenantId,
-        period: DateRange(
-          start: startDate ?? DateTime.now().subtract(const Duration(days: 30)),
-          end: endDate ?? DateTime.now(),
-        ),
-        userMetrics: UserMetrics(
-          totalUsers: metrics.activeUsers,
-          activeUsers: metrics.activeUsers,
-          newUsers: 0, // Calculate from historical data
-          userGrowthRate: 0.0,
-        ),
-        usageMetrics: UsageMetrics(
-          totalRequests: metrics.totalRequests,
-          storageUsed: metrics.storageUsed,
-          bandwidthUsed: metrics.bandwidthUsed,
-          averageResponseTime: 0.0,
-        ),
-        financialMetrics: FinancialMetrics(
-          totalRevenue: 0.0, // Calculate from billing data
-          monthlyRecurringRevenue: 0.0,
-          churnRate: 0.0,
-          averageRevenuePerUser: 0.0,
-        ),
-        performanceMetrics: PerformanceMetrics(
-          uptime: 99.9,
-          errorRate: 0.1,
-          averageLoadTime: 1.2,
-          throughput: 1000.0,
-        ),
-      );
+      // Create analytics data map instead of undefined classes
+      final analyticsData = {
+        'tenantId': tenantId,
+        'period': {
+          'start': (startDate ?? DateTime.now().subtract(const Duration(days: 30))).toIso8601String(),
+          'end': (endDate ?? DateTime.now()).toIso8601String(),
+        },
+        'userMetrics': {
+          'totalUsers': metrics.totalUsers,
+          'activeUsers': metrics.activeUsers,
+          'newUsers': 0,
+          'userGrowthRate': 0.0,
+        },
+        'usageMetrics': {
+          'apiCallsThisMonth': metrics.apiCallsThisMonth,
+          'storageUsed': metrics.storageUsed,
+          'averageResponseTime': metrics.averageResponseTime,
+        },
+        'financialMetrics': {
+          'totalRevenue': 0.0,
+          'monthlyRecurringRevenue': 0.0,
+          'churnRate': 0.0,
+          'averageRevenuePerUser': 0.0,
+        },
+        'performanceMetrics': {
+          'uptime': metrics.uptime,
+          'errorRate': 0.1,
+          'averageLoadTime': 1.2,
+          'throughput': 1000.0,
+        },
+      };
 
       return TenantAnalyticsResult(
         success: true,
         tenantId: tenantId,
-        analytics: analytics,
+        analytics: analyticsData,
       );
     } catch (e) {
       debugPrint('❌ Failed to get tenant analytics: $e');
@@ -953,12 +1015,21 @@ class MultiTenantService extends ChangeNotifier {
   Future<void> _createDatabasePartition(String tenantId) async {
     // Create tenant-specific database partition
     final partition = DatabasePartition(
+      id: 'partition_$tenantId',
       tenantId: tenantId,
-      partitionName: 'tenant_${tenantId}_data',
-      strategy: PartitionStrategy.schema,
+      partitionType: 'dedicated',
       connectionString: 'sqlite://tenant_$tenantId.db',
-      isActive: true,
+      maxConnections: 50,
+      storageLimit: 10.0,
+      currentUsage: 0.0,
+      maxTables: 100,
+      backupEnabled: true,
+      backupFrequency: 'daily',
+      backupRetentionDays: 30,
+      lastBackupAt: DateTime.now(),
+      status: 'active',
       createdAt: DateTime.now(),
+      updatedAt: DateTime.now(),
     );
 
     _databasePartitions[tenantId] = partition;
@@ -1012,15 +1083,37 @@ class MultiTenantService extends ChangeNotifier {
     // Process billing for a specific tenant
     debugPrint('💳 Processing billing for tenant: ${billingAccount.tenantId}');
 
-    // Update next billing date
-    switch (billingAccount.billingCycle) {
-      case BillingCycle.monthly:
-        billingAccount.nextBillingDate = billingAccount.nextBillingDate.add(const Duration(days: 30));
-        break;
-      case BillingCycle.yearly:
-        billingAccount.nextBillingDate = billingAccount.nextBillingDate.add(const Duration(days: 365));
-        break;
+    // Calculate next billing date
+    DateTime nextBilling;
+    if (billingAccount.billingCycle == 'monthly') {
+      nextBilling = billingAccount.nextBillingDate.add(const Duration(days: 30));
+    } else if (billingAccount.billingCycle == 'yearly') {
+      nextBilling = billingAccount.nextBillingDate.add(const Duration(days: 365));
+    } else {
+      nextBilling = billingAccount.nextBillingDate.add(const Duration(days: 30)); // default monthly
     }
+
+    // Create updated billing account
+    _billingAccounts[billingAccount.tenantId] = BillingAccount(
+      id: billingAccount.id,
+      tenantId: billingAccount.tenantId,
+      status: billingAccount.status,
+      billingName: billingAccount.billingName,
+      billingEmail: billingAccount.billingEmail,
+      billingAddress: billingAccount.billingAddress,
+      billingCity: billingAccount.billingCity,
+      billingState: billingAccount.billingState,
+      billingZip: billingAccount.billingZip,
+      billingCountry: billingAccount.billingCountry,
+      paymentMethod: billingAccount.paymentMethod,
+      paymentDetails: billingAccount.paymentDetails,
+      balance: billingAccount.balance,
+      lastPaymentDate: DateTime.now(),
+      lastPaymentAmount: billingAccount.lastPaymentAmount,
+      nextBillingDate: nextBilling,
+      createdAt: billingAccount.createdAt,
+      updatedAt: DateTime.now(),
+    );
   }
 
   Map<String, dynamic> _getDefaultDatabaseSettings(TenantPlan plan) {
@@ -1114,6 +1207,17 @@ class MultiTenantService extends ChangeNotifier {
         return ['Priority Support', 'Advanced Features', 'API Access'];
       case TenantPlan.enterprise:
         return ['24/7 Support', 'All Features', 'API Access', 'Custom Branding', 'SSO'];
+    }
+  }
+
+  double _getPlanAmount(TenantPlan plan) {
+    switch (plan) {
+      case TenantPlan.basic:
+        return 29.99;
+      case TenantPlan.professional:
+        return 99.99;
+      case TenantPlan.enterprise:
+        return 299.99;
     }
   }
 

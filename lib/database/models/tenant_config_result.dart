@@ -1,50 +1,15 @@
 class TenantConfigResult {
   final bool success;
-  final String? tenantId;
+  final String tenantId;
+  final TenantConfiguration? configuration;
   final String? error;
-  final Map<String, dynamic>? updatedConfig;
 
-  TenantConfigResult({
-    required this.success,
-    this.tenantId,
-    this.error,
-    this.updatedConfig,
-  });
-
-  Map<String, dynamic> toMap() {
-    return {
-      'success': success,
-      'tenantId': tenantId,
-      'error': error,
-      'updatedConfig': updatedConfig,
-    };
-  }
-
-  factory TenantConfigResult.success(String tenantId, Map<String, dynamic> updatedConfig) {
-    return TenantConfigResult(
-      success: true,
-      tenantId: tenantId,
-      updatedConfig: updatedConfig,
-    );
-  }
-
-  factory TenantConfigResult.failure(String error) {
-    return TenantConfigResult(
-      success: false,
-      error: error,
-    );
-  }
-class TenantConfigResult {
   TenantConfigResult({
     required this.success,
     required this.tenantId,
     this.configuration,
     this.error,
   });
-  final bool success;
-  final String tenantId;
-  final TenantConfiguration? configuration;
-  final String? error;
 
   Map<String, dynamic> toMap() {
     return {
@@ -82,6 +47,13 @@ class TenantConfigResult {
 }
 
 class TenantConfiguration {
+  final String tenantId;
+  final Map<String, dynamic> databaseSettings;
+  final Map<String, dynamic> securitySettings;
+  final Map<String, bool> featureFlags;
+  final Map<String, dynamic> integrationSettings;
+  final Map<String, dynamic> customSettings;
+
   TenantConfiguration({
     required this.tenantId,
     required this.databaseSettings,
@@ -90,12 +62,6 @@ class TenantConfiguration {
     required this.integrationSettings,
     required this.customSettings,
   });
-  final String tenantId;
-  final Map<String, dynamic> databaseSettings;
-  final Map<String, dynamic> securitySettings;
-  final Map<String, bool> featureFlags;
-  final Map<String, dynamic> integrationSettings;
-  final Map<String, dynamic> customSettings;
 
   Map<String, dynamic> toMap() {
     return {
@@ -116,15 +82,6 @@ class TenantConfiguration {
       featureFlags: Map<String, bool>.from(map['featureFlags']),
       integrationSettings: Map<String, dynamic>.from(map['integrationSettings']),
       customSettings: Map<String, dynamic>.from(map['customSettings']),
-    );
-  }
-}
-  factory TenantConfigResult.fromMap(Map<String, dynamic> map) {
-    return TenantConfigResult(
-      success: map['success'],
-      tenantId: map['tenantId'],
-      error: map['error'],
-      updatedConfig: map['updatedConfig'],
     );
   }
 }

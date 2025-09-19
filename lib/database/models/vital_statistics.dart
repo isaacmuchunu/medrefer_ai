@@ -166,6 +166,8 @@ class VitalStatistics {
         notes.hashCode;
   }
 
+  get systolicBP => null;
+
   @override
   String toString() {
     return 'VitalStatistics(id: $id, patientId: $patientId, heartRate: $heartRate, bloodPressure: $bloodPressureSystolic/$bloodPressureDiastolic, oxygenSaturation: $oxygenSaturation, temperature: $temperature, timestamp: $timestamp)';

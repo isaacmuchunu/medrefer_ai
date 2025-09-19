@@ -24,48 +24,7 @@ class TenantUser {
     required this.createdAt,
     required this.updatedAt,
   });
-class TenantUser {
-  TenantUser({
-    required this.userId,
-    required this.tenantId,
-    required this.email,
-    required this.role,
-    required this.createdAt,
-    this.lastLoginAt,
-    required this.isActive,
-  });
-  final String userId;
-  final String tenantId;
-  final String email;
-  final String role;
-  final DateTime createdAt;
-  DateTime? lastLoginAt;
-  bool isActive;
 
-  Map<String, dynamic> toMap() {
-    return {
-      'userId': userId,
-      'tenantId': tenantId,
-      'email': email,
-      'role': role,
-      'createdAt': createdAt.toIso8601String(),
-      'lastLoginAt': lastLoginAt?.toIso8601String(),
-      'isActive': isActive,
-    };
-  }
-
-  factory TenantUser.fromMap(Map<String, dynamic> map) {
-    return TenantUser(
-      userId: map['userId'],
-      tenantId: map['tenantId'],
-      email: map['email'],
-      role: map['role'],
-      createdAt: DateTime.parse(map['createdAt']),
-      lastLoginAt: map['lastLoginAt'] != null ? DateTime.parse(map['lastLoginAt']) : null,
-      isActive: map['isActive'],
-    );
-  }
-}
   Map<String, dynamic> toMap() {
     return {
       'id': id,

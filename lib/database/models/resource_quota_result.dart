@@ -1,50 +1,15 @@
 class ResourceQuotaResult {
   final bool success;
-  final String? tenantId;
+  final String tenantId;
+  final ResourceQuota? quota;
   final String? error;
-  final Map<String, dynamic>? quotas;
 
-  ResourceQuotaResult({
-    required this.success,
-    this.tenantId,
-    this.error,
-    this.quotas,
-  });
-
-  Map<String, dynamic> toMap() {
-    return {
-      'success': success,
-      'tenantId': tenantId,
-      'error': error,
-      'quotas': quotas,
-    };
-  }
-
-  factory ResourceQuotaResult.success(String tenantId, Map<String, dynamic> quotas) {
-    return ResourceQuotaResult(
-      success: true,
-      tenantId: tenantId,
-      quotas: quotas,
-    );
-  }
-
-  factory ResourceQuotaResult.failure(String error) {
-    return ResourceQuotaResult(
-      success: false,
-      error: error,
-    );
-  }
-class ResourceQuotaResult {
   ResourceQuotaResult({
     required this.success,
     required this.tenantId,
     this.quota,
     this.error,
   });
-  final bool success;
-  final String tenantId;
-  final ResourceQuota? quota;
-  final String? error;
 
   Map<String, dynamic> toMap() {
     return {
@@ -82,6 +47,15 @@ class ResourceQuotaResult {
 }
 
 class ResourceQuota {
+  final String tenantId;
+  int maxUsers;
+  int maxStorage;
+  int maxBandwidth;
+  int maxConnections;
+  int maxRequests;
+  final DateTime createdAt;
+  DateTime updatedAt;
+
   ResourceQuota({
     required this.tenantId,
     required this.maxUsers,
@@ -92,14 +66,6 @@ class ResourceQuota {
     required this.createdAt,
     required this.updatedAt,
   });
-  final String tenantId;
-  int maxUsers;
-  int maxStorage;
-  int maxBandwidth;
-  int maxConnections;
-  int maxRequests;
-  final DateTime createdAt;
-  DateTime updatedAt;
 
   Map<String, dynamic> toMap() {
     return {
@@ -129,6 +95,15 @@ class ResourceQuota {
 }
 
 class ResourceUsage {
+  final String tenantId;
+  double cpuUsage;
+  int memoryUsage;
+  int storageUsage;
+  int bandwidthUsage;
+  int activeConnections;
+  int activeUsers;
+  DateTime lastUpdated;
+
   ResourceUsage({
     required this.tenantId,
     required this.cpuUsage,
@@ -139,14 +114,6 @@ class ResourceUsage {
     this.activeUsers = 0,
     required this.lastUpdated,
   });
-  final String tenantId;
-  double cpuUsage;
-  int memoryUsage;
-  int storageUsage;
-  int bandwidthUsage;
-  int activeConnections;
-  int activeUsers;
-  DateTime lastUpdated;
 
   Map<String, dynamic> toMap() {
     return {
@@ -171,15 +138,6 @@ class ResourceUsage {
       activeConnections: map['activeConnections'],
       activeUsers: map['activeUsers'],
       lastUpdated: DateTime.parse(map['lastUpdated']),
-    );
-  }
-}
-  factory ResourceQuotaResult.fromMap(Map<String, dynamic> map) {
-    return ResourceQuotaResult(
-      success: map['success'],
-      tenantId: map['tenantId'],
-      error: map['error'],
-      quotas: map['quotas'],
     );
   }
 }

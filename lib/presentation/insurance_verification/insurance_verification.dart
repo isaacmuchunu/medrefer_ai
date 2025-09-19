@@ -23,7 +23,7 @@ class _InsuranceVerificationState extends State<InsuranceVerification> {
     setState(() => _isLoading = true);
     final dataService = Provider.of<DataService>(context, listen: false);
     // Assume InsuranceDAO exists
-    _insuranceDocs = await dataService.insuranceDAO.getInsuranceForPatient('patientId') ?? []; // Replace with actual ID
+    _insuranceDocs = await dataService.insuranceDAO.getInsuranceByPatientId('patientId') ?? []; // Replace with actual ID
     setState(() => _isLoading = false);
   }
 

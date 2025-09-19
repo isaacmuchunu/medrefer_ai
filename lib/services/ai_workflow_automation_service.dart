@@ -936,28 +936,6 @@ class AIWorkflowAutomationService extends ChangeNotifier {
   Future<Map<String, dynamic>> _executeConditionalStep(WorkflowStep step, Map<String, dynamic> context) async {
     // TODO: Implement comprehensive conditional step execution
     try {
-      await Future.delayed(Duration(milliseconds: 200 + Random().nextInt(300)));
-      
-      final condition = step.parameters['condition'] ?? 'default';
-      final conditionMet = await _evaluateCondition(condition, context);
-      
-      return {
-        'success': true,
-        'output': {
-          'condition_met': conditionMet,
-          'condition': condition,
-          'next_action': conditionMet ? step.parameters['if_true'] : step.parameters['if_false'],
-        }
-      };
-    } catch (e) {
-      return {'success': false, 'error': e.toString()};
-    }
-  }
-
-  /// Execute conditional step
-  Future<Map<String, dynamic>> _executeConditionalStep(WorkflowStep step, Map<String, dynamic> context) async {
-    // TODO: Implement comprehensive conditional step execution
-    try {
       // Evaluate condition
       final condition = step.parameters['condition'] as String?;
       if (condition != null) {

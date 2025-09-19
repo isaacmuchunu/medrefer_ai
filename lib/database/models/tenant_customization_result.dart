@@ -1,50 +1,15 @@
 class TenantCustomizationResult {
   final bool success;
-  final String? tenantId;
+  final String tenantId;
+  final TenantCustomization? customization;
   final String? error;
-  final Map<String, dynamic>? customization;
 
-  TenantCustomizationResult({
-    required this.success,
-    this.tenantId,
-    this.error,
-    this.customization,
-  });
-
-  Map<String, dynamic> toMap() {
-    return {
-      'success': success,
-      'tenantId': tenantId,
-      'error': error,
-      'customization': customization,
-    };
-  }
-
-  factory TenantCustomizationResult.success(String tenantId, Map<String, dynamic> customization) {
-    return TenantCustomizationResult(
-      success: true,
-      tenantId: tenantId,
-      customization: customization,
-    );
-  }
-
-  factory TenantCustomizationResult.failure(String error) {
-    return TenantCustomizationResult(
-      success: false,
-      error: error,
-    );
-  }
-class TenantCustomizationResult {
   TenantCustomizationResult({
     required this.success,
     required this.tenantId,
     this.customization,
     this.error,
   });
-  final bool success;
-  final String tenantId;
-  final TenantCustomization? customization;
-  final String? error;
 
   Map<String, dynamic> toMap() {
     return {
@@ -82,16 +47,17 @@ class TenantCustomizationResult {
 }
 
 class TenantCustomization {
+  final String tenantId;
+  TenantBranding branding;
+  TenantLocalization localization;
+  final Map<String, dynamic> uiCustomizations;
+
   TenantCustomization({
     required this.tenantId,
     required this.branding,
     required this.localization,
     required this.uiCustomizations,
   });
-  final String tenantId;
-  TenantBranding branding;
-  TenantLocalization localization;
-  final Map<String, dynamic> uiCustomizations;
 
   Map<String, dynamic> toMap() {
     return {
@@ -113,6 +79,12 @@ class TenantCustomization {
 }
 
 class TenantBranding {
+  String primaryColor;
+  String secondaryColor;
+  String? logo;
+  String? favicon;
+  String? customCss;
+
   TenantBranding({
     required this.primaryColor,
     required this.secondaryColor,
@@ -120,11 +92,6 @@ class TenantBranding {
     this.favicon,
     this.customCss,
   });
-  String primaryColor;
-  String secondaryColor;
-  String? logo;
-  String? favicon;
-  String? customCss;
 
   Map<String, dynamic> toMap() {
     return {
@@ -148,14 +115,15 @@ class TenantBranding {
 }
 
 class TenantLocalization {
+  String defaultLanguage;
+  List<String> supportedLanguages;
+  Map<String, Map<String, String>> customTranslations;
+
   TenantLocalization({
     required this.defaultLanguage,
     required this.supportedLanguages,
     required this.customTranslations,
   });
-  String defaultLanguage;
-  List<String> supportedLanguages;
-  Map<String, Map<String, String>> customTranslations;
 
   Map<String, dynamic> toMap() {
     return {
@@ -172,15 +140,6 @@ class TenantLocalization {
       customTranslations: Map<String, Map<String, String>>.from(
         map['customTranslations'].map((key, value) => MapEntry(key, Map<String, String>.from(value))),
       ),
-    );
-  }
-}
-  factory TenantCustomizationResult.fromMap(Map<String, dynamic> map) {
-    return TenantCustomizationResult(
-      success: map['success'],
-      tenantId: map['tenantId'],
-      error: map['error'],
-      customization: map['customization'],
     );
   }
 }

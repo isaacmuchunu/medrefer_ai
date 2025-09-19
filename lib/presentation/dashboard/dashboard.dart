@@ -28,7 +28,7 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
 
   // User role and permissions
   User? _currentUser;
-  String _userRole = 'Doctor';
+  UserRole _userRole = UserRole.doctor;
   List<String> _userPermissions = [];
 
   // Emergency alerts
@@ -88,16 +88,19 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
     }
   }
 
-  List<String> _getUserPermissions(String role) {
-    switch (role.toLowerCase()) {
-      case 'admin':
+  List<String> _getUserPermissions(UserRole role) {
+    switch (role) {
+      case UserRole.admin:
+      case UserRole.superAdmin:
         return ['create_referral', 'view_all_patients', 'manage_specialists', 'view_analytics', 'manage_users'];
-      case 'doctor':
+      case UserRole.doctor:
         return ['create_referral', 'view_patients', 'message_specialists', 'view_referrals'];
-      case 'nurse':
+      case UserRole.nurse:
         return ['create_referral', 'view_patients', 'update_patient_info'];
-      case 'specialist':
+      case UserRole.specialist:
         return ['view_referrals', 'update_referral_status', 'message_doctors'];
+      case UserRole.pharmacist:
+        return ['view_prescriptions', 'manage_inventory', 'process_orders'];
       default:
         return ['view_referrals'];
     }
@@ -211,8 +214,9 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
     ];
 
     // Add role-specific metrics
-    switch (_userRole.toLowerCase()) {
-      case 'admin':
+    switch (_userRole) {
+      case UserRole.admin:
+      case UserRole.superAdmin:
         baseMetrics.addAll([
           {
             'title': 'System Health',
@@ -230,7 +234,7 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
           },
         ]);
         break;
-      case 'doctor':
+      case UserRole.doctor:
         baseMetrics.addAll([
           {
             'title': 'My Patients',
@@ -248,7 +252,7 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
           },
         ]);
         break;
-      case 'specialist':
+      case UserRole.specialist:
         baseMetrics.addAll([
           {
             'title': 'Incoming Referrals',
@@ -299,20 +303,21 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
 
   Future<Map<String, dynamic>> _loadRoleSpecificData() async {
     // Load data specific to user role
-    switch (_userRole.toLowerCase()) {
-      case 'admin':
+    switch (_userRole) {
+      case UserRole.admin:
+      case UserRole.superAdmin:
         return {
           'systemHealth': 'Good',
           'activeUsers': 45,
           'systemAlerts': 2,
         };
-      case 'doctor':
+      case UserRole.doctor:
         return {
           'myPatients': 23,
           'pendingReferrals': 5,
           'todayAppointments': 8,
         };
-      case 'specialist':
+      case UserRole.specialist:
         return {
           'incomingReferrals': 12,
           'scheduledConsultations': 6,
@@ -671,11 +676,8 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
           // Enhanced Header with real-time status
           HeaderWidget(
             hospitalName: 'MedRefer AI Hospital',
-            isSecureConnection: _isSecureConnection,
-            networkStatus: _networkStatus,
-            userRole: _userRole,
             userName: _currentUser?.name ?? 'User',
-            lastRefreshTime: _lastRefreshTime,
+            userRole: _userRole.name,
           ),
 
           // Emergency Alerts Banner
