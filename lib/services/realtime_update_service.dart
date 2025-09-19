@@ -7,10 +7,9 @@ import 'logging_service.dart';
 
 /// Real-time update service for MedRefer AI
 class RealtimeUpdateService extends ChangeNotifier {
-  _RealtimeUpdateService();
-
-  static final RealtimeUpdateService _instance = _RealtimeUpdateService();
+  static final RealtimeUpdateService _instance = RealtimeUpdateService._internal();
   factory RealtimeUpdateService() => _instance;
+  RealtimeUpdateService._internal();
 
   final LoggingService _loggingService = LoggingService();
   

@@ -4,7 +4,7 @@ import '../database/models/patient.dart';
 import '../database/services/data_service.dart';
 import '../core/result.dart';
 import 'ai_service.dart';
-import 'blockchain_medical_records_service.dart';
+import 'blockchain_medical_records_service.dart' hide Patient, Referral;
 import 'notification_service.dart';
 import 'logging_service.dart';
 
@@ -307,12 +307,7 @@ class DrugInteractionService {
       if (!_isInitialized) await initialize();
 
       // Get patient's current medications
-      final medicationsResult = await _dataService.getPatientMedications(patientId);
-      if (medicationsResult.isError) {
-        return Result.error(medicationsResult.errorMessage!);
-      }
-
-      final currentMedications = medicationsResult.data ?? [];
+      final currentMedications = await _dataService.getPatientMedications(patientId);
       final interactions = <DrugInteraction>[];
 
       // Check against current medications
@@ -327,9 +322,8 @@ class DrugInteractionService {
       }
 
       // Get patient information for additional checks
-      final patientResult = await _dataService.getPatientById(patientId);
-      if (patientResult.isSuccess && patientResult.data != null) {
-        final patient = patientResult.data!;
+      final patient = await _dataService.getPatientById(patientId);
+      if (patient != null) {
         
         // Check for disease-drug interactions
         final diseaseInteractions = await _checkDiseaseInteractions(
@@ -406,9 +400,8 @@ class DrugInteractionService {
       }
 
       // Get patient for additional checks
-      final patientResult = await _dataService.getPatientById(patientId);
-      if (patientResult.isSuccess && patientResult.data != null) {
-        final patient = patientResult.data!;
+      final patient = await _dataService.getPatientById(patientId);
+      if (patient != null) {
         
         for (final medication in medications) {
           // Disease interactions
@@ -472,13 +465,11 @@ class DrugInteractionService {
     final interactions = <DrugInteraction>[];
     
     // Get patient's medical conditions
-    final conditionsResult = await _dataService.getPatientConditions(patient.id);
-    if (conditionsResult.isSuccess && conditionsResult.data != null) {
-      for (final condition in conditionsResult.data!) {
-        final interaction = await _findDiseaseInteraction(medication.name, condition.name);
-        if (interaction != null) {
-          interactions.add(interaction);
-        }
+    final conditions = await _dataService.getPatientConditions(patient.id);
+    for (final condition in conditions) {
+      final interaction = await _findDiseaseInteraction(medication.name, condition.name);
+      if (interaction != null) {
+        interactions.add(interaction);
       }
     }
 
@@ -777,8 +768,7 @@ class DrugInteractionService {
       await _dataService.update(
         'drug_interaction_alerts',
         updatedAlert.toMap(),
-        where: 'id = ?',
-        whereArgs: [alertId],
+        alertId,
       );
 
       // Update in memory
@@ -826,8 +816,7 @@ class DrugInteractionService {
       await _dataService.update(
         'drug_interaction_alerts',
         {'isActive': false},
-        where: 'id = ?',
-        whereArgs: [alertId],
+        alertId,
       );
 
       return Result.success(null);

@@ -30,7 +30,7 @@ class _ReferralTrackingState extends State<ReferralTracking>
   final List<String> _statusTabs = ['All', 'Pending', 'Approved', 'Completed'];
 
   // Dynamic data for referrals
-  List<Referral> _allReferrals = [];
+  List<Map<String, dynamic>> _allReferrals = [];
   List<Patient> _patients = [];
   List<Specialist> _specialists = [];
 
@@ -57,7 +57,24 @@ class _ReferralTrackingState extends State<ReferralTracking>
       final specialists = await dataService.getSpecialists();
 
       setState(() {
-        _allReferrals = referrals;
+        _allReferrals = referrals.map((referral) => {
+          'id': referral.id,
+          'trackingNumber': referral.trackingNumber,
+          'patientId': referral.patientId,
+          'specialistId': referral.specialistId,
+          'status': referral.status,
+          'urgency': referral.urgency,
+          'symptomsDescription': referral.symptomsDescription,
+          'aiConfidence': referral.aiConfidence,
+          'estimatedTime': referral.estimatedTime,
+          'department': referral.department,
+          'referringPhysician': referral.referringPhysician,
+          'createdAt': referral.createdAt,
+          'updatedAt': referral.updatedAt,
+          'patient': patients.firstWhere((p) => p.id == referral.patientId, orElse: () => Patient(id: '', name: '', dateOfBirth: DateTime.now(), gender: '')),
+          'specialist': specialists.firstWhere((s) => s.id == referral.specialistId, orElse: () => Specialist(id: '', name: '', specialty: '')),
+          'lastUpdate': referral.updatedAt,
+        }).toList();
         _patients = patients;
         _specialists = specialists;
       });
@@ -98,7 +115,8 @@ class _ReferralTrackingState extends State<ReferralTracking>
   }
 
   void _listenToConnectivity() {
-    Connectivity().onConnectivityChanged.listen((ConnectivityResult result) {
+    Connectivity().onConnectivityChanged.listen((List<ConnectivityResult> results) {
+      final result = results.isNotEmpty ? results.first : ConnectivityResult.none;
       setState(() {
         _isOnline = result != ConnectivityResult.none;
         if (_isOnline && _pendingChanges > 0) {
@@ -129,28 +147,20 @@ class _ReferralTrackingState extends State<ReferralTracking>
     if (_selectedTabIndex > 0) {
       final selectedStatus = _statusTabs[_selectedTabIndex];
       filtered = filtered.where((referral) {
-        return (referral['status'] as String).toLowerCase() ==
-            selectedStatus.toLowerCase();
+        return (referral['status'] as String).toLowerCase() == selectedStatus.toLowerCase();
       }).toList();
     }
 
     // Filter by search query
     if (_searchQuery.isNotEmpty) {
       filtered = filtered.where((referral) {
-        final patient = referral['patient'] as Map<String, dynamic>;
-        final specialist = referral['specialist'] as Map<String, dynamic>;
-        final trackingNumber = referral['trackingNumber'] as String;
+        final patient = referral['patient'] as Patient;
+        final specialist = referral['specialist'] as Specialist;
 
-        return (patient['name'] as String)
-                .toLowerCase()
-                .contains(_searchQuery.toLowerCase()) ||
-            (specialist['name'] as String)
-                .toLowerCase()
-                .contains(_searchQuery.toLowerCase()) ||
-            (specialist['specialty'] as String)
-                .toLowerCase()
-                .contains(_searchQuery.toLowerCase()) ||
-            trackingNumber.toLowerCase().contains(_searchQuery.toLowerCase());
+        return patient.name.toLowerCase().contains(_searchQuery.toLowerCase()) ||
+            specialist.name.toLowerCase().contains(_searchQuery.toLowerCase()) ||
+            specialist.specialty.toLowerCase().contains(_searchQuery.toLowerCase()) ||
+            (referral['trackingNumber'] as String).toLowerCase().contains(_searchQuery.toLowerCase());
       }).toList();
     }
 
@@ -183,8 +193,8 @@ class _ReferralTrackingState extends State<ReferralTracking>
         _currentFilters['specialty'] != 'All Specialties') {
       final specialty = _currentFilters['specialty'] as String;
       filtered = filtered.where((referral) {
-        final specialist = referral['specialist'] as Map<String, dynamic>;
-        return (specialist['specialty'] as String) == specialty;
+        final specialist = referral['specialist'] as Specialist;
+        return specialist.specialty == specialty;
       }).toList();
     }
 
@@ -280,8 +290,7 @@ class _ReferralTrackingState extends State<ReferralTracking>
   }
 
   void _handleReferralAction(String action, Map<String, dynamic> referral) {
-    final patientName =
-        (referral['patient'] as Map<String, dynamic>)['name'] as String;
+    final patientName = (referral['patient'] as Patient).name;
 
     switch (action) {
       case 'call':
@@ -362,8 +371,7 @@ class _ReferralTrackingState extends State<ReferralTracking>
       }
     });
 
-    final patientName =
-        (referral['patient'] as Map<String, dynamic>)['name'] as String;
+    final patientName = (referral['patient'] as Patient).name;
     Fluttertoast.showToast(
       msg: "Status updated for $patientName",
       toastLength: Toast.LENGTH_SHORT,
@@ -372,8 +380,7 @@ class _ReferralTrackingState extends State<ReferralTracking>
   }
 
   void _archiveReferral(Map<String, dynamic> referral) {
-    final patientName =
-        (referral['patient'] as Map<String, dynamic>)['name'] as String;
+    final patientName = (referral['patient'] as Patient).name;
 
     showDialog(
       context: context,
@@ -406,8 +413,7 @@ class _ReferralTrackingState extends State<ReferralTracking>
   }
 
   void _exportReferralPdf(Map<String, dynamic> referral) {
-    final patientName =
-        (referral['patient'] as Map<String, dynamic>)['name'] as String;
+    final patientName = (referral['patient'] as Patient).name;
     Fluttertoast.showToast(
       msg: "Exporting PDF for $patientName",
       toastLength: Toast.LENGTH_SHORT,
@@ -416,8 +422,7 @@ class _ReferralTrackingState extends State<ReferralTracking>
   }
 
   void _shareReferral(Map<String, dynamic> referral) {
-    final patientName =
-        (referral['patient'] as Map<String, dynamic>)['name'] as String;
+    final patientName = (referral['patient'] as Patient).name;
     Fluttertoast.showToast(
       msg: "Sharing referral for $patientName",
       toastLength: Toast.LENGTH_SHORT,

@@ -63,29 +63,29 @@ class LoggingService {
 
   /// Log an info message
   void info(String message, {String? context, Map<String, dynamic>? metadata}) {
-    _log(LogLevel.info, message, context: context, metadata: metadata);
+    log(LogLevel.info, message, context: context, metadata: metadata);
   }
 
   /// Log a warning message
   void warning(String message, {String? context, Map<String, dynamic>? metadata}) {
-    _log(LogLevel.warning, message, context: context, metadata: metadata);
+    log(LogLevel.warning, message, context: context, metadata: metadata);
   }
 
   /// Log an error message
   void error(String message, {String? context, Map<String, dynamic>? metadata, Object? error, StackTrace? stackTrace}) {
-    _log(LogLevel.error, message, context: context, metadata: metadata, error: error, stackTrace: stackTrace);
+    log(LogLevel.error, message, context: context, metadata: metadata, error: error, stackTrace: stackTrace);
   }
 
   /// Log a debug message (only in debug mode)
   void debug(String message, {String? context, Map<String, dynamic>? metadata}) {
     if (kDebugMode) {
-      _log(LogLevel.debug, message, context: context, metadata: metadata);
+      log(LogLevel.debug, message, context: context, metadata: metadata);
     }
   }
 
   /// Log a critical message
   void critical(String message, {String? context, Map<String, dynamic>? metadata, Object? error, StackTrace? stackTrace}) {
-    _log(LogLevel.critical, message, context: context, metadata: metadata, error: error, stackTrace: stackTrace);
+    log(LogLevel.critical, message, context: context, metadata: metadata, error: error, stackTrace: stackTrace);
   }
 
   /// Log user actions for audit trail
@@ -96,8 +96,8 @@ class LoggingService {
       'timestamp': DateTime.now().toIso8601String(),
       ...?metadata,
     };
-    
-    _log(LogLevel.info, 'User Action: $action', context: context ?? 'UserAction', metadata: auditMetadata);
+
+    log(LogLevel.info, 'User Action: $action', context: context ?? 'UserAction', metadata: auditMetadata);
   }
 
   /// Log performance metrics
@@ -108,8 +108,8 @@ class LoggingService {
       'unit': 'ms',
       ...?metadata,
     };
-    
-    _log(LogLevel.info, 'Performance: $metric = ${value}ms', context: context ?? 'Performance', metadata: perfMetadata);
+
+    log(LogLevel.info, 'Performance: $metric = ${value}ms', context: context ?? 'Performance', metadata: perfMetadata);
   }
 
   /// Log network requests
@@ -121,8 +121,8 @@ class LoggingService {
       'responseTime': responseTime,
       ...?metadata,
     };
-    
-    _log(LogLevel.info, 'Network: $method $url', context: 'Network', metadata: networkMetadata);
+
+    log(LogLevel.info, 'Network: $method $url', context: 'Network', metadata: networkMetadata);
   }
 
   /// Log database operations
@@ -132,8 +132,8 @@ class LoggingService {
       'table': table,
       ...?metadata,
     };
-    
-    _log(LogLevel.debug, 'Database: $operation on $table', context: context ?? 'Database', metadata: dbMetadata);
+
+    log(LogLevel.debug, 'Database: $operation on $table', context: context ?? 'Database', metadata: dbMetadata);
   }
 
   /// Log a message with a specific level
@@ -173,11 +173,11 @@ class LoggingService {
     }
 
     // Write to file (asynchronously)
-    _writeToFile(entry);
-    
+    _writeToFile(logEntry);
+
     // Also print to console in debug mode
     if (kDebugMode) {
-      _printToConsole(entry);
+      _printToConsole(logEntry);
     }
   }
 

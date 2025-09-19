@@ -23,6 +23,7 @@ class _PatientProfileState extends State<PatientProfile>
   bool _isPrivacyEnabled = false;
   final int _selectedTabIndex = 0;
   bool _isLoading = true;
+  bool _isMetric = false;
 
   // Dynamic patient data
   Patient? _patient;
@@ -240,6 +241,12 @@ class _PatientProfileState extends State<PatientProfile>
               "oxygenSaturation": "${_vitalStatistics!.oxygenSaturation}",
               "lastUpdated": "Recently",
             } : {},
+            isMetric: _isMetric,
+            onUnitToggle: () {
+              setState(() {
+                _isMetric = !_isMetric;
+              });
+            },
           ),
           SizedBox(height: 3.h),
           CurrentMedicationsWidget(
@@ -250,7 +257,7 @@ class _PatientProfileState extends State<PatientProfile>
               "frequency": med.frequency,
               "type": med.type,
               "status": med.isActive ? "Active" : "Inactive",
-              "startDate": med.startDate.toIso8601String().split('T')[0],
+              "startDate": med.startDate?.toIso8601String().split('T')[0] ?? "",
               "prescribedBy": med.prescribedBy,
             }).toList(),
           ),
@@ -261,7 +268,7 @@ class _PatientProfileState extends State<PatientProfile>
               "name": condition.name,
               "severity": condition.severity,
               "description": condition.description,
-              "diagnosedDate": condition.diagnosedDate.toIso8601String().split('T')[0],
+              "diagnosedDate": condition.diagnosedDate?.toIso8601String().split('T')[0] ?? "",
               "diagnosedBy": condition.diagnosedBy,
               "icd10": condition.icd10Code,
             }).toList(),

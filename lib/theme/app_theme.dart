@@ -31,6 +31,10 @@ class AppTheme {
   static const Color onSurfaceLight = Color(0xFF1A2332);
   static const Color onErrorLight = Color(0xFFFFFFFF);
 
+  // Backward compatibility aliases
+  static const Color primary = primaryLight;
+  static const Color background = backgroundLight;
+
   // Additional Medical App Colors (From Figma Design)
   static const Color cardLight = Color(0xFFFFFFFF); // Card background
   static const Color dividerLight = Color(0xFFE5E7EB); // Divider color

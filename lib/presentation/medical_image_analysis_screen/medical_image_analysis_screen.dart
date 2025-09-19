@@ -268,7 +268,7 @@ class _MedicalImageAnalysisScreenState extends State<MedicalImageAnalysisScreen>
       children: [
         Text(
           'Analysis Details',
-          style: theme.textTheme.titleMedium?.copyWith(
+          style: Theme.of(context).textTheme.titleMedium?.copyWith(
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -285,7 +285,7 @@ class _MedicalImageAnalysisScreenState extends State<MedicalImageAnalysisScreen>
           const SizedBox(height: 8),
           Text(
             'Radiologist Review',
-            style: theme.textTheme.titleSmall?.copyWith(
+            style: Theme.of(context).textTheme.titleSmall?.copyWith(
               fontWeight: FontWeight.bold,
             ),
           ),
@@ -330,7 +330,7 @@ class _MedicalImageAnalysisScreenState extends State<MedicalImageAnalysisScreen>
       children: [
         Text(
           'Findings (${findings.length})',
-          style: theme.textTheme.titleMedium?.copyWith(
+          style: Theme.of(context).textTheme.titleMedium?.copyWith(
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -438,7 +438,7 @@ class _MedicalImageAnalysisScreenState extends State<MedicalImageAnalysisScreen>
                 children: [
                   Text(
                     'Upload Medical Image',
-                    style: theme.textTheme.headlineSmall,
+                    style: Theme.of(context).textTheme.headlineSmall,
                   ),
                   const SizedBox(height: 16),
                   const Text(
@@ -547,7 +547,7 @@ class _MedicalImageAnalysisScreenState extends State<MedicalImageAnalysisScreen>
           children: [
             Text(
               'Supported Formats',
-              style: theme.textTheme.titleMedium?.copyWith(
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -572,7 +572,7 @@ class _MedicalImageAnalysisScreenState extends State<MedicalImageAnalysisScreen>
           children: [
             Text(
               'AI Analysis Capabilities',
-              style: theme.textTheme.titleMedium?.copyWith(
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -600,7 +600,7 @@ class _MedicalImageAnalysisScreenState extends State<MedicalImageAnalysisScreen>
           Icon(
             _getImageTypeIcon(_getImageTypeFromString(type)),
             size: 20,
-            color: theme.primaryColor,
+            color: Theme.of(context).primaryColor,
           ),
           const SizedBox(width: 8),
           Expanded(
@@ -668,12 +668,12 @@ class _MedicalImageAnalysisScreenState extends State<MedicalImageAnalysisScreen>
           children: [
             Text(
               title,
-              style: theme.textTheme.titleMedium?.copyWith(
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.bold,
               ),
             ),
             const SizedBox(height: 12),
-            content is List ? Column(children: content) : content,
+            content is List ? Column(children: content as List<Widget>) : content,
           ],
         ),
       ),
@@ -756,7 +756,7 @@ class _MedicalImageAnalysisScreenState extends State<MedicalImageAnalysisScreen>
                       Icon(
                         _getImageTypeIcon(_getImageTypeFromString(entry.key)),
                         size: 16,
-                        color: theme.primaryColor,
+                        color: Theme.of(context).primaryColor,
                       ),
                       const SizedBox(width: 8),
                       Text(entry.key.toUpperCase()),
@@ -769,7 +769,7 @@ class _MedicalImageAnalysisScreenState extends State<MedicalImageAnalysisScreen>
               LinearProgressIndicator(
                 value: percentage,
                 backgroundColor: Colors.grey[300],
-                valueColor: AlwaysStoppedAnimation<Color>(theme.primaryColor),
+                valueColor: AlwaysStoppedAnimation<Color>(Theme.of(context).primaryColor),
               ),
             ],
           ),

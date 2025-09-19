@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path_provider/path_provider.dart';
@@ -703,21 +704,21 @@ class DatabaseHelper {
   Future<void> batchOperation(List<BatchOperation> operations) async {
     final db = await database;
     final batch = db.batch();
-    
+
     for (final operation in operations) {
       switch (operation.type) {
         case BatchOperationType.insert:
-          batch.insert(operation.table, operation.data, conflictAlgorithm: ConflictAlgorithm.replace);
+          batch.insert(operation.table, operation.data as Map<String, Object?>, conflictAlgorithm: ConflictAlgorithm.replace);
           break;
         case BatchOperationType.update:
-          batch.update(operation.table, operation.data, where: operation.where, whereArgs: operation.whereArgs);
+          batch.update(operation.table, operation.data as Map<String, Object?>, where: operation.where, whereArgs: operation.whereArgs);
           break;
         case BatchOperationType.delete:
           batch.delete(operation.table, where: operation.where, whereArgs: operation.whereArgs);
           break;
       }
     }
-    
+
     await batch.commit(noResult: true);
   }
 

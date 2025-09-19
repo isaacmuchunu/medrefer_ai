@@ -4,7 +4,7 @@ import 'package:fl_chart/fl_chart.dart';
 import '../../core/app_export.dart';
 import '../../services/iot_medical_device_service.dart';
 import '../../services/ai_service.dart';
-import '../../services/blockchain_medical_records_service.dart';
+import '../../services/blockchain_medical_records_service.dart' hide Patient, Referral;
 import '../../services/realtime_update_service.dart';
 import '../../services/notification_service.dart';
 import '../../database/models/patient.dart';
@@ -80,20 +80,11 @@ class _PatientMonitoringDashboardState extends State<PatientMonitoringDashboard>
     
     try {
       // Load patient information
-      final patientResult = await _dataService.getPatientById(widget.patientId);
-      if (patientResult.isSuccess) {
-        patient = patientResult.data;
-      }
+      patient = await _dataService.getPatientById(widget.patientId);
 
       // Load recent vital statistics
-      final vitalsResult = await _dataService.getVitalStatistics(
-        patientId: widget.patientId,
-        limit: 50,
-      );
-      if (vitalsResult.isSuccess) {
-        vitals = vitalsResult.data ?? [];
-        _processTrends();
-      }
+      vitals = await _dataService.getVitalStatisticsByPatientId(widget.patientId);
+      _processTrends();
 
       // Connect to patient's medical devices
       await _connectToMedicalDevices();

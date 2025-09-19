@@ -141,102 +141,78 @@ class EnterpriseIntegrationService extends ChangeNotifier {
     _adapters['epic_ehr'] = IntegrationAdapter(
       id: 'epic_ehr',
       name: 'Epic EHR Integration',
-      systemType: SystemType.ehr,
-      vendor: 'Epic Systems',
-      version: '2023',
-      supportedProtocols: ['hl7_fhir', 'hl7_v2'],
-      endpoints: {
-        'fhir': 'https://fhir.epic.com/interconnect-fhir-oauth/api/FHIR/R4',
-        'hl7v2': 'mllp://hl7.epic.com:6661',
-      },
-      authentication: AuthenticationMethod.oauth2,
-      dataMapping: _getEpicDataMapping(),
-      isActive: true,
+      type: IntegrationSystemType.ehr,
+      baseUrl: 'https://fhir.epic.com/interconnect-fhir-oauth/api/FHIR/R4',
+      credentials: {'username': 'epic_user', 'password': 'epic_pass'},
+      supportedDataTypes: ['patient', 'encounter', 'observation'],
+      capabilities: [IntegrationCapability.fhir],
+      isEnabled: true,
+      metadata: {'vendor': 'Epic Systems', 'version': '2023'},
     );
 
     // Cerner EHR Adapter
     _adapters['cerner_ehr'] = IntegrationAdapter(
       id: 'cerner_ehr',
       name: 'Cerner EHR Integration',
-      systemType: SystemType.ehr,
-      vendor: 'Oracle Cerner',
-      version: '2023.01',
-      supportedProtocols: ['hl7_fhir', 'hl7_v2'],
-      endpoints: {
-        'fhir': 'https://fhir-open.cerner.com/r4',
-        'hl7v2': 'mllp://hl7.cerner.com:6661',
-      },
-      authentication: AuthenticationMethod.oauth2,
-      dataMapping: _getCernerDataMapping(),
-      isActive: true,
+      type: IntegrationSystemType.ehr,
+      baseUrl: 'https://fhir-open.cerner.com/r4',
+      credentials: {'username': 'cerner_user', 'password': 'cerner_pass'},
+      supportedDataTypes: ['patient', 'encounter', 'observation'],
+      capabilities: [IntegrationCapability.fhir],
+      isEnabled: true,
+      metadata: {'vendor': 'Oracle Cerner', 'version': '2023.01'},
     );
 
     // PACS Integration Adapter
     _adapters['pacs_system'] = IntegrationAdapter(
       id: 'pacs_system',
       name: 'PACS Integration',
-      systemType: SystemType.pacs,
-      vendor: 'Generic PACS',
-      version: '1.0',
-      supportedProtocols: ['dicom'],
-      endpoints: {
-        'dicom': 'dicom://pacs.hospital.com:11112',
-        'wado': 'https://pacs.hospital.com/wado',
-      },
-      authentication: AuthenticationMethod.certificate,
-      dataMapping: _getPACSDataMapping(),
-      isActive: true,
+      type: IntegrationSystemType.pacs,
+      baseUrl: 'https://pacs.hospital.com/wado',
+      credentials: {'certificate': 'pacs_cert'},
+      supportedDataTypes: ['dicom', 'image'],
+      capabilities: [IntegrationCapability.dicom],
+      isEnabled: true,
+      metadata: {'vendor': 'Generic PACS', 'version': '1.0'},
     );
 
     // Laboratory Information System (LIS) Adapter
     _adapters['lis_system'] = IntegrationAdapter(
       id: 'lis_system',
       name: 'Laboratory Information System',
-      systemType: SystemType.lis,
-      vendor: 'Generic LIS',
-      version: '2.0',
-      supportedProtocols: ['hl7_v2', 'hl7_fhir'],
-      endpoints: {
-        'hl7v2': 'mllp://lis.hospital.com:6661',
-        'fhir': 'https://lis.hospital.com/fhir/R4',
-      },
-      authentication: AuthenticationMethod.basic,
-      dataMapping: _getLISDataMapping(),
-      isActive: true,
+      type: IntegrationSystemType.lis,
+      baseUrl: 'https://lis.hospital.com/fhir/R4',
+      credentials: {'username': 'lis_user', 'password': 'lis_pass'},
+      supportedDataTypes: ['lab_order', 'lab_result', 'specimen'],
+      capabilities: [IntegrationCapability.hl7, IntegrationCapability.fhir],
+      isEnabled: true,
+      metadata: {'vendor': 'Generic LIS', 'version': '2.0'},
     );
 
     // Pharmacy Information System Adapter
     _adapters['pharmacy_system'] = IntegrationAdapter(
       id: 'pharmacy_system',
       name: 'Pharmacy Information System',
-      systemType: SystemType.pharmacy,
-      vendor: 'Generic PIS',
-      version: '1.5',
-      supportedProtocols: ['hl7_v2', 'hl7_fhir'],
-      endpoints: {
-        'hl7v2': 'mllp://pharmacy.hospital.com:6661',
-        'fhir': 'https://pharmacy.hospital.com/fhir/R4',
-      },
-      authentication: AuthenticationMethod.oauth2,
-      dataMapping: _getPharmacyDataMapping(),
-      isActive: true,
+      type: IntegrationSystemType.pharmacy,
+      baseUrl: 'https://pharmacy.hospital.com/fhir/R4',
+      credentials: {'username': 'pharmacy_user', 'password': 'pharmacy_pass'},
+      supportedDataTypes: ['medication_order', 'medication_administration', 'medication_dispense'],
+      capabilities: [IntegrationCapability.hl7, IntegrationCapability.fhir],
+      isEnabled: true,
+      metadata: {'vendor': 'Generic PIS', 'version': '1.5'},
     );
 
     // Insurance/Payer System Adapter
     _adapters['insurance_system'] = IntegrationAdapter(
       id: 'insurance_system',
       name: 'Insurance/Payer System',
-      systemType: SystemType.payer,
-      vendor: 'Generic Payer',
-      version: '1.0',
-      supportedProtocols: ['hl7_fhir', 'x12_edi'],
-      endpoints: {
-        'fhir': 'https://payer.insurance.com/fhir/R4',
-        'x12': 'https://payer.insurance.com/x12',
-      },
-      authentication: AuthenticationMethod.oauth2,
-      dataMapping: _getInsuranceDataMapping(),
-      isActive: true,
+      type: IntegrationSystemType.insurance,
+      baseUrl: 'https://payer.insurance.com/fhir/R4',
+      credentials: {'username': 'insurance_user', 'password': 'insurance_pass'},
+      supportedDataTypes: ['coverage', 'claim', 'payment'],
+      capabilities: [IntegrationCapability.fhir, IntegrationCapability.x12],
+      isEnabled: true,
+      metadata: {'vendor': 'Generic Payer', 'version': '1.0'},
     );
 
     debugPrint('✅ Integration adapters initialized: ${_adapters.length}');
@@ -508,14 +484,14 @@ class EnterpriseIntegrationService extends ChangeNotifier {
   }
 
   /// Get system health status
-  Map<String, dynamic> getSystemHealth() {
+  Future<Map<String, dynamic>> getSystemHealth() async {
     final healthData = <String, dynamic>{};
-    
+
     for (final entry in _connections.entries) {
       final systemId = entry.key;
       final connection = entry.value;
       final health = _systemHealth[systemId];
-      
+
       healthData[systemId] = {
         'connection_status': connection.status.toString(),
         'last_activity': connection.lastActivity.toIso8601String(),
@@ -525,7 +501,7 @@ class EnterpriseIntegrationService extends ChangeNotifier {
         'message_queue_size': _messageQueues[systemId]?.length ?? 0,
       };
     }
-    
+
     return {
       'systems': healthData,
       'total_connections': _connections.length,
@@ -764,6 +740,7 @@ class IntegrationConnection {
   IntegrationConnection({
     required this.id,
     required this.adapterId,
+    required this.systemName,
     required this.status,
     required this.connectionType,
     required this.lastActivity,
@@ -771,9 +748,10 @@ class IntegrationConnection {
   });
   final String id;
   final String adapterId;
+  final String systemName;
   final ConnectionStatus status;
   final ConnectionType connectionType;
-  final DateTime lastActivity;
+  DateTime lastActivity;
   AuthenticationToken? authToken;
 }
 
@@ -781,6 +759,7 @@ class IntegrationMessage {
   IntegrationMessage({
     required this.id,
     required this.systemId,
+    required this.messageType,
     required this.dataType,
     required this.payload,
     required this.timestamp,
@@ -789,6 +768,7 @@ class IntegrationMessage {
   });
   final String id;
   final String systemId;
+  final MessageType messageType;
   final String dataType;
   final Map<String, dynamic> payload;
   final DateTime timestamp;
@@ -936,7 +916,7 @@ enum SystemType { ehr, pacs, lis, pharmacy, payer, registry, his, ris }
 enum ConnectionType { http, https, mllp, dicom, websocket, ftp, sftp }
 enum ConnectionStatus { connecting, connected, disconnected, failed, maintenance }
 enum MessageType { inbound, outbound, bidirectional }
-enum MessageStatus { queued, processing, sent, delivered, failed, archived }
+enum MessageStatus { queued, processing, sent, delivered, failed, archived, pending, completed }
 enum AuthenticationMethod { oauth2, basic, certificate, saml, kerberos }
 enum HealthStatus { healthy, unhealthy, warning, error, maintenance }
 enum IntegrationEventType { connectionEstablished, connectionLost, dataSent, dataReceived, queryExecuted, error }

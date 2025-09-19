@@ -5,10 +5,9 @@ import 'package:flutter/services.dart';
 
 /// Service for managing notifications and alerts in the MedRefer AI app
 class NotificationService extends ChangeNotifier {
+  static final NotificationService _instance = NotificationService._internal();
   factory NotificationService() => _instance;
-  _NotificationService();
-
-  static final NotificationService _instance = _NotificationService();
+  NotificationService._internal();
 
   // Notification state
   List<AppNotification> _notifications = [];
@@ -203,8 +202,73 @@ class NotificationService extends ChangeNotifier {
     // Implement sending workflow timeout notification
   }
 
+  Future<void> sendCriticalFindingAlert({
+    required String title,
+    required String message,
+    required String patientId,
+    required String priority,
+    required Map<String, dynamic> metadata,
+  }) async {
+    // Implement sending critical finding alert
+  }
+
   Future<void> sendTaskTimeout({required String taskName, String? assignedTo, required DateTime dueDate}) async {
     // Implement sending task timeout notification
+  }
+
+  /// Send a critical alert notification
+  Future<void> sendCriticalAlert({
+    required String title,
+    required String message,
+    required String patientId,
+    required double riskLevel,
+  }) async {
+    await addNotification(
+      title: title,
+      message: message,
+      type: NotificationType.urgent,
+      data: {
+        'patientId': patientId,
+        'riskLevel': riskLevel,
+        'alertType': 'critical',
+      },
+    );
+
+    // Also show system notification
+    await showSystemNotification(
+      title: title,
+      message: message,
+      type: NotificationType.urgent,
+    );
+  }
+
+  /// Send a regular alert notification
+  Future<void> sendAlert({
+    required String title,
+    required String message,
+    required String patientId,
+    String? priority,
+    Map<String, dynamic>? metadata,
+  }) async {
+    // Determine notification type based on priority
+    NotificationType type = NotificationType.warning;
+    if (priority == 'high') {
+      type = NotificationType.urgent;
+    } else if (priority == 'medium') {
+      type = NotificationType.warning;
+    }
+
+    await addNotification(
+      title: title,
+      message: message,
+      type: type,
+      data: {
+        'patientId': patientId,
+        'alertType': 'regular',
+        'priority': priority,
+        ...?metadata,
+      },
+    );
   }
 
   @override
@@ -222,8 +286,10 @@ enum NotificationType {
   error,
   urgent,
   referral,
+  referralUpdate,
   message,
   appointment,
+  emergency,
 }
 
 /// App notification model
@@ -305,6 +371,8 @@ class AppNotification {
         return Icons.priority_high;
       case NotificationType.referral:
         return Icons.assignment_outlined;
+      case NotificationType.referralUpdate:
+        return Icons.assignment_turned_in;
       case NotificationType.message:
         return Icons.message_outlined;
       case NotificationType.appointment:
@@ -328,6 +396,8 @@ class AppNotification {
         return Colors.red;
       case NotificationType.referral:
         return theme.colorScheme.secondary;
+      case NotificationType.referralUpdate:
+        return theme.colorScheme.primary;
       case NotificationType.message:
         return Colors.blue;
       case NotificationType.appointment:

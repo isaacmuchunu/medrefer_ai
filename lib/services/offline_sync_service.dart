@@ -10,9 +10,9 @@ import '../database/database.dart';
 /// Advanced Offline Sync Queue Service
 /// Manages offline operations, conflict resolution, and intelligent retry logic
 class OfflineSyncService extends ChangeNotifier {
+  static final OfflineSyncService _instance = OfflineSyncService._internal();
   factory OfflineSyncService() => _instance;
-  _OfflineSyncService();
-  static final OfflineSyncService _instance = _OfflineSyncService();
+  OfflineSyncService._internal();
 
   // Configuration
   static const int _maxRetries = 5;

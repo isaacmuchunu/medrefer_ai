@@ -7,10 +7,9 @@ import '../config/mpesa_config.dart';
 
 /// M-Pesa payment service for handling mobile money transactions
 class MpesaService extends ChangeNotifier {
+  static final MpesaService _instance = MpesaService._internal();
   factory MpesaService() => _instance;
-  _MpesaService();
-
-  static final MpesaService _instance = _MpesaService();
+  MpesaService._internal();
 
   // M-Pesa API Configuration using MpesaConfig
   static String get _baseUrl => MpesaConfig.baseUrl;

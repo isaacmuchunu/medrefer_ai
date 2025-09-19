@@ -521,7 +521,7 @@ class _DataAnalyticsHubScreenState extends State<DataAnalyticsHubScreen>
                   child: _buildMLMetricItem(
                     'Prediction Accuracy',
                     '${_mlAnalyticsData['predictionAccuracy']}%',
-                    Icons.target,
+                    Icons.adjust,
                     Colors.green,
                   ),
                 ),

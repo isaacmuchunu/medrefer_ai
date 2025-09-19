@@ -21,7 +21,7 @@ class _PrescriptionManagementState extends State<PrescriptionManagement> {
     setState(() => _isLoading = true);
     final dataService = Provider.of<DataService>(context, listen: false);
     // Assume PrescriptionDAO exists
-    _prescriptions = await dataService.prescriptionDAO.getPrescriptionsForPatient('patientId') ?? []; // Replace with actual ID
+    _prescriptions = await dataService.prescriptionDAO.getPrescriptionsByPatientId('patientId') ?? []; // Replace with actual ID
     setState(() => _isLoading = false);
   }
 

@@ -153,4 +153,15 @@ class ClinicalDecisionDao extends BaseDao<ClinicalDecision> {
     );
     return maps.map(fromMap).toList();
   }
+
+  // Get all decisions
+  Future<List<ClinicalDecision>> getAll() async {
+    final db = await database;
+    final maps = await db.query(
+      _tableName,
+      where: 'is_active = 1',
+      orderBy: 'created_at DESC',
+    );
+    return maps.map(fromMap).toList();
+  }
 }

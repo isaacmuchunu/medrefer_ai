@@ -22,7 +22,7 @@ class _CarePlanScreenState extends State<CarePlanScreen> {
 
   Future<List<CarePlan>> _loadPlans({bool force = false}) async {
     final dataService = Provider.of<DataService>(context, listen: false);
-    return await dataService.getCarePlansForPatient(widget.patientId, {"forceRefresh": force}["forceRefresh"] as bool);
+    return await dataService.getCarePlansForPatient(widget.patientId, forceRefresh: force);
   }
 
   Future<void> _refresh() async {
@@ -159,4 +159,3 @@ class _CarePlanScreenState extends State<CarePlanScreen> {
     );
   }
 }
-

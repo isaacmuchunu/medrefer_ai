@@ -568,7 +568,7 @@ class _PatientSearchScreenState extends State<PatientSearchScreen> with TickerPr
     } else {
       Navigator.pushNamed(
         context,
-        AppRoutes.patientProfileScreen,
+        AppRoutes.patientProfile,
         arguments: {'patientId': patient.id},
       );
     }

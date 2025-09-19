@@ -6,9 +6,14 @@ import '../database/services/data_service.dart';
 
 /// IoT Medical Device Integration Service for real-time patient monitoring
 class IoTMedicalDeviceService extends ChangeNotifier {
-  factory IoTMedicalDeviceService() => _instance;
-  _IoTMedicalDeviceService();
-  static final IoTMedicalDeviceService _instance = _IoTMedicalDeviceService();
+  static IoTMedicalDeviceService? _instance;
+  
+  factory IoTMedicalDeviceService() {
+    _instance ??= IoTMedicalDeviceService._internal();
+    return _instance!;
+  }
+  
+  IoTMedicalDeviceService._internal();
 
   bool _isInitialized = false;
   
@@ -233,6 +238,32 @@ class IoTMedicalDeviceService extends ChangeNotifier {
         macAddress: '00:11:22:33:44:58',
       ),
     ];
+  }
+
+  /// Load patient-device associations from the database
+  Future<void> _loadPatientDeviceAssociations() async {
+    try {
+      // TODO: Load patient-device associations from database
+      // This would typically involve querying the database for which devices
+      // are assigned to which patients
+      
+      // For now, create some mock associations
+      final patients = await DataService().getPatients();
+      
+      int deviceIndex = 0;
+      for (final patient in patients) {
+        if (deviceIndex < _connectedDevices.length) {
+          final device = _connectedDevices.values.elementAt(deviceIndex);
+          device.assignedPatientId = patient.id;
+          debugPrint('✅ Associated device ${device.name} with patient ${patient.name}');
+          deviceIndex++;
+        }
+      }
+      
+      debugPrint('✅ Loaded ${patients.length} patient-device associations');
+    } catch (e) {
+      debugPrint('❌ Failed to load patient-device associations: $e');
+    }
   }
 
   /// Connect to a medical device
@@ -464,6 +495,53 @@ class IoTMedicalDeviceService extends ChangeNotifier {
     }
     
     trends.lastUpdated = DateTime.now();
+  }
+
+  /// Get devices assigned to a patient
+  Future<List<Map<String, dynamic>>> getPatientDevices(String patientId) async {
+    return _connectedDevices.values
+        .where((device) => device.assignedPatientId == patientId)
+        .map((device) => device.toJson())
+        .toList();
+  }
+
+  /// Connect to a specific device
+  Future<bool> connectToDevice(String deviceId) async {
+    final device = _connectedDevices[deviceId];
+    if (device == null) return false;
+
+    try {
+      await _connectToDevice(device);
+      return device.isConnected;
+    } catch (e) {
+      debugPrint('❌ Failed to connect to device $deviceId: $e');
+      return false;
+    }
+  }
+
+  /// Get real-time data stream for a patient
+  Stream<Map<String, dynamic>> getDeviceDataStream(String patientId) {
+    return Stream.periodic(const Duration(seconds: 5), (count) {
+      final devices = _connectedDevices.values
+          .where((device) => device.assignedPatientId == patientId)
+          .toList();
+
+      final data = <String, dynamic>{};
+      for (final device in devices) {
+        final readings = _deviceReadings[device.id];
+        if (readings != null && readings.isNotEmpty) {
+          final latestReading = readings.last;
+          data[device.id] = {
+            'device_id': device.id,
+            'device_name': device.name,
+            'timestamp': latestReading.timestamp.toIso8601String(),
+            'parameters': latestReading.parameters,
+          };
+        }
+      }
+
+      return data;
+    }).asBroadcastStream();
   }
 
   /// Get real-time patient vitals

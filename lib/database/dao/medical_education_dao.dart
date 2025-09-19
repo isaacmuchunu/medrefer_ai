@@ -226,15 +226,26 @@ class MedicalEducationDao extends BaseDao<MedicalEducation> {
     return maps.map(fromMap).toList();
   }
 
+  // Get all education
+  Future<List<MedicalEducation>> getAllEducation() async {
+    final db = await database;
+    final maps = await db.query(
+      _tableName,
+      where: 'is_active = 1',
+      orderBy: 'start_date DESC',
+    );
+    return maps.map(fromMap).toList();
+  }
+
   // Get education summary
   Future<Map<String, dynamic>> getEducationSummary() async {
     final db = await database;
-    
+
     final totalEducation = await db.rawQuery('SELECT COUNT(*) as count FROM $_tableName WHERE is_active = 1');
     final upcomingEducation = await db.rawQuery('SELECT COUNT(*) as count FROM $_tableName WHERE status = ? AND is_active = 1', ['upcoming']);
     final ongoingEducation = await db.rawQuery('SELECT COUNT(*) as count FROM $_tableName WHERE status = ? AND is_active = 1', ['ongoing']);
     final completedEducation = await db.rawQuery('SELECT COUNT(*) as count FROM $_tableName WHERE status = ? AND is_active = 1', ['completed']);
-    
+
     return {
       'total_education': totalEducation.first['count'],
       'upcoming_education': upcomingEducation.first['count'],

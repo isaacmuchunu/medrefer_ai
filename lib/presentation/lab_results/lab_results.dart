@@ -22,7 +22,7 @@ class _LabResultsState extends State<LabResults> {
     setState(() => _isLoading = true);
     final dataService = Provider.of<DataService>(context, listen: false);
     // Assume LabResultDAO exists
-    _labResults = await dataService.labResultDAO.getLabResultsForPatient('patientId') ?? []; // Replace with actual ID
+    _labResults = await dataService.labResultDAO.getLabResultsByPatientId('patientId') ?? []; // Replace with actual ID
     setState(() => _isLoading = false);
   }
 

@@ -6,7 +6,7 @@ import 'services/ai_service.dart';
 import 'services/collaboration_service.dart';
 import 'services/offline_sync_service.dart';
 import 'services/advanced_ml_analytics_service.dart';
-import 'services/blockchain_medical_records_service.dart';
+import 'services/blockchain_medical_records_service.dart' hide Patient, Referral;
 import 'services/iot_medical_device_service.dart';
 import 'services/advanced_telemedicine_service.dart';
 import 'services/ai_workflow_automation_service.dart';

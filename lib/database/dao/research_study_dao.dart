@@ -193,17 +193,28 @@ class ResearchStudyDao extends BaseDao<ResearchStudy> {
   // Get studies summary
   Future<Map<String, dynamic>> getStudiesSummary() async {
     final db = await database;
-    
+
     final totalStudies = await db.rawQuery('SELECT COUNT(*) as count FROM $_tableName WHERE is_active = 1');
     final activeStudies = await db.rawQuery('SELECT COUNT(*) as count FROM $_tableName WHERE status = ? AND is_active = 1', ['active']);
     final recruitingStudies = await db.rawQuery('SELECT COUNT(*) as count FROM $_tableName WHERE status = ? AND is_active = 1', ['recruiting']);
     final completedStudies = await db.rawQuery('SELECT COUNT(*) as count FROM $_tableName WHERE status = ? AND is_active = 1', ['completed']);
-    
+
     return {
       'total_studies': totalStudies.first['count'],
       'active_studies': activeStudies.first['count'],
       'recruiting_studies': recruitingStudies.first['count'],
       'completed_studies': completedStudies.first['count'],
     };
+  }
+
+  // Get all studies
+  Future<List<ResearchStudy>> getAll() async {
+    final db = await database;
+    final maps = await db.query(
+      _tableName,
+      where: 'is_active = 1',
+      orderBy: 'start_date DESC',
+    );
+    return maps.map(fromMap).toList();
   }
 }

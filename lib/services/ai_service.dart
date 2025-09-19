@@ -4,12 +4,11 @@ import 'dart:math';
 import 'package:crypto/crypto.dart';
 import 'package:flutter/foundation.dart';
 import '../database/database.dart';
+import '../core/result.dart';
 
 /// Advanced AI/ML Service for Medical Intelligence
 /// Provides diagnostic suggestions, predictive analytics, and smart recommendations
 class AIService extends ChangeNotifier {
-  _AIService();
-
   static final AIService _instance = AIService._internal();
   factory AIService() => _instance;
   AIService._internal();
@@ -178,6 +177,59 @@ class AIService extends ChangeNotifier {
     }
   }
 
+  /// Assess Vital Signs Risk using AI
+  Future<RiskAssessment> assessVitalRisk({
+    required String patientId,
+    required VitalStatistics vitalStatistics,
+    required List<VitalStatistics> historicalData,
+  }) async {
+    try {
+      final cacheKey = _generateCacheKey({
+        'patientId': patientId,
+        'vitalId': vitalStatistics.id,
+        'timestamp': DateTime.now().millisecondsSinceEpoch ~/ 3600000, // 1-hour cache
+      });
+
+      if (_riskCache.containsKey(cacheKey)) {
+        return _riskCache[cacheKey]!;
+      }
+
+      // Analyze current vital signs
+      final currentRisks = _analyzeVitalSigns(vitalStatistics);
+
+      // Analyze trends from historical data
+      final trendRisks = _analyzeVitalTrends(historicalData);
+
+      // Combine risks
+      final overallRisk = _combineVitalRisks(currentRisks, trendRisks);
+
+      // Generate recommendations
+      final recommendations = _generateVitalRiskRecommendations(currentRisks, trendRisks);
+
+      final assessment = RiskAssessment(
+        id: 'vital_risk_${DateTime.now().millisecondsSinceEpoch}',
+        patientId: patientId,
+        overallRisk: overallRisk,
+        cardiovascularRisk: currentRisks['cardiovascular'] ?? 0.0,
+        diabetesRisk: currentRisks['metabolic'] ?? 0.0,
+        readmissionRisk: trendRisks['deterioration'] ?? 0.0,
+        medicationRisk: 0.0, // Not applicable for vital signs
+        fallRisk: currentRisks['neurological'] ?? 0.0,
+        recommendations: recommendations,
+        nextAssessmentDate: DateTime.now().add(Duration(hours: 4)),
+        timestamp: DateTime.now(),
+      );
+
+      // Cache result
+      _riskCache[cacheKey] = assessment;
+
+      return assessment;
+    } catch (e) {
+      debugPrint('Error in vital risk assessment: $e');
+      throw AIException('Failed to assess vital signs risk: $e');
+    }
+  }
+
   /// Predictive Risk Assessment
   Future<RiskAssessment> assessPatientRisk({
     required Patient patient,
@@ -283,6 +335,95 @@ class AIService extends ChangeNotifier {
     }
   }
 
+  /// Predict drug interactions using AI
+  Future<List<DrugInteraction>> predictDrugInteractions({
+    required Medication newMedication,
+    required List<Medication> currentMedications,
+    required String patientId,
+  }) async {
+    try {
+      // Simple AI-based prediction for demo purposes
+      final interactions = <DrugInteraction>[];
+
+      // Check for common interactions
+      for (final medication in currentMedications) {
+        final interaction = await predictInteraction(newMedication.name, medication.name);
+        if (interaction != null) {
+          interactions.add(interaction);
+        }
+      }
+
+      return interactions;
+    } catch (e) {
+      debugPrint('Error predicting drug interactions: $e');
+      return [];
+    }
+  }
+
+  /// Predict interaction between two drugs
+  Future<DrugInteraction?> predictInteraction(String drugA, String drugB) async {
+    try {
+      // Simple rule-based prediction for demo
+      final drugAPatterns = _getDrugPatterns(drugA);
+      final drugBPatterns = _getDrugPatterns(drugB);
+
+      // Check for known interaction patterns
+      for (final patternA in drugAPatterns) {
+        for (final patternB in drugBPatterns) {
+          if (_hasInteraction(patternA, patternB)) {
+            return DrugInteraction(
+              id: '${drugA}_${drugB}_predicted',
+              drugA: drugA,
+              drugB: drugB,
+              severity: InteractionSeverity.moderate,
+              type: InteractionType.drugDrug,
+              description: 'Potential interaction detected by AI analysis',
+              mechanism: 'Pattern-based prediction',
+              symptoms: ['Monitor for adverse effects'],
+              recommendations: ['Consult pharmacist', 'Monitor closely'],
+              confidenceScore: 0.7,
+              detectedAt: DateTime.now(),
+            );
+          }
+        }
+      }
+
+      return null;
+    } catch (e) {
+      debugPrint('Error predicting interaction: $e');
+      return null;
+    }
+  }
+
+  List<String> _getDrugPatterns(String drugName) {
+    final patterns = <String>[];
+    final lowerDrug = drugName.toLowerCase();
+
+    // Common drug categories
+    if (lowerDrug.contains('statin')) patterns.add('statin');
+    if (lowerDrug.contains('beta') || lowerDrug.contains('olol')) patterns.add('beta_blocker');
+    if (lowerDrug.contains('ace') || lowerDrug.contains('pril')) patterns.add('ace_inhibitor');
+    if (lowerDrug.contains('arbs') || lowerDrug.contains('artan')) patterns.add('arb');
+    if (lowerDrug.contains('diuretic') || lowerDrug.contains('ide')) patterns.add('diuretic');
+    if (lowerDrug.contains('anticoagulant') || lowerDrug.contains('warfarin')) patterns.add('anticoagulant');
+    if (lowerDrug.contains('antiplatelet') || lowerDrug.contains('aspirin')) patterns.add('antiplatelet');
+
+    return patterns;
+  }
+
+  bool _hasInteraction(String patternA, String patternB) {
+    // Known interaction patterns
+    final interactions = {
+      'statin': ['fibrate', 'azole'],
+      'beta_blocker': ['calcium_channel_blocker'],
+      'ace_inhibitor': ['potassium_sparing_diuretic'],
+      'anticoagulant': ['antiplatelet', 'nsaid'],
+    };
+
+    return interactions[patternA]?.contains(patternB) == true ||
+           interactions[patternB]?.contains(patternA) == true;
+  }
+
   /// Anomaly Detection in Patient Data
   Future<List<DataAnomaly>> detectAnomalies({
     required Patient patient,
@@ -347,7 +488,7 @@ class AIService extends ChangeNotifier {
   }
 
   /// AI-Powered Clinical Workflow Optimization
-  Future<List<Workflow>> optimizeWorkflows({required List<Workflow> workflows}) async {
+  Future<List<ClinicalWorkflow>> optimizeWorkflows({required List<ClinicalWorkflow> workflows}) async {
     // In a real implementation, this would use AI to optimize workflows.
     // For now, it just returns the original workflows.
     debugPrint('Optimizing ${workflows.length} workflows...');
@@ -1057,7 +1198,7 @@ class AIService extends ChangeNotifier {
       // Check for sudden changes
       if (i > 0) {
         final prevVital = vitalHistory[i - 1];
-        final prevHeartRate = double.tryParse(prevVital.heartRate ?? '0') ?? 0;
+        final prevHeartRate = double.tryParse(prevVital.heartRate?.toString() ?? '0') ?? 0;
         final hrChange = (heartRate - prevHeartRate).abs();
         
         if (hrChange > 30) {
@@ -1121,8 +1262,8 @@ class AIService extends ChangeNotifier {
     if (vitalHistory.length >= 3) {
       var deteriorating = true;
       for (var i = 2; i < vitalHistory.length && i < 5; i++) {
-        final currentSystolic = double.tryParse(vitalHistory[i].bloodPressureSystolic ?? '0') ?? 0;
-        final prevSystolic = double.tryParse(vitalHistory[i - 1].bloodPressureSystolic ?? '0') ?? 0;
+        final currentSystolic = double.tryParse(vitalHistory[i].bloodPressureSystolic?.toString() ?? '0') ?? 0;
+        final prevSystolic = double.tryParse(vitalHistory[i - 1].bloodPressureSystolic?.toString() ?? '0') ?? 0;
         
         if (currentSystolic <= prevSystolic) {
           deteriorating = false;
@@ -1278,6 +1419,115 @@ class AIService extends ChangeNotifier {
     return 0.9;
   }
 
+  Map<String, double> _analyzeVitalSigns(VitalStatistics vitals) {
+    final risks = <String, double>{};
+
+    // Cardiovascular risk
+    var cardioRisk = 0.0;
+    if (vitals.heartRate != null) {
+      if (vitals.heartRate! < 60 || vitals.heartRate! > 100) cardioRisk += 0.3;
+    }
+    if (vitals.bloodPressureSystolic != null && vitals.bloodPressureDiastolic != null) {
+      if (vitals.bloodPressureSystolic! > 140 || vitals.bloodPressureDiastolic! > 90) {
+        cardioRisk += 0.4;
+      }
+    }
+    risks['cardiovascular'] = min(cardioRisk, 1.0);
+
+    // Metabolic risk
+    var metabolicRisk = 0.0;
+    if (vitals.glucoseLevel != null && vitals.glucoseLevel! > 140) {
+      metabolicRisk += 0.5;
+    }
+    risks['metabolic'] = min(metabolicRisk, 1.0);
+
+    // Neurological risk
+    var neuroRisk = 0.0;
+    if (vitals.temperature != null) {
+      if (vitals.temperature! < 36.1 || vitals.temperature! > 37.2) neuroRisk += 0.2;
+    }
+    risks['neurological'] = min(neuroRisk, 1.0);
+
+    return risks;
+  }
+
+  Map<String, double> _analyzeVitalTrends(List<VitalStatistics> history) {
+    final trends = <String, double>{};
+
+    if (history.length < 2) {
+      trends['deterioration'] = 0.0;
+      return trends;
+    }
+
+    // Check for deteriorating trends
+    var deteriorationScore = 0.0;
+
+    // Blood pressure trend
+    final bpSystolic = history.map((v) => v.bloodPressureSystolic ?? 0).toList();
+    if (_isDeteriorating(bpSystolic)) deteriorationScore += 0.3;
+
+    // Heart rate trend
+    final heartRates = history.map((v) => v.heartRate ?? 0).toList();
+    if (_isDeteriorating(heartRates)) deteriorationScore += 0.2;
+
+    // Oxygen saturation trend
+    final oxygenLevels = history.map((v) => v.oxygenSaturation ?? 100).toList();
+    if (_isDeteriorating(oxygenLevels.reversed.toList())) deteriorationScore += 0.4; // Lower is worse
+
+    trends['deterioration'] = min(deteriorationScore, 1.0);
+    return trends;
+  }
+
+  bool _isDeteriorating(List<num> values) {
+    if (values.length < 3) return false;
+
+    var increasingCount = 0;
+    for (var i = 1; i < values.length; i++) {
+      if (values[i] > values[i - 1]) increasingCount++;
+    }
+
+    // If more than 60% of changes are increases, consider it deteriorating
+    return increasingCount / (values.length - 1) > 0.6;
+  }
+
+  double _combineVitalRisks(Map<String, double> currentRisks, Map<String, double> trendRisks) {
+    final currentAvg = currentRisks.values.isNotEmpty
+        ? currentRisks.values.reduce((a, b) => a + b) / currentRisks.length
+        : 0.0;
+
+    final trendAvg = trendRisks.values.isNotEmpty
+        ? trendRisks.values.reduce((a, b) => a + b) / trendRisks.length
+        : 0.0;
+
+    // Weight current risks more heavily than trends
+    return min((currentAvg * 0.7) + (trendAvg * 0.3), 1.0);
+  }
+
+  List<String> _generateVitalRiskRecommendations(Map<String, double> currentRisks, Map<String, double> trendRisks) {
+    final recommendations = <String>[];
+
+    if (currentRisks['cardiovascular'] != null && currentRisks['cardiovascular']! > 0.3) {
+      recommendations.add('Monitor blood pressure and heart rate closely');
+      recommendations.add('Consider cardiology consultation');
+    }
+
+    if (currentRisks['metabolic'] != null && currentRisks['metabolic']! > 0.3) {
+      recommendations.add('Check glucose levels regularly');
+      recommendations.add('Review diabetes management plan');
+    }
+
+    if (trendRisks['deterioration'] != null && trendRisks['deterioration']! > 0.4) {
+      recommendations.add('Immediate medical attention required');
+      recommendations.add('Escalate to supervising physician');
+    }
+
+    if (recommendations.isEmpty) {
+      recommendations.add('Continue regular monitoring');
+    }
+
+    return recommendations;
+  }
+
   String _generateCacheKey(Map<String, dynamic> params) {
     final json = jsonEncode(params);
     final bytes = utf8.encode(json);
@@ -1289,6 +1539,42 @@ class AIService extends ChangeNotifier {
   void dispose() {
     _learningTimer?.cancel();
     super.dispose();
+  }
+
+  /// Generate medical image diagnosis
+  Future<Result<String>> generateMedicalImageDiagnosis(
+    List<String> findings,
+    String imageType,
+  ) async {
+    try {
+      // Simulate AI diagnosis generation
+      await Future.delayed(const Duration(milliseconds: 500));
+
+      final diagnosis = findings.isNotEmpty
+          ? 'Based on analysis: ${findings.first}'
+          : 'Unable to determine diagnosis from image';
+
+      return Result.success(diagnosis);
+    } catch (e) {
+      return Result.error('Failed to generate medical image diagnosis: ${e.toString()}');
+    }
+  }
+
+  /// Generate medical image summary
+  Future<Result<String>> generateMedicalImageSummary(
+    List<String> findings,
+    String diagnosis,
+  ) async {
+    try {
+      // Simulate AI summary generation
+      await Future.delayed(const Duration(milliseconds: 300));
+
+      final summary = 'Analysis Summary: $diagnosis. Key findings: ${findings.join(", ")}';
+
+      return Result.success(summary);
+    } catch (e) {
+      return Result.error('Failed to generate medical image summary: ${e.toString()}');
+    }
   }
 }
 
@@ -1510,4 +1796,71 @@ class Workflow {
   final List<String> steps;
 
   Workflow({required this.id, required this.steps});
+}
+
+// Drug Interaction model for AI predictions
+class DrugInteraction {
+  DrugInteraction({
+    required this.id,
+    required this.drugA,
+    required this.drugB,
+    required this.severity,
+    required this.type,
+    required this.description,
+    required this.mechanism,
+    required this.symptoms,
+    required this.recommendations,
+    required this.confidenceScore,
+    required this.detectedAt,
+    this.metadata = const {},
+  });
+
+  final String id;
+  final String drugA;
+  final String drugB;
+  final String severity;
+  final String type;
+  final String description;
+  final String mechanism;
+  final List<String> symptoms;
+  final List<String> recommendations;
+  final double confidenceScore;
+  final DateTime detectedAt;
+  final Map<String, dynamic> metadata;
+}
+
+// Missing enums and types
+enum InteractionSeverity {
+  mild,
+  moderate,
+  severe,
+  critical
+}
+
+enum InteractionType {
+  drugDrug,
+  drugDisease,
+  drugAllergy,
+  drugFood
+}
+
+// Clinical Workflow model
+class ClinicalWorkflow {
+  ClinicalWorkflow({
+    required this.id,
+    required this.name,
+    required this.steps,
+    required this.patientId,
+    required this.createdAt,
+    this.completedAt,
+    required this.status,
+  });
+
+  final String id;
+  final String name;
+  final List<String> steps;
+  final String patientId;
+  final DateTime createdAt;
+  final DateTime? completedAt;
+  final String status;
 }

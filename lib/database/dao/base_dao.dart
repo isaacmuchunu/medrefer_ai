@@ -41,6 +41,9 @@ abstract class BaseDao<T> {
     final List<Map<String, dynamic>> maps = await db.query(tableName);
     return maps.map(fromMap).toList();
   }
+
+  /// Get all records (alias for findAll)
+  Future<List<T>> getAll() async => await findAll();
   
   /// Find records with a where clause
   Future<List<T>> findWhere(String where, List<dynamic> whereArgs) async {

@@ -19,9 +19,9 @@ import '../core/app_export.dart';
 /// - Performance monitoring and analytics
 /// - Integration with external systems
 class WorkflowManagementService extends ChangeNotifier {
-  static final WorkflowManagementService _instance = _WorkflowManagementService();
+  static final WorkflowManagementService _instance = WorkflowManagementService._internal();
   factory WorkflowManagementService() => _instance;
-  _WorkflowManagementService();
+  WorkflowManagementService._internal();
 
   Database? _workflowDb;
   bool _isInitialized = false;

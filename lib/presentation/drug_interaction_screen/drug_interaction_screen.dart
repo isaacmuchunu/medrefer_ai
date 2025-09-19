@@ -58,17 +58,13 @@ class _DrugInteractionScreenState extends State<DrugInteractionScreen>
   }
 
   Future<void> _loadPatientData() async {
-    final result = await _dataService.getPatientById(widget.patientId);
-    if (result.isSuccess) {
-      setState(() => patient = result.data);
-    }
+    patient = await _dataService.getPatientById(widget.patientId);
+    setState(() {});
   }
 
   Future<void> _loadMedications() async {
-    final result = await _dataService.getPatientMedications(widget.patientId);
-    if (result.isSuccess) {
-      setState(() => medications = result.data ?? []);
-    }
+    medications = await _dataService.getPatientMedications(widget.patientId);
+    setState(() {});
   }
 
   Future<void> _loadAlerts() async {

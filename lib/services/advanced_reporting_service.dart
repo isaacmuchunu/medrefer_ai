@@ -19,9 +19,9 @@ import '../core/app_export.dart';
 /// - Performance optimization and caching
 /// - Mobile-responsive dashboard layouts
 class AdvancedReportingService extends ChangeNotifier {
-  static final AdvancedReportingService _instance = _AdvancedReportingService();
+  static final AdvancedReportingService _instance = AdvancedReportingService._internal();
   factory AdvancedReportingService() => _instance;
-  _AdvancedReportingService();
+  AdvancedReportingService._internal();
 
   Database? _reportingDb;
   bool _isInitialized = false;

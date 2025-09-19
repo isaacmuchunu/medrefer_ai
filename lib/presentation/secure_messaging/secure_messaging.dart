@@ -1,6 +1,7 @@
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:crypto/crypto.dart';
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 
 import '../../core/app_export.dart';
 import './widgets/conversation_header_widget.dart';
@@ -87,7 +88,7 @@ class _SecureMessagingState extends State<SecureMessaging> {
   Future<void> _loadMessages() async {
     // Assuming DataService has a method to fetch messages for this conversation
     // Replace 'conversationId' with actual conversation ID
-    final messages = await DataService.instance.messageDAO.getMessagesForConversation('conversationId');
+    final messages = await DataService.instance.messageDAO.getMessagesByConversationId('conversationId');
     setState(() {
       _messages.addAll(messages.map((msg) => msg.toMap()));
     });

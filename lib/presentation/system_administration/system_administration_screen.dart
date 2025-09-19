@@ -9,7 +9,7 @@ class SystemAdministrationScreen extends StatefulWidget {
   State<SystemAdministrationScreen> createState() => _SystemAdministrationScreenState();
 }
 
-class _SystemAdministrationScreenState extends State&lt;SystemAdministrationScreen&gt; with ProviderStateMixin {\
+class _SystemAdministrationScreenState extends State<SystemAdministrationScreen> with TickerProviderStateMixin {
   late TabController _tabController;
   bool _isLoading = true;
   
@@ -215,7 +215,7 @@ class _SystemAdministrationScreenState extends State&lt;SystemAdministrationScre
               children: [
                 _buildHealthMetric('CPU Usage', '${_systemHealth['cpuUsage']}%', Icons.memory, _getHealthColor(_systemHealth['cpuUsage'])),
                 _buildHealthMetric('Memory', '${_systemHealth['memoryUsage']}%', Icons.storage, _getHealthColor(_systemHealth['memoryUsage'])),
-                _buildHealthMetric('Disk Space', '${_systemHealth['diskUsage']}%', Icons.hard_drive, _getHealthColor(_systemHealth['diskUsage'])),
+                _buildHealthMetric('Disk Space', '${_systemHealth['diskUsage']}%', Icons.storage, _getHealthColor(_systemHealth['diskUsage'])),
                 _buildHealthMetric('Network', '${_systemHealth['networkLatency']}ms', Icons.network_check, Colors.green),
                 _buildHealthMetric('Uptime', _systemHealth['uptime'], Icons.access_time, Colors.blue),
                 _buildHealthMetric('Connections', '${_systemHealth['activeConnections']}', Icons.people, Colors.purple),

@@ -146,6 +146,48 @@ class WorkflowTask {
       'notes': notes,
     };
   }
+
+  WorkflowTask copyWith({
+    String? id,
+    String? workflowId,
+    String? name,
+    String? description,
+    TaskType? type,
+    WorkflowStatus? status,
+    WorkflowPriority? priority,
+    String? assignedTo,
+    String? assignedRole,
+    DateTime? dueDate,
+    DateTime? startedAt,
+    DateTime? completedAt,
+    Map<String, dynamic>? inputs,
+    Map<String, dynamic>? outputs,
+    List<String>? dependencies,
+    List<String>? conditions,
+    Map<String, dynamic>? metadata,
+    String? notes,
+  }) {
+    return WorkflowTask(
+      id: id ?? this.id,
+      workflowId: workflowId ?? this.workflowId,
+      name: name ?? this.name,
+      description: description ?? this.description,
+      type: type ?? this.type,
+      status: status ?? this.status,
+      priority: priority ?? this.priority,
+      assignedTo: assignedTo ?? this.assignedTo,
+      assignedRole: assignedRole ?? this.assignedRole,
+      dueDate: dueDate ?? this.dueDate,
+      startedAt: startedAt ?? this.startedAt,
+      completedAt: completedAt ?? this.completedAt,
+      inputs: inputs ?? this.inputs,
+      outputs: outputs ?? this.outputs,
+      dependencies: dependencies ?? this.dependencies,
+      conditions: conditions ?? this.conditions,
+      metadata: metadata ?? this.metadata,
+      notes: notes ?? this.notes,
+    );
+  }
 }
 
 class ClinicalWorkflow {
@@ -311,8 +353,8 @@ class ClinicalWorkflowService {
         whereArgs: ['completed', 'cancelled'],
       );
       
-      if (result.isSuccess) {
-        for (final workflowMap in result.data as List<Map<String, dynamic>>) {
+      if (result != null && result is List<Map<String, dynamic>>) {
+        for (final workflowMap in result) {
           final workflow = ClinicalWorkflow.fromMap(workflowMap);
           
           // Load tasks for this workflow
@@ -322,8 +364,8 @@ class ClinicalWorkflowService {
             whereArgs: [workflow.id],
           );
           
-          if (tasksResult.isSuccess) {
-            final tasks = (tasksResult.data as List<Map<String, dynamic>>)
+          if (tasksResult != null && tasksResult is List<Map<String, dynamic>>) {
+            final tasks = tasksResult
                 .map((taskMap) => WorkflowTask.fromMap(taskMap))
                 .toList();
             

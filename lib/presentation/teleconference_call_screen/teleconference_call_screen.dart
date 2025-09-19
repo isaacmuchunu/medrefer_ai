@@ -33,7 +33,7 @@ class _TeleconferenceCallScreenState extends State<TeleconferenceCallScreen> wit
   late DateTime _callStartTime;
 
   List<CallParticipant> _participants = [];
-  List<ChatMessage> _chatMessages = [];
+  final List<ChatMessage> _chatMessages = [];
   final TextEditingController _chatController = TextEditingController();
 
   @override
@@ -210,7 +210,7 @@ class _TeleconferenceCallScreenState extends State<TeleconferenceCallScreen> wit
               child: Center(
                 child: Text(
                   'Video Feed',
-                  style: TextStyle(color: Colors.white.withOpacity(0.7)),
+                  style: TextStyle(color: Colors.white.withValues(alpha: 0.7)),
                 ),
               ),
             )
@@ -246,7 +246,7 @@ class _TeleconferenceCallScreenState extends State<TeleconferenceCallScreen> wit
             child: Container(
               padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
               decoration: BoxDecoration(
-                color: Colors.black.withOpacity(0.7),
+                color: Colors.black.withValues(alpha: 0.7),
                 borderRadius: BorderRadius.circular(4),
               ),
               child: Row(
@@ -268,7 +268,7 @@ class _TeleconferenceCallScreenState extends State<TeleconferenceCallScreen> wit
                         Text(
                           participant.role,
                           style: TextStyle(
-                            color: Colors.white.withOpacity(0.8),
+                            color: Colors.white.withValues(alpha: 0.8),
                             fontSize: 10,
                           ),
                           overflow: TextOverflow.ellipsis,
@@ -309,7 +309,7 @@ class _TeleconferenceCallScreenState extends State<TeleconferenceCallScreen> wit
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
           colors: [
-            Colors.black.withOpacity(0.8),
+            Colors.black.withValues(alpha: 0.8),
             Colors.transparent,
           ],
         ),
@@ -320,7 +320,7 @@ class _TeleconferenceCallScreenState extends State<TeleconferenceCallScreen> wit
           Container(
             padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             decoration: BoxDecoration(
-              color: Colors.black.withOpacity(0.5),
+              color: Colors.black.withValues(alpha: 0.5),
               borderRadius: BorderRadius.circular(20),
             ),
             child: Row(
@@ -361,7 +361,7 @@ class _TeleconferenceCallScreenState extends State<TeleconferenceCallScreen> wit
             Container(
               padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
               decoration: BoxDecoration(
-                color: Colors.red.withOpacity(0.8),
+                color: Colors.red.withValues(alpha: 0.8),
                 borderRadius: BorderRadius.circular(20),
               ),
               child: Row(
@@ -394,7 +394,7 @@ class _TeleconferenceCallScreenState extends State<TeleconferenceCallScreen> wit
           begin: Alignment.bottomCenter,
           end: Alignment.topCenter,
           colors: [
-            Colors.black.withOpacity(0.8),
+            Colors.black.withValues(alpha: 0.8),
             Colors.transparent,
           ],
         ),
@@ -453,11 +453,11 @@ class _TeleconferenceCallScreenState extends State<TeleconferenceCallScreen> wit
           color: isEndCall
               ? Colors.red
               : isActive
-                  ? Colors.white.withOpacity(0.2)
-                  : Colors.black.withOpacity(0.5),
+                  ? Colors.white.withValues(alpha: 0.2)
+                  : Colors.black.withValues(alpha: 0.5),
           shape: BoxShape.circle,
           border: Border.all(
-            color: isActive ? Colors.white.withOpacity(0.3) : Colors.transparent,
+            color: isActive ? Colors.white.withValues(alpha: 0.3) : Colors.transparent,
             width: 2,
           ),
         ),
@@ -474,7 +474,7 @@ class _TeleconferenceCallScreenState extends State<TeleconferenceCallScreen> wit
     return Container(
       width: 300,
       decoration: BoxDecoration(
-        color: Colors.black.withOpacity(0.9),
+        color: Colors.black.withValues(alpha: 0.9),
         borderRadius: BorderRadius.only(
           topLeft: Radius.circular(12),
           bottomLeft: Radius.circular(12),
@@ -525,7 +525,7 @@ class _TeleconferenceCallScreenState extends State<TeleconferenceCallScreen> wit
                   ),
                   subtitle: Text(
                     participant.role,
-                    style: TextStyle(color: Colors.white.withOpacity(0.7)),
+                    style: TextStyle(color: Colors.white.withValues(alpha: 0.7)),
                   ),
                 );
               },
@@ -540,7 +540,7 @@ class _TeleconferenceCallScreenState extends State<TeleconferenceCallScreen> wit
     return Container(
       width: 300,
       decoration: BoxDecoration(
-        color: Colors.black.withOpacity(0.9),
+        color: Colors.black.withValues(alpha: 0.9),
         borderRadius: BorderRadius.only(
           topLeft: Radius.circular(12),
           bottomLeft: Radius.circular(12),
@@ -593,7 +593,7 @@ class _TeleconferenceCallScreenState extends State<TeleconferenceCallScreen> wit
                       Text(
                         message.content,
                         style: TextStyle(
-                          color: Colors.white.withOpacity(0.9),
+                          color: Colors.white.withValues(alpha: 0.9),
                           fontSize: 14,
                         ),
                       ),

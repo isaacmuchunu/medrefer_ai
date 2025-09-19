@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:fl_chart/fl_chart.dart';
 import '../../core/app_export.dart';
 import '../../services/advanced_ml_analytics_service.dart';
-import '../../services/blockchain_medical_records_service.dart';
+import '../../services/blockchain_medical_records_service.dart' hide Patient, Referral;
 import '../../services/iot_medical_device_service.dart';
 import '../../services/advanced_telemedicine_service.dart';
 import '../../services/ai_workflow_automation_service.dart';
@@ -48,11 +48,11 @@ class _EnterpriseCommandCenterScreenState extends State<EnterpriseCommandCenterS
 
       final futures = await Future.wait([
         mlService.getAnalyticsDashboard(),
-        blockchainService.getBlockchainStats(),
+        Future.value(blockchainService.getBlockchainStats()),
         _getIoTDashboardData(iotService),
         _getTelemedicineDashboardData(telemedicineService),
-        workflowService.getWorkflowMetrics(),
-        integrationService.getSystemHealth(),
+        Future.value(workflowService.getWorkflowMetrics()),
+        Future.value(integrationService.getSystemHealth()),
       ]);
 
       setState(() {
@@ -154,7 +154,7 @@ class _EnterpriseCommandCenterScreenState extends State<EnterpriseCommandCenterS
           // Key Metrics Cards
           Row(
             children: [
-              Expanded(child: _buildMetricCard('Prediction Accuracy', '94.2%', Icons.target, Colors.green)),
+              Expanded(child: _buildMetricCard('Prediction Accuracy', '94.2%', Icons.track_changes, Colors.green)),
               SizedBox(width: 12.h),
               Expanded(child: _buildMetricCard('Models Active', '12', Icons.psychology, Colors.blue)),
               SizedBox(width: 12.h),

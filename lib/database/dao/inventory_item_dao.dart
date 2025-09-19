@@ -266,13 +266,13 @@ class InventoryItemDao extends BaseDao<InventoryItem> {
   // Get inventory summary
   Future<Map<String, dynamic>> getInventorySummary() async {
     final db = await database;
-    
+
     final totalItems = await db.rawQuery('SELECT COUNT(*) as count FROM $_tableName WHERE is_active = 1');
     final lowStockItems = await db.rawQuery('SELECT COUNT(*) as count FROM $_tableName WHERE current_stock <= minimum_stock AND is_active = 1');
     final outOfStockItems = await db.rawQuery('SELECT COUNT(*) as count FROM $_tableName WHERE current_stock <= 0 AND is_active = 1');
     final expiredItems = await db.rawQuery('SELECT COUNT(*) as count FROM $_tableName WHERE expiry_date < ? AND is_active = 1', [DateTime.now().toIso8601String()]);
     final needsMaintenance = await db.rawQuery('SELECT COUNT(*) as count FROM $_tableName WHERE next_maintenance < ? AND is_active = 1', [DateTime.now().toIso8601String()]);
-    
+
     return {
       'total_items': totalItems.first['count'],
       'low_stock_items': lowStockItems.first['count'],
@@ -280,5 +280,16 @@ class InventoryItemDao extends BaseDao<InventoryItem> {
       'expired_items': expiredItems.first['count'],
       'needs_maintenance': needsMaintenance.first['count'],
     };
+  }
+
+  // Get all items
+  Future<List<InventoryItem>> getAll() async {
+    final db = await database;
+    final maps = await db.query(
+      _tableName,
+      where: 'is_active = 1',
+      orderBy: 'name ASC',
+    );
+    return maps.map(fromMap).toList();
   }
 }

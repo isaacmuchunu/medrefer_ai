@@ -12,6 +12,7 @@ class Patient extends BaseModel {
   String? address;
   String? insurance;
   String? profileImageUrl;
+  String? medicalHistory;
 
   Patient({
     super.id,
@@ -26,6 +27,7 @@ class Patient extends BaseModel {
     this.address,
     this.insurance,
     this.profileImageUrl,
+    this.medicalHistory,
     super.createdAt,
     super.updatedAt,
   });
@@ -44,6 +46,7 @@ class Patient extends BaseModel {
       address: map['address'],
       insurance: map['insurance'],
       profileImageUrl: map['profile_image_url'],
+      medicalHistory: map['medical_history'],
       createdAt: BaseModel.parseDateTime(map['created_at']),
       updatedAt: BaseModel.parseDateTime(map['updated_at']),
     );
@@ -64,6 +67,7 @@ class Patient extends BaseModel {
       'address': address,
       'insurance': insurance,
       'profile_image_url': profileImageUrl,
+      'medical_history': medicalHistory,
     });
     return map;
   }
@@ -80,6 +84,7 @@ class Patient extends BaseModel {
     String? address,
     String? insurance,
     String? profileImageUrl,
+    String? medicalHistory,
   }) {
     return Patient(
       id: id,
@@ -94,6 +99,7 @@ class Patient extends BaseModel {
       address: address ?? this.address,
       insurance: insurance ?? this.insurance,
       profileImageUrl: profileImageUrl ?? this.profileImageUrl,
+      medicalHistory: medicalHistory ?? this.medicalHistory,
       createdAt: createdAt,
       updatedAt: DateTime.now(),
     );
