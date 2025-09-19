@@ -1,3 +1,7 @@
+import 'subscription.dart';
+
+enum BillingCycle { monthly, yearly }
+
 class BillingAccount {
   final String id;
   final String tenantId;
@@ -17,54 +21,7 @@ class BillingAccount {
   final DateTime nextBillingDate;
   final DateTime createdAt;
   final DateTime updatedAt;
-import 'subscription.dart';
 
-enum BillingCycle { monthly, yearly }
-
-class BillingAccount {
-  BillingAccount({
-    required this.tenantId,
-    required this.accountId,
-    required this.plan,
-    required this.billingCycle,
-    required this.nextBillingDate,
-    this.paymentMethod,
-    this.billingAddress,
-  });
-  final String tenantId;
-  final String accountId;
-  TenantPlan plan;
-  BillingCycle billingCycle;
-  DateTime nextBillingDate;
-  String? paymentMethod;
-  Map<String, dynamic>? billingAddress;
-
-  Map<String, dynamic> toMap() {
-    return {
-      'tenantId': tenantId,
-      'accountId': accountId,
-      'plan': plan.toString(),
-      'billingCycle': billingCycle.toString(),
-      'nextBillingDate': nextBillingDate.toIso8601String(),
-      'paymentMethod': paymentMethod,
-      'billingAddress': billingAddress,
-    };
-  }
-
-  factory BillingAccount.fromMap(Map<String, dynamic> map) {
-    return BillingAccount(
-      tenantId: map['tenantId'],
-      accountId: map['accountId'],
-      plan: TenantPlan.values.firstWhere(
-          (e) => e.toString() == map['plan']),
-      billingCycle: BillingCycle.values.firstWhere(
-          (e) => e.toString() == map['billingCycle']),
-      nextBillingDate: DateTime.parse(map['nextBillingDate']),
-      paymentMethod: map['paymentMethod'],
-      billingAddress: map['billingAddress'],
-    );
-  }
-}
   BillingAccount({
     required this.id,
     required this.tenantId,
